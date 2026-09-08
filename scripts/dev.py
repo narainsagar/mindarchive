@@ -26,7 +26,8 @@ Checking your work, when you want to::
     python scripts/dev.py lint
     python scripts/dev.py types
     python scripts/dev.py format --fix
-    python scripts/dev.py build
+    python scripts/dev.py build            # checks the build compiles;
+                                           # does NOT start anything
     python scripts/dev.py verify           # everything, then tidy up
 
 `verify` is the milestone gate: run it before finishing a milestone, before
@@ -323,12 +324,19 @@ def report(failures: list, gate: bool = False) -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(
         description="Development commands for Mind Archive.",
-        epilog="Nothing runs automatically. You decide when to check your work.",
+        epilog=(
+            "To start Mind Archive:  dev.py up --build\n"
+            "'build' on its own is a check, not a way to start anything.\n\n"
+            "Nothing runs automatically. You decide when to check your work."
+        ),
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     sub = parser.add_subparsers(dest="command")
 
-    up = sub.add_parser("up", help="start the stack")
-    up.add_argument("--build", action="store_true", help="rebuild images first")
+    up = sub.add_parser("up", help="START Mind Archive")
+    up.add_argument(
+        "--build", action="store_true", help="rebuild the Docker images first"
+    )
     up.set_defaults(func=cmd_up)
 
     down = sub.add_parser("down", help="stop and remove containers")
@@ -363,7 +371,12 @@ def main() -> int:
     fmt.add_argument("--fix", action="store_true", help="rewrite files in place")
     fmt.set_defaults(func=cmd_format)
 
-    sub.add_parser("build", help="production build").set_defaults(func=cmd_build)
+    # Named for what it checks, not what it starts. "up --build" is the one
+    # that starts Mind Archive; this only asks whether the frontend still
+    # compiles for production.
+    sub.add_parser(
+        "build", help="CHECK the frontend production build compiles"
+    ).set_defaults(func=cmd_build)
 
     verify = sub.add_parser("verify", help="every check — the milestone gate")
     verify.add_argument(
