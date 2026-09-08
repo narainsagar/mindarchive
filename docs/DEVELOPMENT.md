@@ -18,6 +18,10 @@ is a common situation, and Docker removes it as a problem. See decision D-006.
 
 ## Running with Docker
 
+> **`python` or `python3`?** On Windows it is `python`. On Linux, WSL and macOS
+> it is usually `python3` — Ubuntu ships no bare `python`. Every `python ...`
+> command below works either way; use whichever your shell has.
+
 ```bash
 git clone https://github.com/YOUR-USERNAME/mind-archive.git
 cd mind-archive

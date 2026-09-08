@@ -4,6 +4,15 @@ A clean run from nothing, and how to check each part works. Fifteen minutes.
 
 You need **Docker Desktop running**. Nothing else.
 
+> **`python` or `python3`?** On Windows it is `python`. On Linux, WSL and macOS
+> it is usually `python3` — Ubuntu ships no bare `python`. Every `python ...`
+> command below works either way; use whichever your shell has.
+
+> **On Windows, use PowerShell** unless you have deliberately enabled Docker
+> Desktop's WSL integration. Running from WSL against `/mnt/c` is both the
+> slowest path and the one most likely to fail with a missing Docker socket —
+> see [If something goes wrong](#if-something-goes-wrong).
+
 ---
 
 ## 1. Start it
@@ -182,9 +191,11 @@ delete it** — including `clean`.
 
 | Symptom | Likely cause |
 |---|---|
+| `Command 'python' not found` | You are on Linux, WSL or macOS. Use `python3` |
+| `failed to connect to the docker API at unix:///var/run/docker.sock` | You are in WSL and Docker Desktop's WSL integration is off for that distribution. Either run from PowerShell instead, or turn it on: **Docker Desktop → Settings → Resources → WSL integration**, enable your distro, **Apply & restart** |
 | Interface cannot reach the API | Backend still starting. `python scripts/dev.py logs api` |
 | Port already in use | Change `MIND_ARCHIVE_API_PORT` or `WEB_PORT` in `.env` |
-| Import is slow | Expected on Windows. Docker's bind mount is ~27× slower than a native filesystem — see project-memory RESEARCH R-005. On Linux or inside WSL2 it is near-instant |
+| Import is slow | Expected on Windows, and worst of all from WSL against `/mnt/c`. Docker's bind mount is ~27× slower than a native filesystem — see project-memory RESEARCH R-005. Clone into the WSL home directory (`~/`) rather than `/mnt/c` if you want speed |
 | Nothing in the inbox is picked up | Only `.zip` and `.json` are read. Check the file is directly in the folder, not a subfolder |
 | Changes are not showing | The frontend hot-reloads; the backend restarts on save. `python scripts/dev.py restart` if in doubt |
 
