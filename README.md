@@ -26,7 +26,7 @@ The supported way to run Mind Archive is Docker.
 git clone https://github.com/YOUR-USERNAME/mind-archive.git
 cd mind-archive
 cp .env.example .env
-docker compose up --build
+python scripts/dev.py up --build
 ```
 
 Then open:
@@ -35,7 +35,10 @@ Then open:
 - **API** — http://localhost:8000
 - **API documentation** — http://localhost:8000/docs
 
-To stop: `docker compose down`. Your data stays in `./data`.
+To stop: `python scripts/dev.py down`. Your archive stays in `./data`.
+
+Plain `docker compose up --build` works too — `scripts/dev.py` is a convenience
+wrapper, not a requirement.
 
 ## Running without Docker
 

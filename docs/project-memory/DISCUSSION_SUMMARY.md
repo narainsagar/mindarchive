@@ -2,8 +2,8 @@
 
 Durable conclusions from the planning conversations that preceded the first
 line of code. This is a summary, not a transcript — the original conversations
-are kept verbatim in [`docs/archive/`](../archive/) if the reasoning is ever
-needed in full.
+were merged into project memory and removed. They remain in git history at
+commit `fcf1f5c` if the reasoning is ever needed in full.
 
 ## What Mind Archive is
 

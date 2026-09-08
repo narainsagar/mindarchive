@@ -23,5 +23,5 @@ This repository is organised so you do not have to explore it. Read the four
 files above, then open only the files your task touches. Avoid repeatedly
 re-reading the tree.
 
-Planning transcripts live in `docs/archive/`. They are history. You almost
-never need them.
+The original planning transcripts were merged into project memory and removed.
+They remain in git history at commit `fcf1f5c`.

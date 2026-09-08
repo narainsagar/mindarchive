@@ -23,6 +23,21 @@ here is a commitment.
 - **CI does not yet run the Docker build.** Compose config is validated; a full
   image build in CI would be slower but catch more.
 
+## Deployment
+
+The stated intent is to release to GitHub with Pages for documentation, or to a
+private VPS. Both are viable; neither is decided. Record a decision when it is.
+
+- **GitHub + Pages.** Workflows are already written and committed but have never
+  run — there is no remote yet (D-017). Flipping this on is mostly a matter of
+  adding a remote and filling in `project.json`.
+- **Private VPS.** Would need a production frontend image (the current one runs
+  the Vite dev server), a reverse proxy with TLS, and a decision about whether
+  anything is exposed beyond localhost. Note that the API has **no
+  authentication** by design — exposing it to a network without putting auth in
+  front of it would be a serious mistake.
+- Release process, versioning and packaging are Milestone 7.
+
 ## Commercial and licensing
 
 None of this is application work — it belongs on the project website, not in

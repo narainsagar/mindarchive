@@ -7,7 +7,23 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-Nothing yet. Next up: the ChatGPT importer (Milestone 2).
+### Added
+
+- `scripts/dev.py` — one entry point for running checks and managing Docker.
+  Nothing runs automatically; the developer decides when.
+
+### Changed
+
+- **Tests are no longer expected on every change.** Verification is developer-
+  controlled during development and required at milestone boundaries and on
+  pull requests. See decision D-018.
+
+### Removed
+
+- `docs/archive/`. The durable content was merged into `docs/project-memory/`
+  and the transcripts removed; they remain in git history at commit `fcf1f5c`.
+
+Next up: the ChatGPT importer (Milestone 2).
 
 ---
 

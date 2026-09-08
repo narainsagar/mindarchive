@@ -30,4 +30,5 @@ Google Gemini and Google AI Studio are, for this project, one possible
 development assistant and one possible future *import source*. Neither may
 become an architectural dependency of the product.
 
-Planning transcripts live in `docs/archive/`. They are history.
+The original planning transcripts were merged into project memory and
+removed. They remain in git history at commit `fcf1f5c`.

@@ -5,6 +5,47 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-08 — Archive cleanup and developer-controlled workflow
+
+**Session:** [2026-09-08-02-archive-cleanup-and-dev-workflow](sessions/2026-09-08-02-archive-cleanup-and-dev-workflow/SESSION.md)
+· [prompts](sessions/2026-09-08-02-archive-cleanup-and-dev-workflow/PROMPTS.md)
+· [archive audit](sessions/2026-09-08-02-archive-cleanup-and-dev-workflow/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+Groundwork before Milestone 2, all from explicit direction.
+
+**`docs/archive/` removed.** Audited all nine files: only `SETUP.md` held
+durable content not already in project memory, and it was merged into
+`RESEARCH.md` R-002 with the `pc_specs` probe commands. The rest were duplicates
+of session 01's verbatim prompts or superseded by the real repository layout.
+Deleted rather than kept, because all nine are committed in `fcf1f5c` and so
+remain recoverable. Eight files with dangling links now point at that commit.
+Also caught a Milestone 1 mistake: `agent-tooling-research.md` was misnamed —
+it was a prompt, not research.
+
+**D-018 — verification is developer-controlled.** Tests no longer run on every
+change. Required before a milestone completes, before a pull request, and before
+a release. Exploratory work is expected to leave the code broken; a slow gate
+after every edit gets skipped, which is worse than an explicit one.
+
+**D-019 — Docker containers are disposable.** Checks run in throwaway
+containers, `verify` tears the stack down, `clean` removes this project's
+images. `./data` is a bind mount, so no cleanup command can touch the archive.
+
+**`scripts/dev.py`** added as the single entry point for both the stack and the
+checks. Two small bugs fixed along the way: `slugify` truncated session folder
+names mid-word, and `dev.py` emitted ANSI escapes into consoles that cannot
+render them.
+
+**Verified** with `dev.py verify`: 33 backend tests, 19 frontend tests, ruff,
+mypy strict, eslint, tsc, production build — all passed. The memory check
+correctly failed until this session's record was written.
+
+**Next:** Milestone 2, the ChatGPT importer.
+
+---
+
 ## 2026-09-08 — Audit and Milestone 1
 
 **Session:** [2026-09-08-01-audit-and-milestone-1](sessions/2026-09-08-01-audit-and-milestone-1/SESSION.md)

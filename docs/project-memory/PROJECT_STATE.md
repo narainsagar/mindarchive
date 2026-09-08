@@ -8,6 +8,11 @@ stand.
 
 **Last updated:** 2026-09-08 · **Milestone 1 complete** · Version 0.1.0
 
+> **Workflow note.** Checks do not run on every change. Verification is
+> developer-controlled and required at milestone boundaries, pull requests and
+> releases — run `python scripts/dev.py verify` (decision D-018). Containers are
+> disposable; `python scripts/dev.py down` when finished (D-019).
+
 ---
 
 ## In one paragraph

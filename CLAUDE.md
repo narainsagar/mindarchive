@@ -23,7 +23,8 @@ Read as your task requires: `docs/ARCHITECTURE.md`, `docs/PRODUCT.md`,
 and `docs/` disagree, `docs/` is current — and the disagreement should be fixed,
 not ignored.
 
-Planning transcripts in `docs/archive/` are history. You rarely need them.
+The original planning transcripts were merged into project memory and
+removed. They remain in git history at commit `fcf1f5c` if ever needed.
 
 ## Identity
 
@@ -78,8 +79,28 @@ and errors for humans. Accessibility is required.
 - `.claude/rules/backend.md`
 - `.claude/rules/security.md`
 
+## When to run checks
+
+**Not after every change** (decision D-018). Verification is developer-
+controlled during development and required before a milestone is called
+complete, before a pull request, and before a release.
+
+```bash
+python scripts/dev.py verify    # everything — the gate
+python scripts/dev.py test backend lint    # or just what you touched
+```
+
+Never claim a check passed unless you ran it. Saying "I have not run the tests"
+is fine; saying they pass when you did not run them is not.
+
+Containers are disposable — `python scripts/dev.py down` when you are finished.
+
 ## Definition of done
 
-Code implemented · tests and checks run · configuration documented ·
-documentation updated · decisions recorded where applicable · roadmap, backlog
-and project state updated where applicable · `git status` reviewed.
+**A milestone:** code implemented · `dev.py verify` passes, with real output
+reported · configuration documented · documentation updated · decisions
+recorded · roadmap, backlog and project state updated · session record written ·
+`git status` reviewed.
+
+**A change within a milestone:** code implemented · configuration and
+documentation updated · relevant checks run.

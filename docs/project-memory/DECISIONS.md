@@ -214,6 +214,60 @@ updates; see `LICENSING.md` and `docs/BACKLOG.md`.
 
 ---
 
+## D-018 — Verification is developer-controlled during development, and required at milestone boundaries
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Tests and checks are **not** expected to run on every change. There is no
+pre-commit hook, no file watcher, and nothing wired into saving a file.
+
+The developer decides when to verify. Checks are **required** at three points:
+
+1. Before a milestone is called complete.
+2. Before opening a pull request.
+3. Before a release or deployment.
+
+CI enforces the second and third; the first is a working discipline.
+
+**Why:** Running a full suite after every edit is slow, and slow feedback gets
+skipped or worked around, which is worse than an explicit gate. Exploratory
+work — trying an approach, throwing it away — is where most development time
+goes, and the code is *expected* to be broken during it. Verifying constantly
+during that phase costs time and buys nothing.
+
+This mirrors how open-source projects actually work: contributors iterate
+locally however they like, then run the full suite before pushing, and CI is the
+backstop.
+
+**Consequences:** `scripts/dev.py` gives granular commands (`test`, `lint`,
+`types`, `format`, `build`) plus `verify`, which runs everything and is the
+milestone gate. `AGENTS.md` and `AI_AGENT_PROTOCOL.md` were updated: agents must
+no longer run the full suite after every edit, but must run `verify` before
+declaring a milestone done — and must still never claim a check passed without
+running it.
+
+**What does not change:** honesty about verification. "I did not run the tests"
+is a fine thing to say. "The tests pass" without having run them is not.
+
+---
+
+## D-019 — Docker containers are disposable and never left running
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Every check runs in a one-shot container (`docker compose run --rm`). Nothing
+lingers. `scripts/dev.py verify` tears the stack down when it finishes, and
+`dev.py clean` removes this project's containers, volumes and built images.
+
+**Why:** Development machines accumulate stopped containers, orphaned volumes
+and stale images until Docker quietly consumes tens of gigabytes. Making
+teardown explicit and easy prevents that, and guarantees checks run against a
+clean environment rather than a container that has drifted.
+
+**Consequences:** `./data` is a bind mount, not a Docker volume, so no cleanup
+command can delete the user's archive — including `down --volumes`. That
+separation is deliberate and must be preserved.
+
+---
+
 ## D-017 — The repository stays local until there is something worth showing
 **Date:** 2026-09-08 · **Status:** Accepted
 

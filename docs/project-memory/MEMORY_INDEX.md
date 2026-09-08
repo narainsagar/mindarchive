@@ -19,7 +19,7 @@ conversation with Claude, Gemini, Qwen, Cursor or ChatGPT, it does not exist.
 | [SESSION_LOG.md](SESSION_LOG.md) | One short entry per working session | Picking up where someone left off |
 | [SESSION_PROTOCOL.md](SESSION_PROTOCOL.md) | How sessions are recorded, start and end | Beginning or ending a session |
 | [sessions/](sessions/) | Full record of each session: what happened, the prompts, any report | Resuming work, or asking what was actually asked for |
-| [archive/](../archive/) | Original planning transcripts, kept verbatim | Rarely — history only |
+| git history `fcf1f5c` | The original planning transcripts, before they were merged into the files above | Almost never |
 
 ## Session memory
 

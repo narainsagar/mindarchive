@@ -101,12 +101,29 @@ Accessibility is required, not optional.
 **Before editing:** inspect the repository, read the relevant documentation,
 understand the existing architecture, and identify the smallest correct change.
 
-**After editing:** run the tests and checks, review the diff, update the
-documentation, record any architectural decision, update the roadmap or backlog
-if scope changed, and review `git status`.
+**After editing:** review the diff, update the documentation, record any
+architectural decision, update the roadmap or backlog if scope changed, and
+review `git status`.
+
+**When to run tests.** Not after every change. Verification is developer-
+controlled during development, and required at three points (decision D-018):
+
+1. Before calling a milestone complete
+2. Before opening a pull request
+3. Before a release or deployment
+
+```bash
+python scripts/dev.py verify      # everything — the gate
+python scripts/dev.py test        # or just what you need
+python scripts/dev.py lint types build
+```
+
+Iterate however you like in between. Broken code mid-task is expected.
 
 **Never claim a command passed unless you actually ran it.** Code inspection is
-not verification. If something failed, say so and show the output.
+not verification. If something failed, say so and show the output. "I have not
+run the tests" is a perfectly good thing to say — claiming they pass when you
+did not run them is not.
 
 Do not blindly rewrite working code. Do not refactor beyond your task. Do not
 create a fake implementation to make a task look complete. Do not silently
@@ -152,15 +169,19 @@ the conflict, resolve it deliberately, and update both.
 
 ## Definition of done
 
-A change is not complete until:
+A **milestone** is not complete until:
 
 1. Code is implemented.
-2. Tests and checks have been run.
+2. `python scripts/dev.py verify` passes, and its real output is reported.
 3. Configuration is documented.
 4. Relevant documentation is updated.
 5. Architectural decisions are recorded where applicable.
 6. Roadmap, backlog and project state are updated where applicable.
-7. `git status` has been reviewed.
+7. The session record is written and `git status` reviewed.
+
+An individual **change** within a milestone needs items 1, 3 and 4 — run
+whichever checks are relevant to what you touched, and leave the full gate for
+the milestone boundary.
 
 ## Git
 
@@ -177,14 +198,22 @@ chore: establish project foundation
 ## Quick commands
 
 ```bash
-# Everything, the supported way
 cp .env.example .env
-docker compose up --build      # web on :5173, API on :8000
 
-# Backend, natively (needs Python 3.11+)
-cd apps/api && python -m venv .venv && . .venv/bin/activate
-pip install -e ".[dev]" && pytest && uvicorn mind_archive.main:app --reload
+python scripts/dev.py up --build   # start:  web :5173, API :8000
+python scripts/dev.py status       # what is running
+python scripts/dev.py logs api -f  # follow a log
+python scripts/dev.py down         # stop and remove containers
+python scripts/dev.py clean        # also remove built images
 
-# Frontend, natively (needs Node 20+)
-cd apps/web && npm install && npm run dev && npm test
+python scripts/dev.py verify       # every check — the milestone gate
+python scripts/dev.py test backend # or just one thing
+python scripts/dev.py format --fix
+
+python scripts/session.py start "what you are doing"
+python scripts/session.py end
 ```
+
+Leave nothing running. Containers are disposable (D-019).
+
+Native setup, if you prefer it, is in `docs/DEVELOPMENT.md`.

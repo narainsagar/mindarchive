@@ -48,17 +48,46 @@ historical intent — `docs/` describes the product as it is now.
 
 **After changing things:**
 
-1. Run the tests and checks. Actually run them.
-2. Review the diff.
-3. Update the documentation that the change affects.
-4. Update project memory (see below).
-5. Check for security and privacy consequences.
-6. Report what changed and what remains.
+1. Review the diff.
+2. Update the documentation that the change affects.
+3. Update project memory (see below).
+4. Check for security and privacy consequences.
+5. Report what changed and what remains.
+
+## When to run checks
+
+**Not after every change.** Verification is developer-controlled during
+development and required at milestone boundaries — decision D-018.
+
+Required before:
+
+- calling a milestone complete
+- opening a pull request
+- a release or deployment
+
+```bash
+python scripts/dev.py verify        # everything; the gate
+python scripts/dev.py test lint types build   # or just what you need
+```
+
+In between, iterate freely. Code being broken mid-task is expected and fine.
+
+Use judgement: if you changed one backend file, `dev.py test backend` is a
+sensible thing to run before moving on. Running the whole gate every time is
+not.
 
 ## Never claim something works unless you ran it
 
-This is not negotiable. Code inspection is not verification. If a check failed,
-say it failed and show the output. If you skipped a step, say you skipped it.
+This is not negotiable and D-018 does not soften it. Code inspection is not
+verification.
+
+- If a check failed, say it failed and show the output.
+- If you did not run a check, say so plainly. That is a perfectly acceptable
+  answer.
+- Never write "tests pass" about a command you did not execute.
+
+The point of developer-controlled verification is to stop wasting time, not to
+stop being honest about what has been verified.
 
 ## Updating project memory
 

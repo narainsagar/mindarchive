@@ -8,7 +8,7 @@
 
 ## Checks
 
-- [ ] Tests and checks pass locally
+- [ ] `python scripts/dev.py verify` passes locally
 - [ ] Documentation updated where behaviour changed
 - [ ] No secret, `.env`, database file or personal archive in the diff
 - [ ] Any new dependency justified below

@@ -66,6 +66,30 @@ or LM Studio behind an OpenAI-compatible API.
 
 - VRAM matters far more than system RAM for inference speed. A model that does
   not fit in VRAM can spill to system RAM, with a significant performance cost.
+- Qwen Code itself is lightweight — any modern 4-core CPU, 8 GB RAM minimum
+  (16 GB recommended), ~2–5 GB of storage. The hardware demand comes almost
+  entirely from running a model locally, not from the agent.
+
+**Machine tiers for running this project plus a local model:**
+
+| Tier | CPU | RAM | GPU | Disk |
+|---|---|---|---|---|
+| Minimum practical | 4+ cores | 16 GB | none | 100 GB free |
+| Recommended | 6–12 cores | 32 GB | 8–12 GB VRAM | 200 GB free |
+| Enthusiast | 12+ cores | 64 GB+ | 16–24 GB+ VRAM | 500 GB free |
+
+Mind Archive itself is undemanding — React, FastAPI, SQLite and a filesystem
+run comfortably on an ordinary laptop. Only the optional local model is heavy.
+
+**Agent ranking reached during planning**, best first for this project: Qwen
+Code with a local Qwen model; OpenCode with a local model; Cline (if you prefer
+working inside VS Code); Aider (strongest for Git-centric edits); Goose;
+OpenHands (heavier than V1 needs).
+
+**A two-agent pattern was proposed:** one agent as the builder for routine
+development, a second as an occasional reviewer for architecture, security and
+alternative implementations, with a stronger hosted model consulted for
+difficult problems. Never adopted formally, and not a project requirement.
 
 **Assumption this supports:** The repository must be understandable by any agent
 or by a human, from the repository alone (D-013). Mind Archive itself must never
@@ -74,8 +98,18 @@ depend on Ollama, Qwen, Claude, Gemini, Cursor or any coding tool.
 **Explicitly out of scope:** Local-model integration *inside the product*. This
 research concerns the development environment only.
 
-**Revisit when:** Choosing a local model to install, which requires measuring
-the machine's actual CPU, RAM, GPU and VRAM first. Not yet done.
+**Revisit when:** Choosing a local model to install. That requires measuring the
+machine first — not yet done. On Linux or WSL2:
+
+```bash
+lscpu | grep -E 'Model name|CPU\(s\)'   # CPU
+free -h                                  # RAM
+nvidia-smi 2>/dev/null || echo "no NVIDIA GPU"   # GPU and VRAM
+df -h /                                  # disk
+```
+
+Measure before installing a model, rather than downloading something the
+machine cannot comfortably run.
 
 ---
 
@@ -87,8 +121,8 @@ agent read a small number of known files instead of exploring.
 
 **Assumption this supports:** The read order defined in
 [AI_AGENT_PROTOCOL.md](AI_AGENT_PROTOCOL.md), and the decision to keep planning
-transcripts out of the working tree root (they were moved to `docs/archive/` on
-2026-09-08).
+transcripts out of the working tree entirely (merged into project memory and
+removed on 2026-09-08; they remain in git history at commit `fcf1f5c`).
 
 **Observed on 2026-09-08:** Before cleanup, roughly half the repository's
 content by size was raw conversation transcript, which every agent had to read

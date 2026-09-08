@@ -5,7 +5,8 @@ The instructions given during this session, verbatim and in order.
 No secrets appeared in any prompt, so nothing has been redacted.
 
 Prompt 1 was pasted by the user from `prompts/local_claude.md` (now in
-`docs/archive/`) and combines three prompts that were designed to be sent
+`docs/archive/`, later merged into project memory and removed — see commit
+`fcf1f5c`) and combines three prompts that were designed to be sent
 separately: the audit prompt, the Milestone 1 implementation prompt, and the
 template for future sessions.
 

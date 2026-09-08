@@ -53,9 +53,17 @@ SECRET_PATTERNS = [
 ]
 
 
-def slugify(text):
+def slugify(text, limit=50):
+    """Make a short, readable folder name.
+
+    Truncates at a word boundary — a name cut mid-word reads as a typo in a
+    directory listing.
+    """
     slug = re.sub(r"[^a-z0-9]+", "-", text.lower()).strip("-")
-    return slug[:50] or "session"
+    if len(slug) <= limit:
+        return slug or "session"
+    trimmed = slug[:limit].rsplit("-", 1)[0]
+    return trimmed or slug[:limit]
 
 
 def today():

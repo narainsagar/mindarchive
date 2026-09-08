@@ -67,21 +67,34 @@ These are not negotiable, because they are the product:
 
 ## Making a change
 
-1. Fork and branch from `main`.
-2. Make the smallest coherent change that fully solves the problem.
-3. Add or update tests.
-4. Run the checks — actually run them:
+1. **Open an issue first** for anything non-trivial, so nobody duplicates work
+   and the approach can be agreed before you spend time on it.
+2. Fork and branch from `main`. One topic per branch.
+3. Make the smallest coherent change that fully solves the problem.
+4. Add or update tests.
+5. **Iterate however suits you.** Nothing forces you to run checks while you
+   work — no pre-commit hook, no watcher. Run what is useful when it is useful:
 
    ```bash
-   cd apps/api && pytest && ruff check . && mypy src
-   cd apps/web && npm test && npm run typecheck && npm run lint && npm run build
+   python scripts/dev.py test backend
+   python scripts/dev.py lint
+   python scripts/dev.py format --fix
    ```
 
-5. Update the documentation your change affects. Documentation is part of the
+6. Update the documentation your change affects. Documentation is part of the
    implementation, not a follow-up.
-6. If you changed architecture, add a numbered entry to
+7. If you changed architecture, add a numbered entry to
    [docs/project-memory/DECISIONS.md](docs/project-memory/DECISIONS.md).
-7. Review your own diff before you push.
+8. **Before you push, run the full gate and fix what it finds:**
+
+   ```bash
+   python scripts/dev.py verify
+   ```
+
+9. Review your own diff. Then open the pull request.
+
+CI runs the same checks `verify` does, so a green local run should mean a green
+pull request.
 
 ## Commit messages
 

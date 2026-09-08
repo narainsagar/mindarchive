@@ -30,3 +30,5 @@ Record new architectural and product decisions there, numbered and dated.
 | D-015 | Default branch `main`; per-repository git identity |
 | D-016 | PolyForm Noncommercial 1.0.0; commercial licences sold separately |
 | D-017 | Repository stays local until there is a product worth showing |
+| D-018 | Verification is developer-controlled; required at milestone boundaries |
+| D-019 | Docker containers are disposable and never left running |
