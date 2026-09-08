@@ -1,0 +1,205 @@
+---
+layout: null
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mind Archive</title>
+    <meta
+      name="description"
+      content="Own your AI memory. Simple, private, and yours. A local-first, source-available personal AI archive."
+    />
+
+    <style>
+      /* Same palette as the application. Light by default, dark supported. */
+      :root {
+        --page: #fbfaf8;
+        --surface: #ffffff;
+        --border: #e2ded7;
+        --text: #1f1d1a;
+        --text-soft: #56514a;
+        --text-faint: #857f75;
+        --accent: #6b5b45;
+        color-scheme: light;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --page: #171614;
+          --surface: #201f1c;
+          --border: #33312d;
+          --text: #f0ede8;
+          --text-soft: #bab5ac;
+          --text-faint: #8a857c;
+          --accent: #c3ad8a;
+          color-scheme: dark;
+        }
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        padding: 0 24px;
+        background: var(--page);
+        color: var(--text);
+        font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+          "Helvetica Neue", Arial, sans-serif;
+        font-size: 16px;
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      .wrap {
+        max-width: 720px;
+        margin: 0 auto;
+        padding: 80px 0 64px;
+      }
+
+      h1 {
+        font-size: 2rem;
+        letter-spacing: -0.02em;
+        margin: 0 0 8px;
+      }
+
+      .tagline {
+        color: var(--text-soft);
+        font-size: 1.125rem;
+        margin: 0 0 40px;
+      }
+
+      h2 {
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+        color: var(--text-faint);
+        margin: 48px 0 16px;
+      }
+
+      p {
+        color: var(--text-soft);
+        max-width: 62ch;
+      }
+
+      a {
+        color: var(--accent);
+      }
+
+      ul {
+        padding-left: 20px;
+        color: var(--text-soft);
+      }
+
+      li {
+        margin-bottom: 6px;
+      }
+
+      li strong {
+        color: var(--text);
+        font-weight: 600;
+      }
+
+      pre {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 16px 18px;
+        overflow-x: auto;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.8125rem;
+        color: var(--text);
+      }
+
+      footer {
+        margin-top: 64px;
+        padding-top: 24px;
+        border-top: 1px solid var(--border);
+        color: var(--text-faint);
+        font-size: 0.8125rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <h1>Mind Archive</h1>
+      <p class="tagline">Own your AI memory. Simple, private, and yours.</p>
+
+      <p>
+        Mind Archive is a local-first, source-available application for
+        preserving, organising and searching your AI conversations, memories,
+        knowledge and files — so they stay yours, and stay useful even when you
+        change AI provider.
+      </p>
+
+      <p>
+        Your archive lives on your own computer. There is no account, no server,
+        and nothing is uploaded anywhere unless you explicitly configure it.
+      </p>
+
+      <h2>Try it</h2>
+      <pre>git clone https://github.com/YOUR-USERNAME/mind-archive.git
+cd mind-archive
+cp .env.example .env
+docker compose up --build</pre>
+
+      <p>
+        Then open <a href="http://localhost:5173">localhost:5173</a>.
+      </p>
+
+      <h2>Licence</h2>
+      <p>
+        Free for any noncommercial use — personal, study, research, hobby
+        projects, and use by charities, schools, public research bodies and
+        government institutions. Commercial use requires a separate licence.
+      </p>
+
+      <h2>Why</h2>
+      <ul>
+        <li>
+          <strong>Local first.</strong> Works with no network and no account.
+        </li>
+        <li>
+          <strong>Privacy first.</strong> Nothing leaves your machine. Cloud
+          features are opt-in and off by default.
+        </li>
+        <li>
+          <strong>You own your data.</strong> Ordinary Markdown and JSON files
+          you can read, search and back up with any tool.
+        </li>
+        <li>
+          <strong>No lock-in.</strong> ChatGPT is just the first import format.
+          No provider sits at the centre.
+        </li>
+      </ul>
+
+      <h2>Documentation</h2>
+      <ul>
+        <li><a href="PRODUCT.html">What Mind Archive is</a></li>
+        <li><a href="ARCHITECTURE.html">How it is built</a></li>
+        <li><a href="DEVELOPMENT.html">Working on it</a></li>
+        <li><a href="SECURITY.html">Privacy and security</a></li>
+        <li><a href="ROADMAP.html">Where it is going</a></li>
+        <li><a href="DECISIONS.html">Why it is built this way</a></li>
+      </ul>
+
+      <h2>Status</h2>
+      <p>
+        Early development. Milestone 1 is complete — a runnable, documented
+        foundation. Importing conversations is Milestone 2.
+      </p>
+
+      <footer>
+        Free for noncommercial use under
+        <a href="https://polyformproject.org/licenses/noncommercial/1.0.0"
+          >PolyForm Noncommercial</a
+        >. Commercial use requires a licence — see <code>LICENSING.md</code> in
+        the repository.
+      </footer>
+    </div>
+  </body>
+</html>

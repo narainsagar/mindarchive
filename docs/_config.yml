@@ -1,0 +1,18 @@
+# GitHub Pages settings for the Mind Archive documentation site.
+# See docs/GITHUB_PAGES.md.
+
+title: Mind Archive
+description: Own your AI memory. Simple, private, and yours.
+
+theme: jekyll-theme-primer
+
+# Working memory, useful in the repository but noise on a public site.
+exclude:
+  - project-memory/
+  - archive/
+  - _config.yml
+
+# Markdown files render as pages; index.html is the landing page.
+markdown: kramdown
+kramdown:
+  input: GFM

@@ -1,0 +1,75 @@
+# Changelog
+
+All notable changes to Mind Archive are recorded here.
+
+The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
+and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+Nothing yet. Next up: the ChatGPT importer (Milestone 2).
+
+---
+
+## [0.1.0] — 2026-09-08
+
+Milestone 1. A runnable, documented foundation. No product features yet — you
+cannot import or browse conversations. That is deliberate.
+
+### Added
+
+**Backend** (`apps/api`)
+
+- FastAPI application with typed settings read from the environment
+- `GET /api/health` — liveness and version
+- `GET /api/config` — non-sensitive configuration, including where the archive
+  is stored and whether cloud is enabled
+- A small in-process event bus, so later milestones have a real extension point
+- Centralised, traversal-safe filesystem path resolution
+- Tests with pytest; linting with ruff; type checking with mypy
+
+**Frontend** (`apps/web`)
+
+- React + TypeScript + Vite single-page workspace
+- Light mode by default, dark mode toggle, system preference honoured, choice
+  persisted locally
+- Status panel showing backend health and where the archive lives
+- Tests with Vitest and Testing Library
+
+**Project**
+
+- Docker and Docker Compose for the whole stack
+- GitHub Actions CI: backend and frontend checks, plus a project-memory check
+- GitHub Pages documentation foundation
+- `.gitignore` protecting secrets, databases and personal archives
+- `.env.example` with safe placeholders and an explanation of every setting
+- `LICENSE` (PolyForm Noncommercial 1.0.0) and `LICENSING.md` explaining the
+  free noncommercial tier and paid commercial licensing
+- `project.json` as the single source of truth for project identity, applied
+  across the repository by `scripts/set_identity.py`
+- `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`
+- Issue and pull request templates
+
+**Documentation and project memory**
+
+- `README.md`, and `docs/` covering product, architecture, development,
+  security, roadmap, backlog, decisions and GitHub Pages
+- `docs/project-memory/` — the permanent project memory: state, milestones,
+  numbered decisions, research, discussion summary, agent protocol, session log
+- Session memory: every working session is recorded in the repository, with the
+  prompts and reports that produced it (`scripts/session.py`)
+- `AGENTS.md` as the canonical cross-agent instruction file, with `CLAUDE.md`,
+  `GEMINI.md` and `QWEN.md` as thin pointers
+
+### Changed
+
+- `CLAUDE.md` rewritten — it previously directed agents to five empty files as
+  the project's source of truth
+- Licence changed from MIT to PolyForm Noncommercial 1.0.0 before any code was
+  published. Mind Archive is source-available, not open source: free for
+  noncommercial use, commercial use requires a licence. See decision D-016.
+- Planning transcripts moved to `docs/archive/`, with the durable knowledge in
+  them extracted into project memory
+
+[Unreleased]: https://github.com/YOUR-USERNAME/mind-archive/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/YOUR-USERNAME/mind-archive/releases/tag/v0.1.0

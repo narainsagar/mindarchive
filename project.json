@@ -1,0 +1,45 @@
+{
+  "_comment": [
+    "Project identity for Mind Archive — the single source of truth for who owns",
+    "this repository and where it lives.",
+    "",
+    "Edit the values below, then run:",
+    "",
+    "    python scripts/set_identity.py",
+    "",
+    "That propagates them into LICENSE, README.md, CHANGELOG.md, the docs, the",
+    "GitHub workflows and apps/web/package.json, replacing the YOUR-USERNAME",
+    "placeholders. Run it again any time these values change.",
+    "",
+    "Nothing here is secret. Secrets belong in .env, which is git-ignored.",
+    "This file is committed so contributors and CI see the same values."
+  ],
+
+  "name": "mind-archive",
+  "displayName": "Mind Archive",
+  "tagline": "Your Personal AI Mind Archive.",
+  "slogan": "Own your AI memory. Simple, private, and yours.",
+  "description": "A local-first application for preserving, organising and searching your AI conversations, memories, knowledge and files.",
+  "version": "0.1.0",
+  "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
+
+  "github": {
+    "username": "YOUR-USERNAME",
+    "repository": "mind-archive"
+  },
+
+  "copyright": {
+    "year": "2026",
+    "holder": "Mind Archive contributors"
+  },
+
+  "author": {
+    "name": "",
+    "email": ""
+  },
+
+  "site": {
+    "domain": "mindarchive.app",
+    "useCustomDomain": false
+  }
+}

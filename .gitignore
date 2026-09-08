@@ -1,0 +1,92 @@
+# Mind Archive — files that must never enter version control.
+#
+# The two rules that matter most for a privacy-first project:
+#   1. Never commit secrets (.env and friends).
+#   2. Never commit the user's own archive data.
+# Everything else here is ordinary build noise.
+
+# ---------------------------------------------------------------
+# Secrets and local configuration
+# ---------------------------------------------------------------
+.env
+.env.*
+!.env.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+credentials.json
+secrets.json
+
+# ---------------------------------------------------------------
+# The user's archive and local data
+#
+# Mind Archive stores your conversations and files on your own
+# machine. None of it belongs in Git.
+# ---------------------------------------------------------------
+/data/
+/archive/
+apps/api/data/
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Imported provider exports (ChatGPT, Claude, Gemini, ...)
+*.zip
+conversations.json
+
+# ---------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+*.egg-info/
+.eggs/
+dist/
+build/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ---------------------------------------------------------------
+# Node / frontend
+# ---------------------------------------------------------------
+node_modules/
+apps/web/dist/
+apps/web/.vite/
+*.tsbuildinfo
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.eslintcache
+
+# ---------------------------------------------------------------
+# Editors and operating systems
+# ---------------------------------------------------------------
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---------------------------------------------------------------
+# Local scratch space
+# ---------------------------------------------------------------
+/tmp/
+/scratch/
+*.local

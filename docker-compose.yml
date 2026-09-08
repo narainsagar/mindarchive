@@ -1,0 +1,71 @@
+# Mind Archive — the whole application, locally.
+#
+#     cp .env.example .env
+#     docker compose up --build
+#
+#     Interface  http://localhost:5173
+#     API        http://localhost:8000
+#
+# Your archive is bind-mounted at ./data, so it stays on your machine and
+# survives 'docker compose down'. It is git-ignored.
+
+services:
+  api:
+    build:
+      context: ./apps/api
+    container_name: mind-archive-api
+    # Published on localhost only. This API has no authentication because it is
+    # a single-user local application — do not change this to 0.0.0.0 unless
+    # you have put authentication in front of it.
+    ports:
+      - "127.0.0.1:${MIND_ARCHIVE_API_PORT:-8000}:8000"
+    environment:
+      MIND_ARCHIVE_DATA_DIR: /data
+      MIND_ARCHIVE_DEBUG: ${MIND_ARCHIVE_DEBUG:-false}
+      MIND_ARCHIVE_LOG_LEVEL: ${MIND_ARCHIVE_LOG_LEVEL:-info}
+      MIND_ARCHIVE_CORS_ORIGINS: ${MIND_ARCHIVE_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}
+      MIND_ARCHIVE_CLOUD_ENABLED: ${MIND_ARCHIVE_CLOUD_ENABLED:-false}
+      MIND_ARCHIVE_STORAGE_MODE: ${MIND_ARCHIVE_STORAGE_MODE:-local}
+    volumes:
+      # Your archive.
+      - ./data:/data
+      # Source, for hot reload. The virtualenv inside the image is kept.
+      - ./apps/api/src:/app/src
+      - ./apps/api/tests:/app/tests
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request;urllib.request.urlopen('http://127.0.0.1:8000/api/health')",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ./apps/web
+    container_name: mind-archive-web
+    ports:
+      - "127.0.0.1:${WEB_PORT:-5173}:5173"
+    environment:
+      # The browser makes this request, not the container, so this is the host
+      # address rather than the compose service name.
+      VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+      # Docker on Windows and macOS cannot always deliver filesystem events
+      # into a container. Set VITE_USE_POLLING=true in .env if edits are not
+      # picked up.
+      VITE_USE_POLLING: ${VITE_USE_POLLING:-false}
+    volumes:
+      - ./apps/web/src:/app/src
+      - ./apps/web/index.html:/app/index.html
+      # An anonymous volume keeps the container's node_modules from being
+      # shadowed by the host's.
+      - /app/node_modules
+    depends_on:
+      - api
+    restart: unless-stopped

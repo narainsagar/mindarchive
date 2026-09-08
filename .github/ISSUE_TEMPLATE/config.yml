@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/YOUR-USERNAME/mind-archive/security/advisories/new
+    about: Please report vulnerabilities privately, not as a public issue.
+  - name: Question
+    url: https://github.com/YOUR-USERNAME/mind-archive/discussions
+    about: Ask anything about using or building Mind Archive.

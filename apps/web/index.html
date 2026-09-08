@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Mind Archive</title>
+    <meta
+      name="description"
+      content="Your personal AI mind archive. Own your AI memory. Simple, private, and yours."
+    />
+
+    <script>
+      // Set the theme before the first paint, so a dark-mode user never sees a
+      // flash of the light theme. Kept tiny and inline on purpose.
+      (function () {
+        try {
+          var stored = localStorage.getItem("mind-archive-theme");
+          if (stored === "light" || stored === "dark") {
+            document.documentElement.setAttribute("data-theme", stored);
+          }
+        } catch (error) {
+          // Storage unavailable; the CSS default and the system preference
+          // handle it from here.
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
