@@ -39,6 +39,17 @@ stays rebuildable from the files on disk.
 
 ---
 
+## Milestone 3.5 — Import ergonomics ✅
+
+Getting an export out of ChatGPT takes days, so importing one should take no
+effort at all. A watched inbox folder imports anything you drop into it.
+Re-importing reports what is genuinely new rather than counting everything
+again, and rewrites nothing that has not changed. Correct guidance about the
+export's real timings. An optional [faster route](FASTER_IMPORT.md) you run
+yourself in your own browser.
+
+---
+
 ## Milestone 4 — Organisation 🎯 next
 
 Projects, tags and metadata. The fuller archive model — Conversation, Message,

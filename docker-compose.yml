@@ -24,6 +24,9 @@ services:
       # The archive is at /data inside this container, but at ./data on your
       # machine. This is the path the interface shows you.
       MIND_ARCHIVE_DISPLAY_DATA_DIR: ./data
+      # Drop a provider export into ./data/inbox and it imports itself.
+      MIND_ARCHIVE_INBOX_DIR: ${MIND_ARCHIVE_INBOX_DIR:-}
+      MIND_ARCHIVE_INBOX_KEEP_FILES: ${MIND_ARCHIVE_INBOX_KEEP_FILES:-false}
       MIND_ARCHIVE_DEBUG: ${MIND_ARCHIVE_DEBUG:-false}
       MIND_ARCHIVE_LOG_LEVEL: ${MIND_ARCHIVE_LOG_LEVEL:-info}
       MIND_ARCHIVE_CORS_ORIGINS: ${MIND_ARCHIVE_CORS_ORIGINS:-http://localhost:5173,http://127.0.0.1:5173}

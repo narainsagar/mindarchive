@@ -5,6 +5,59 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-08 — Import ergonomics: the inbox and honest re-import reporting
+
+**Session:** [2026-09-08-05-import-ergonomics-inbox-and-re-import-reporting](sessions/2026-09-08-05-import-ergonomics-inbox-and-re-import-reporting/SESSION.md)
+· [prompts](sessions/2026-09-08-05-import-ergonomics-inbox-and-re-import-reporting/PROMPTS.md)
+· [report](sessions/2026-09-08-05-import-ergonomics-inbox-and-re-import-reporting/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+Milestone 3.5, prompted by the importer having gone three milestones without
+seeing a real export. The obstacle was the product, not the code.
+
+**Research corrected the premise** (R-004). OpenAI's own email says an export
+"may take a few days". The famous "24 hours" is how long the **download link**
+lasts — a deadline, not a wait — and only the most recent request is fulfilled,
+so asking twice cancels your own job. Our import panel had that number exactly
+backwards. There is no official API for ChatGPT history, so the wait cannot be
+automated.
+
+**The inbox** (D-023): drop an export into a folder and it imports itself. No
+filesystem watcher — three scan triggers cover it. Configurable to a folder you
+already keep exports in, and **that folder is read, never rearranged**; a ledger
+remembers instead.
+
+**Honest re-import reporting.** Every export is a full export, so re-importing
+now says "12 new, 8 updated, 392 already in your archive", and unchanged
+conversations are not rewritten at all.
+
+**The fast path** (D-024): a script the user runs in their own logged-in tab.
+No token is pasted anywhere, and Mind Archive never contacts OpenAI. Tools that
+ask you to paste a session token are a different and much worse proposition —
+that token can send messages as you. Mind Archive calling those endpoints itself
+is rejected outright.
+
+**Measuring beat guessing.** A 2,000-conversation import took 194s and looked
+like a code problem. It takes 4.7s on the container filesystem and 127s on the
+Windows bind mount — **27× slower, same code** (R-005). No optimisation needed;
+recorded so nobody optimises the wrong thing later. It did justify moving the
+startup scan to a background thread, after an inline version left the server
+refusing connections for minutes.
+
+**`inspect_export.py` leaked content in its first draft** by listing archive
+filenames — ChatGPT names attachments after what they are. A tool built to avoid
+leaking leaked, on draft one.
+
+**Verified**: 217 backend tests (was 197), 54 frontend (was 45), full gate
+green, plus 2,000 conversations imported end to end with the API responsive
+throughout.
+
+**Outstanding, still:** no real ChatGPT export has been imported. This makes it
+cheap rather than replacing it.
+
+---
+
 ## 2026-09-08 — Milestone 3: archive browser and search
 
 **Session:** [2026-09-08-04-milestone-3-archive-browser-and-search](sessions/2026-09-08-04-milestone-3-archive-browser-and-search/SESSION.md)

@@ -43,6 +43,9 @@ user.json
 message_feedback.json
 model_comparisons.json
 
+# The inbox: exports waiting to be imported, and the ones already done.
+/data/inbox/
+
 # Scratch space for real provider exports used while developing.
 # Put your own ChatGPT export in local/ — everything in there is ignored
 # except the README that explains what it is for.

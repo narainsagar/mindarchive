@@ -8,16 +8,31 @@ import { ImportPanel } from "./ImportPanel";
 
 vi.mock("../api", async () => {
   const actual = await vi.importActual<typeof import("../api")>("../api");
-  return { ...actual, importExport: vi.fn() };
+  return {
+    ...actual,
+    importExport: vi.fn(),
+    fetchInbox: vi.fn(),
+    scanInbox: vi.fn(),
+  };
 });
 
-const { importExport } = await import("../api");
+const { importExport, fetchInbox, scanInbox } = await import("../api");
+
+const inbox = {
+  folder: "/home/someone/mind-archive/data/inbox",
+  managed: true,
+  moves_files: true,
+  waiting: 0,
+};
 
 const success: ImportSummary = {
   ok: true,
   message: "Imported 412 conversations.",
   source: "chatgpt",
   imported: 412,
+  new: 412,
+  updated: 0,
+  unchanged: 0,
   skipped: 0,
   problems: [],
   archive_location: "/home/someone/mind-archive/data/archive",
@@ -38,12 +53,39 @@ describe("the import panel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     vi.mocked(importExport).mockResolvedValue(success);
+    vi.mocked(fetchInbox).mockResolvedValue(inbox);
   });
 
   it("explains where to get an export", () => {
     render(<ImportPanel />);
 
-    expect(screen.getByText(/Settings → Data controls → Export data/)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Settings → Data controls → Export data/),
+    ).toBeInTheDocument();
+  });
+
+  it("says the export takes days, not hours", async () => {
+    /* This panel used to say "up to 24 hours", which was wrong in the most
+       misleading way: 24 hours is the download deadline, not the wait. */
+    render(<ImportPanel />);
+
+    expect(await screen.findByText(/can take a few days/i)).toBeInTheDocument();
+  });
+
+  it("warns that the download link expires", async () => {
+    render(<ImportPanel />);
+
+    expect(
+      await screen.findByText(/expires 24 hours after the email arrives/i),
+    ).toBeInTheDocument();
+  });
+
+  it("warns that asking again cancels the previous request", async () => {
+    render(<ImportPanel />);
+
+    expect(
+      await screen.findByText(/cancels your previous request/i),
+    ).toBeInTheDocument();
   });
 
   it("cannot import until a file is chosen", () => {
@@ -109,13 +151,107 @@ describe("the import panel", () => {
     await user.click(screen.getByRole("button", { name: "Import" }));
 
     await screen.findByText(success.message);
-    expect(onImported).toHaveBeenCalledWith(success);
+    expect(onImported).toHaveBeenCalled();
+  });
+});
+
+describe("the inbox", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(importExport).mockResolvedValue(success);
+    vi.mocked(fetchInbox).mockResolvedValue(inbox);
+    vi.mocked(scanInbox).mockResolvedValue({
+      ok: true,
+      message: "Read 1 file: 412 new.",
+      scanned: 1,
+      imported_files: 1,
+      failed_files: 0,
+      new: 412,
+      updated: 0,
+      unchanged: 0,
+      problems: [],
+    });
+  });
+
+  it("tells you where to put the file", async () => {
+    render(<ImportPanel />);
+
+    expect(await screen.findByText(inbox.folder)).toBeInTheDocument();
+  });
+
+  it("says how many files are waiting", async () => {
+    vi.mocked(fetchInbox).mockResolvedValue({ ...inbox, waiting: 3 });
+
+    render(<ImportPanel />);
+
+    expect(await screen.findByText(/3 files are waiting/i)).toBeInTheDocument();
+  });
+
+  it("imports what is waiting when asked", async () => {
+    const user = userEvent.setup();
+    render(<ImportPanel />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /check that folder now/i }),
+    );
+
+    expect(scanInbox).toHaveBeenCalledOnce();
+    expect(await screen.findByText("Read 1 file: 412 new.")).toBeInTheDocument();
+  });
+
+  it("refreshes the archive after the inbox brings something in", async () => {
+    const onImported = vi.fn();
+    const user = userEvent.setup();
+    render(<ImportPanel onImported={onImported} />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /check that folder now/i }),
+    );
+
+    await screen.findByText("Read 1 file: 412 new.");
+    expect(onImported).toHaveBeenCalled();
+  });
+
+  it("does not refresh the archive when nothing arrived", async () => {
+    vi.mocked(scanInbox).mockResolvedValue({
+      ok: true,
+      message: "Nothing new in your inbox.",
+      scanned: 0,
+      imported_files: 0,
+      failed_files: 0,
+      new: 0,
+      updated: 0,
+      unchanged: 0,
+      problems: [],
+    });
+    const onImported = vi.fn();
+    const user = userEvent.setup();
+    render(<ImportPanel onImported={onImported} />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /check that folder now/i }),
+    );
+
+    await screen.findByText("Nothing new in your inbox.");
+    expect(onImported).not.toHaveBeenCalled();
+  });
+
+  it("still works when the inbox cannot be read", async () => {
+    /* The inbox is a convenience. Losing it must not break importing. */
+    vi.mocked(fetchInbox).mockRejectedValue(new Error("no such folder"));
+
+    render(<ImportPanel />);
+
+    expect(
+      await screen.findByRole("button", { name: "Import" }),
+    ).toBeInTheDocument();
   });
 });
 
 describe("when the import cannot be done", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    vi.mocked(fetchInbox).mockResolvedValue(inbox);
   });
 
   it("shows the backend's explanation", async () => {

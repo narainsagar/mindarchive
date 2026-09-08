@@ -214,6 +214,75 @@ updates; see `LICENSING.md` and `docs/BACKLOG.md`.
 
 ---
 
+## D-023 — A watched inbox folder, owned by default and configurable
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Mind Archive watches one folder for provider exports. Anything dropped in is
+imported. `MIND_ARCHIVE_INBOX_DIR` defaults to `data/inbox`.
+
+**Why:** Getting an export out of ChatGPT takes days (see RESEARCH R-004). When
+it finally arrives, the least the application can do is pick it up without being
+asked. Saving a file into a folder is a smaller act than opening an application
+and finding an upload button.
+
+**Why one folder and not a filesystem watcher:** scanning on startup, on demand,
+and when the interface regains focus covers every case that matters for a
+personal archive, and costs no dependency. `watchdog` can be added if it ever
+earns its place.
+
+**Consequences and the boundary that matters:**
+
+- The default folder is one Mind Archive owns. There it tidies up: imported
+  files move to `imported/`, unreadable ones to `failed/` with a note. An empty
+  inbox means everything is in.
+- Pointing the setting at a folder of your own is supported, and then **files
+  are left exactly where they are** — moving things out of somebody's Downloads
+  folder would be presumptuous. A small ledger records what has been imported.
+- A folder the user chose is never created for them.
+- **Everything in the inbox is untrusted**, exactly like an upload: same
+  importers, same zip-safety checks, same size caps. Only `.zip` and `.json`
+  are ever opened.
+- The startup scan runs on a **background thread**. On a slow filesystem a
+  large import takes minutes, and doing it inline left the server refusing
+  connections throughout — the application looked broken at exactly the moment
+  it was being most useful. Found by measurement, see R-005.
+
+---
+
+## D-024 — The fast path is a script the user runs; no credential enters Mind Archive
+**Date:** 2026-09-08 · **Status:** Accepted
+
+ChatGPT's undocumented `/backend-api/` endpoints can return your conversations
+in minutes rather than days. Mind Archive will **never** call them, and will
+never ask for a session token.
+
+The supported fast path is `scripts/browser/chatgpt-export.js`: a script the
+user pastes into the console of their own logged-in tab. It reuses the session
+the browser already holds, downloads a `conversations.json`, and that file goes
+into the inbox like any other export.
+
+**Why this shape and not the obvious one:** a ChatGPT session token grants full
+account access — reading every conversation and sending messages as the user.
+Several third-party tools ask people to paste that token into a text box. For a
+product whose entire pitch is that your data stays yours, asking for that
+credential would be self-defeating regardless of how carefully it was handled.
+
+Keeping the script outside the application means Mind Archive's privacy claim
+stays trivially true: it makes no outbound request, and only ever reads a file
+you put in a folder.
+
+**Consequences:** The script is documented as **not part of the application**,
+with honest warnings — the endpoints are undocumented and may break, using them
+may violate OpenAI's Terms of Use, and it cannot fetch attachments. The
+counter-argument (it is the user's own data, GDPR Article 20) is presented as
+theirs to weigh rather than settled for them. The official export stays the
+default and the recommendation.
+
+**Explicitly rejected:** Mind Archive storing a session token and calling
+OpenAI itself, in any form, opt-in or otherwise.
+
+---
+
 ## D-020 — A conversation is served and rendered as one Markdown file
 **Date:** 2026-09-08 · **Status:** Accepted
 

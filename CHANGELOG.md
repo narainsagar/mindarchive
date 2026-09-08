@@ -9,6 +9,31 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+**Import ergonomics.** Getting an export out of ChatGPT takes days; importing
+one should take no effort at all.
+
+- **A watched inbox folder.** Drop an export into `data/inbox/` and it imports
+  itself — on startup, on demand, or when you come back to the tab. Imported
+  files are tidied into `imported/`, unreadable ones into `failed/` with a note
+  saying why
+- **Point it at your own folder** with `MIND_ARCHIVE_INBOX_DIR` and your files
+  are left exactly where they are, with a ledger recording what has been read
+- **Honest re-import reporting.** Every ChatGPT export is a full export, so
+  re-importing now says "12 new, 8 updated, 392 already in your archive" rather
+  than counting everything again — and rewrites nothing that has not changed
+- **Correct guidance in the interface.** ChatGPT says preparing an export takes
+  a few days; the download link expires 24 hours after the email arrives; and
+  asking again cancels your previous request
+- `scripts/inspect_export.py` — reports the *structure* of a real export and
+  none of its content, so an importer can be hardened against real data without
+  anyone reading your conversations
+- `scripts/make_fixture_export.py` — generates large, deliberately messy
+  synthetic exports for testing
+- `scripts/browser/chatgpt-export.js` and
+  [docs/FASTER_IMPORT.md](docs/FASTER_IMPORT.md) — an optional script you run in
+  your own browser to get your conversations in minutes instead of days. Mind
+  Archive never sees your session and never contacts OpenAI
+
 **Milestone 3 — the archive browser and search.** You can now read what you
 imported.
 
@@ -44,6 +69,8 @@ something.
 
 ### Fixed
 
+- The import panel said an export takes "up to 24 hours". That was wrong: 24
+  hours is how long the download link lasts, not how long the export takes.
 - An unusable archive folder no longer stops the application starting. It logs
   the problem and carries on, so the interface can explain it.
 - The handler that indexes an imported conversation now uses the configuration

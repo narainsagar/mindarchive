@@ -65,12 +65,26 @@ this repository. Recorded here so the plan is not lost. See
 - **Website.** Downloads, pricing, donations and documentation. The application
   must never contain payment code or contact a server.
 
+## Faster and easier import
+
+Done in Milestone 3.5: watched inbox folder, re-import reporting, correct
+guidance, and an optional browser script. See decisions D-023 and D-024, and
+[RESEARCH.md](project-memory/RESEARCH.md) R-004 for the export's real timings.
+
+Still open:
+
+- **Progress reporting during a long import.** A large archive on a slow
+  filesystem takes minutes (R-005). The import runs on a background thread so
+  nothing blocks, but the interface says nothing while it works.
+- **A filesystem watcher.** Scanning on startup, on demand and on window focus
+  covers every case so far. `watchdog` only if that stops being true.
+- **Verify the browser script's output shape** against a real official export.
+  Believed identical; unconfirmed.
+
 ## Product ideas
 
 - Import from Claude, Gemini, Google AI Studio, Copilot and local tools
 - Attachments and images inside imported conversations
-- Deduplication when the same export is imported twice
-- Incremental import — only what is new since last time
 - Saved searches
 - Timeline view of an archive
 - Statistics that are genuinely useful rather than decorative
@@ -101,3 +115,10 @@ Kept here so they are not re-proposed without new information.
 - **Authentication and multi-user support.** Not before Milestone 7, and only
   if there is a genuine reason.
 - **Telemetry of any kind.** Contradicts the product.
+- **Mind Archive calling ChatGPT's undocumented API itself.** It would need a
+  session token, which grants full account access — reading everything and
+  sending messages as the user. Asking for that credential would contradict the
+  entire product. The supported fast path is a script the user runs in their own
+  browser, where the token never leaves the tab. See decision D-024.
+- **Asking anyone to paste a session token into Mind Archive.** Not opt-in, not
+  behind a warning, not at all.

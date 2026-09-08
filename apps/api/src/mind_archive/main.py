@@ -10,6 +10,7 @@ Interactive documentation is at http://localhost:8000/docs
 from __future__ import annotations
 
 import logging
+import threading
 from collections.abc import AsyncIterator, Callable
 from contextlib import asynccontextmanager
 
@@ -19,6 +20,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from mind_archive import __version__
 from mind_archive.config import Settings, get_settings
 from mind_archive.events import Event, events
+from mind_archive.inbox import Inbox
 from mind_archive.index import Indexer, supports_fts5
 from mind_archive.paths import safe_join
 from mind_archive.routes import config as config_routes
@@ -54,6 +56,16 @@ def _make_index_handler(settings: Settings) -> Callable[[Event], None]:
             logger.exception("Could not index a conversation; rebuild to recover")
 
     return handle
+
+
+def _scan_inbox_quietly(settings: Settings) -> None:
+    """Import whatever is in the inbox, without ever disturbing the server."""
+    try:
+        result = Inbox(settings).scan()
+        if result.scanned:
+            logger.info("Inbox: %s", result.summary())
+    except Exception:  # noqa: BLE001 - the inbox must never stop the app
+        logger.exception("Could not scan the inbox")
 
 
 def _settings_for(app: FastAPI) -> Settings:
@@ -114,15 +126,33 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     except Exception:  # noqa: BLE001 - a broken index must not stop the app
         logger.exception("Could not build the search index")
 
-    # Keep the index in step with imports.
+    # Keep the index in step with imports. Both events matter: a conversation
+    # that already existed and has grown needs re-indexing too.
     index_handler = _make_index_handler(settings)
     events.subscribe("conversation.created", index_handler)
+    events.subscribe("conversation.updated", index_handler)
+
+    # Anything sitting in the inbox is imported now. Getting an export out of
+    # ChatGPT takes days; the least we can do is pick it up without being
+    # asked once it finally arrives.
+    #
+    # In a background thread, deliberately. A large export takes a while to
+    # import, and doing it inline would leave the server refusing connections
+    # while it worked — the application would look broken at exactly the moment
+    # it was being most useful.
+    threading.Thread(
+        target=_scan_inbox_quietly,
+        args=(settings,),
+        name="mind-archive-inbox",
+        daemon=True,
+    ).start()
 
     events.publish("application.started", {"version": __version__})
 
     yield
 
     events.unsubscribe("conversation.created", index_handler)
+    events.unsubscribe("conversation.updated", index_handler)
 
     events.publish("application.stopping", {"version": __version__})
     logger.info("Mind Archive stopped")

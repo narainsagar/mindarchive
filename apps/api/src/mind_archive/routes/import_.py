@@ -1,16 +1,21 @@
 """Importing a provider export.
 
-Two endpoints:
+- ``GET  /api/importers``   — which providers are supported
+- ``POST /api/import``      — upload an export and archive it
+- ``GET  /api/inbox``       — where the watched folder is, and what is in it
+- ``POST /api/inbox/scan``  — import whatever is sitting in that folder
 
-- ``GET  /api/importers`` — which providers are supported
-- ``POST /api/import``    — upload an export and archive it
+Two ways in, because getting an export out of ChatGPT takes days and the moment
+it arrives should be as easy as possible: choose the file here, or just save it
+into the inbox folder.
 
-The uploaded file is written to a temporary location, read, and deleted. It is
+An uploaded file is written to a temporary location, read, and deleted. It is
 never stored in the archive folder: the archive holds readable conversations,
 not provider zips.
 
-**The upload is untrusted.** It is size-capped on the way in, and the importer
-treats its contents as hostile throughout. See `docs/SECURITY.md`.
+**Both routes are untrusted.** Uploads are size-capped on the way in, inbox
+files are size-checked before opening, and the importer treats the contents of
+either as hostile throughout. See `docs/SECURITY.md`.
 """
 
 from __future__ import annotations
@@ -29,6 +34,7 @@ from mind_archive.config import Settings, get_settings
 from mind_archive.events import events
 from mind_archive.importers import available_importers, find_importer
 from mind_archive.importers.zip_safety import safety_problem
+from mind_archive.inbox import Inbox
 from mind_archive.paths import safe_filename
 
 logger = logging.getLogger(__name__)
@@ -54,7 +60,13 @@ class ImportSummary(BaseModel):
     ok: bool
     message: str
     source: str | None = None
+
+    #: Conversations that reached the archive, changed or not.
     imported: int = 0
+    #: Of those: not already there, already there but grown, and identical.
+    new: int = 0
+    updated: int = 0
+    unchanged: int = 0
     skipped: int = 0
 
     #: Descriptions of what could not be read. Never conversation content.
@@ -159,21 +171,28 @@ async def import_export(
             },
         )
 
-        logger.info("Imported %s conversations from %s", stored.written, importer.name)
+        logger.info(
+            "Imported from %s: %s new, %s updated, %s unchanged",
+            importer.name,
+            stored.new,
+            stored.updated,
+            stored.unchanged,
+        )
 
         total_skipped = parsed.skipped + stored.skipped
-        message = f"Imported {stored.written} " + (
-            "conversation" if stored.written == 1 else "conversations"
-        )
+        message = stored.summary()
         if total_skipped:
-            message += f", skipped {total_skipped} that could not be read"
-        message += "."
+            message = message.rstrip(".")
+            message += f", and skipped {total_skipped} that could not be read."
 
         return ImportSummary(
             ok=True,
             message=message,
             source=importer.name,
             imported=stored.written,
+            new=stored.new,
+            updated=stored.updated,
+            unchanged=stored.unchanged,
             skipped=total_skipped,
             problems=(parsed.problems + stored.problems)[:20],
             archive_location=settings.archive_location,
@@ -181,6 +200,75 @@ async def import_export(
 
     finally:
         shutil.rmtree(workspace, ignore_errors=True)
+
+
+class InboxStatus(BaseModel):
+    """Where the inbox is, and what is sitting in it."""
+
+    folder: str
+    #: False when the user has pointed the inbox at a folder of their own.
+    managed: bool
+    #: Whether imported files are tidied away or left where they are.
+    moves_files: bool
+    waiting: int
+
+
+class InboxScanResult(BaseModel):
+    ok: bool
+    message: str
+    scanned: int = 0
+    imported_files: int = 0
+    failed_files: int = 0
+    new: int = 0
+    updated: int = 0
+    unchanged: int = 0
+    problems: list[str] = []
+
+
+@router.get(
+    "/api/inbox",
+    response_model=InboxStatus,
+    summary="Where the inbox is, and what is waiting in it",
+)
+def inbox_status(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> InboxStatus:
+    inbox = Inbox(settings)
+    return InboxStatus(
+        folder=settings.inbox_location,
+        managed=settings.inbox_is_managed,
+        moves_files=settings.inbox_moves_files,
+        waiting=len(inbox.waiting()),
+    )
+
+
+@router.post(
+    "/api/inbox/scan",
+    response_model=InboxScanResult,
+    summary="Import anything waiting in the inbox",
+)
+def scan_inbox(
+    settings: Annotated[Settings, Depends(get_settings)],
+) -> InboxScanResult:
+    """Import every export sitting in the inbox folder.
+
+    Safe to call whenever. Files already imported are not imported again, and
+    re-importing an export you already have changes nothing.
+    """
+    settings.ensure_directories()
+    result = Inbox(settings).scan()
+
+    return InboxScanResult(
+        ok=result.failed_files == 0,
+        message=result.summary(),
+        scanned=result.scanned,
+        imported_files=result.imported_files,
+        failed_files=result.failed_files,
+        new=result.new,
+        updated=result.updated,
+        unchanged=result.unchanged,
+        problems=result.problems,
+    )
 
 
 async def _save_upload(file: UploadFile, destination: Path) -> int:

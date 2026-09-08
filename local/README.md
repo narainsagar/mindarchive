@@ -35,8 +35,13 @@ wrong.
 
 ## Getting a ChatGPT export
 
-In ChatGPT: **Settings → Data controls → Export data**. You get an email with a
-download link. The archive contains `conversations.json`, `chat.html`,
-`user.json` and any images or files from your conversations.
+In ChatGPT: **Settings → Data controls → Export data**. ChatGPT emails you when
+it is ready — its own message says this "may take a few days".
+
+**The download link expires 24 hours after that email arrives**, and requesting
+again cancels your previous request. Ask once, then wait.
+
+The archive contains `conversations.json`, `chat.html`, `user.json` and any
+images or files from your conversations.
 
 `conversations.json` is the only file Mind Archive currently reads.

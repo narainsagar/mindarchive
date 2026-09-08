@@ -80,6 +80,30 @@ file is rendered rather than parsed back into messages.
 
 ---
 
+## Milestone 3.5 — Import ergonomics ✅
+
+Slotted in after Milestone 3 because getting an export out of ChatGPT turned out
+to be the real obstacle to using the product, not anything in the code. OpenAI's
+own email says the export "may take a few days" — see [RESEARCH.md](RESEARCH.md)
+R-004.
+
+| Item | Status |
+|---|---|
+| Watched inbox folder — drop an export in and it imports itself | ✅ |
+| Configurable to a folder you already keep exports in, files left in place | ✅ |
+| Honest re-import reporting: new, updated, already there | ✅ |
+| Unchanged conversations are not rewritten at all | ✅ |
+| Correct guidance: days to prepare, 24h link expiry, one request at a time | ✅ |
+| `scripts/inspect_export.py` — structure only, safe to share | ✅ |
+| `scripts/make_fixture_export.py` — large messy synthetic exports | ✅ |
+| `scripts/browser/chatgpt-export.js` — optional fast path, run by the user | ✅ |
+
+**Deliberately excluded:** a filesystem watcher (scanning covers it), progress
+reporting during a long import, and anything that puts a session token inside
+Mind Archive (D-024).
+
+---
+
 ## Milestone 4 — Projects, tags, metadata and events ⬜
 
 - Archive model: Project, Conversation, Message, Document, Memory, Tag,

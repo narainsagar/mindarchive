@@ -62,11 +62,43 @@ export interface ImporterInfo {
   supported_formats: string[];
 }
 
+export interface InboxStatus {
+  folder: string;
+  /** False when the inbox points at a folder the user chose. */
+  managed: boolean;
+  moves_files: boolean;
+  waiting: number;
+}
+
+export interface InboxScanResult {
+  ok: boolean;
+  message: string;
+  scanned: number;
+  imported_files: number;
+  failed_files: number;
+  new: number;
+  updated: number;
+  unchanged: number;
+  problems: string[];
+}
+
+export function fetchInbox(): Promise<InboxStatus> {
+  return request<InboxStatus>("/api/inbox");
+}
+
+export function scanInbox(): Promise<InboxScanResult> {
+  return request<InboxScanResult>("/api/inbox/scan", { method: "POST" });
+}
+
 export interface ImportSummary {
   ok: boolean;
   message: string;
   source: string | null;
   imported: number;
+  /** Of those imported: genuinely new, already there but grown, identical. */
+  new: number;
+  updated: number;
+  unchanged: number;
   skipped: number;
   /** Descriptions of what could not be read. Never conversation content. */
   problems: string[];

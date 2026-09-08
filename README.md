@@ -12,9 +12,8 @@ provider.
 Your archive lives on your own computer. There is no account, no server, and
 nothing is uploaded anywhere unless you explicitly configure it.
 
-> **Status: early development.** Milestone 1 is complete — this is a runnable,
-> documented foundation with a working frontend, backend, Docker setup and CI.
-> It does not import or browse conversations yet. That is Milestone 2.
+> **Status: early development.** You can import a ChatGPT export, then browse,
+> search and read it. Organising it with tags and projects is next.
 
 ---
 
@@ -65,6 +64,29 @@ npm run dev
 Full instructions, including WSL2 and Windows specifics, are in
 [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
+## Getting your ChatGPT history in
+
+In ChatGPT: **Settings → Data controls → Export data**. Two things catch people
+out, and neither is obvious:
+
+- **ChatGPT says preparing it can take a few days.** Request it before you need
+  it.
+- **The download link expires 24 hours after the email arrives**, and asking
+  again **cancels your previous request**. Ask once, then wait.
+
+When it arrives, save the `.zip` into `data/inbox/` and Mind Archive imports it
+on its own. Or choose the file in the interface — whichever you prefer.
+
+Already keep your exports somewhere? Point the inbox at that folder with
+`MIND_ARCHIVE_INBOX_DIR`; your files stay exactly where they are.
+
+Re-importing later costs nothing: Mind Archive reports what is genuinely new
+and leaves everything else untouched.
+
+**In a hurry?** [docs/FASTER_IMPORT.md](docs/FASTER_IMPORT.md) describes an
+optional script you run in your own browser to get your conversations in
+minutes. Mind Archive never sees your session and never contacts OpenAI.
+
 ## What makes Mind Archive different
 
 **Local first.** Everything works with no network connection and no account.
@@ -91,9 +113,11 @@ mind-archive/
 │   ├── api/          Python + FastAPI backend
 │   └── web/          React + TypeScript + Vite frontend
 ├── docs/             Documentation
-│   ├── project-memory/   Decisions, state, milestones
-│   └── archive/          Original planning notes (history)
-├── data/             Your archive. Never committed.
+│   └── project-memory/   Decisions, state, milestones, sessions
+├── scripts/          Development helpers, and the optional browser script
+├── data/
+│   ├── archive/      Your conversations. Never committed.
+│   └── inbox/        Drop exports here and they import themselves.
 ├── AGENTS.md         Instructions for AI agents and contributors
 ├── MASTER.md         The founding specification
 └── docker-compose.yml
@@ -110,6 +134,7 @@ committed.
 | Document | What it covers |
 |---|---|
 | [PRODUCT.md](docs/PRODUCT.md) | What Mind Archive is and who it is for |
+| [FASTER_IMPORT.md](docs/FASTER_IMPORT.md) | Getting your conversations in sooner |
 | [ARCHITECTURE.md](docs/ARCHITECTURE.md) | How the system is put together |
 | [DEVELOPMENT.md](docs/DEVELOPMENT.md) | Setting up and working on the project |
 | [SECURITY.md](docs/SECURITY.md) | Privacy model and reporting a vulnerability |

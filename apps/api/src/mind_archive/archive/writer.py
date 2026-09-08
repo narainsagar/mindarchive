@@ -23,6 +23,7 @@ import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from typing import Literal
 
 from mind_archive.events import EventBus, events
 from mind_archive.models import Conversation
@@ -32,19 +33,87 @@ CONVERSATION_FILE = "conversation.md"
 METADATA_FILE = "metadata.json"
 
 
+#: What happened to one conversation when it was written.
+Status = Literal["new", "updated", "unchanged"]
+
+
+@dataclass
+class Written:
+    """Where a conversation went, and whether anything actually changed."""
+
+    folder: Path
+    status: Status
+
+
 @dataclass
 class WriteResult:
-    """What was written, and what was not."""
+    """What was written, and what was not.
 
-    written: int = 0
+    The new/updated/unchanged split matters because every provider export is a
+    *full* export. The second one contains everything the first did, so
+    "imported 412 conversations" would be true and useless. What a person wants
+    to know is what arrived that they did not already have.
+    """
+
+    new: int = 0
+    updated: int = 0
+    unchanged: int = 0
     skipped: int = 0
     problems: list[str] = field(default_factory=list)
     folders: list[str] = field(default_factory=list)
+
+    @property
+    def written(self) -> int:
+        """Conversations that reached the archive, changed or not."""
+        return self.new + self.updated + self.unchanged
+
+    def note(self, status: Status) -> None:
+        if status == "new":
+            self.new += 1
+        elif status == "updated":
+            self.updated += 1
+        else:
+            self.unchanged += 1
 
     def note_problem(self, problem: str) -> None:
         self.skipped += 1
         if len(self.problems) < 50:
             self.problems.append(problem)
+
+    def summary(self) -> str:
+        """What happened, in words a person would use.
+
+        Says only what is true: an import with nothing new says so rather than
+        claiming a number that means nothing.
+        """
+        if self.written == 0:
+            return "Nothing was imported."
+
+        # Nothing arrived that was not already here. Common, and worth saying
+        # plainly rather than dressing up as a number.
+        if not self.new and not self.updated:
+            return (
+                f"Nothing new — all {self.unchanged} "
+                f"{'conversation was' if self.unchanged == 1 else 'conversations were'}"
+                " already in your archive."
+            )
+
+        # A first import: everything is new, so the breakdown says nothing.
+        if not self.updated and not self.unchanged:
+            return (
+                f"Imported {self.new} "
+                f"{'conversation' if self.new == 1 else 'conversations'}."
+            )
+
+        parts: list[str] = []
+        if self.new:
+            parts.append(f"{self.new} new")
+        if self.updated:
+            parts.append(f"{self.updated} updated")
+        if self.unchanged:
+            parts.append(f"{self.unchanged} already in your archive")
+
+        return "Imported " + ", ".join(parts) + "."
 
 
 class ArchiveWriter:
@@ -59,7 +128,7 @@ class ArchiveWriter:
 
         for index, conversation in enumerate(conversations):
             try:
-                folder = self.write(conversation)
+                written = self.write(conversation)
             except Exception as error:  # noqa: BLE001 - one bad one, not a failed import
                 # The conversation's title is not logged: it is user content.
                 result.note_problem(
@@ -68,26 +137,44 @@ class ArchiveWriter:
                 )
                 continue
 
-            result.written += 1
-            result.folders.append(str(folder))
+            result.note(written.status)
+            result.folders.append(str(written.folder))
 
         return result
 
-    def write(self, conversation: Conversation) -> Path:
-        """Write one conversation, returning the folder it went into."""
-        folder = self._folder_for(conversation)
-        folder.mkdir(parents=True, exist_ok=True)
+    def write(self, conversation: Conversation) -> Written:
+        """Write one conversation, unless it is already there unchanged.
 
-        (folder / CONVERSATION_FILE).write_text(
-            render_markdown(conversation), encoding="utf-8"
+        Re-importing the same export is the normal case, not the exception —
+        every provider export is a full export. So an unchanged conversation is
+        left completely alone: no write, no modified timestamp, no event. A
+        file's timestamp should mean "this changed", and it stops meaning that
+        if every import rewrites everything.
+        """
+        folder = self._folder_for(conversation)
+
+        markdown = render_markdown(conversation)
+        metadata = (
+            json.dumps(_metadata(conversation), indent=2, ensure_ascii=False) + "\n"
         )
-        (folder / METADATA_FILE).write_text(
-            json.dumps(_metadata(conversation), indent=2, ensure_ascii=False) + "\n",
-            encoding="utf-8",
-        )
+
+        markdown_path = folder / CONVERSATION_FILE
+        metadata_path = folder / METADATA_FILE
+
+        existed = markdown_path.is_file()
+        if (
+            existed
+            and _unchanged(markdown_path, markdown)
+            and _unchanged(metadata_path, metadata)
+        ):
+            return Written(folder=folder, status="unchanged")
+
+        folder.mkdir(parents=True, exist_ok=True)
+        markdown_path.write_text(markdown, encoding="utf-8")
+        metadata_path.write_text(metadata, encoding="utf-8")
 
         self.bus.publish(
-            "conversation.created",
+            "conversation.updated" if existed else "conversation.created",
             {
                 "source": conversation.source,
                 # The folder relative to the archive root — the conversation's
@@ -98,7 +185,7 @@ class ArchiveWriter:
             },
         )
 
-        return folder
+        return Written(folder=folder, status="updated" if existed else "new")
 
     def _folder_for(self, conversation: Conversation) -> Path:
         """Build a readable, unique, traversal-safe folder name.
@@ -155,6 +242,18 @@ class ArchiveWriter:
             isinstance(existing, dict)
             and existing.get("source_id") == conversation.source_id
         )
+
+
+def _unchanged(path: Path, content: str) -> bool:
+    """Is the file already exactly this text?
+
+    A plain comparison rather than a hash: these files are kilobytes, the
+    comparison is exact, and there is no digest to get wrong.
+    """
+    try:
+        return path.read_text(encoding="utf-8") == content
+    except (OSError, UnicodeDecodeError):
+        return False
 
 
 def _metadata(conversation: Conversation) -> dict[str, object]:

@@ -35,3 +35,5 @@ Record new architectural and product decisions there, numbered and dated.
 | D-020 | A conversation is served and rendered as one Markdown file |
 | D-021 | Markdown rendered with `react-markdown`; raw HTML stays off |
 | D-022 | Search matches all words, last word as a prefix |
+| D-023 | A watched inbox folder, owned by default and configurable |
+| D-024 | The fast path is a user-run script; no credential enters the app |

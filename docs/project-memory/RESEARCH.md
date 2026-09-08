@@ -113,6 +113,147 @@ machine cannot comfortably run.
 
 ---
 
+## R-004 — Getting a ChatGPT export: timings, traps, and whether it can be automated
+
+Researched 2026-09-08, because the importer had been built and tested for two
+milestones without ever seeing a real export, and the reason turned out to be
+that getting one is slow and its rules are not obvious.
+
+### The official export
+
+| | |
+|---|---|
+| How long it takes | **OpenAI's own confirmation email says "this process may take a few days".** Help-centre documentation allows up to 7 days. In practice reports range from an hour to two days. |
+| **Link expiry** | **The download link expires 24 hours after the email arrives.** |
+| **Repeat requests** | **Only the most recent request is fulfilled.** Requesting again silently cancels the previous job. |
+| Route | Settings → Data controls → Export data, at `https://chatgpt.com/#settings/DataControls` |
+| Contents | `conversations.json`, `chat.html`, `user.json`, `message_feedback.json`, plus images and files |
+
+**Primary source, observed 2026-09-08.** The confirmation email received after
+requesting an export reads, verbatim:
+
+> You recently requested a copy of your ChatGPT data.
+>
+> We have started preparing your data export, this process may take a few days.
+> We will email you when it is ready to download
+
+This is worth recording because it contradicts what people expect. The figure
+"24 hours" is widely believed — it appears in ChatGPT's own interface — but it
+refers to the **download link's expiry**, not the wait. The email itself
+promises nothing faster than "a few days".
+
+**So there are two separate clocks, and confusing them is what costs people
+their export:**
+
+1. **Preparing it:** a few days, per OpenAI's email. Nothing can speed this up.
+2. **Downloading it:** 24 hours from when the email arrives, then the link is
+   dead and you start over.
+
+Someone who requests an export, misses the email for a day, and finds a dead
+link has to begin again — and if impatience leads them to request twice, they
+cancel their own job. Both facts belong in the interface; neither was there
+before this was researched.
+
+An earlier version of the import panel told users the export takes "up to 24
+hours". That was wrong in the most misleading possible way: it set an
+expectation of one day for something that takes several, using a number that
+actually describes a deadline.
+
+### There is no official API for ChatGPT history
+
+The OpenAI Platform API (`api.openai.com`) does not expose ChatGPT consumer
+conversation history. Its `conversation` objects hold conversations *created
+through the API*; they are a different product and a different data store.
+There is no endpoint for "my ChatGPT chats", and this has been a standing
+feature request for years.
+
+**So the acquisition delay cannot be legitimately automated.** The export job
+runs on OpenAI's infrastructure and the queue is theirs. Anything Mind Archive
+does to make importing faster has to be on the ingestion side.
+
+### The unofficial route
+
+ChatGPT's web app uses undocumented `/backend-api/` endpoints —
+`/backend-api/conversations` to list and `/backend-api/conversation/{id}` for
+detail — authenticated by the session JWT from `chatgpt.com/api/auth/session`.
+Several third-party tools use these.
+
+Findings, all consistent across sources:
+
+- **Undocumented and unstable.** They may change, break or be blocked at any
+  time without notice. Excessive use can trigger rate limits.
+- **May violate OpenAI's Terms of Use.** Tool authors disclaim rather than
+  assert compliance.
+- **The session token grants full account access** — reading all history and
+  sending new messages as the user. This is the decisive point.
+- The counter-argument is real: it is the user's own data, and GDPR Article 20
+  gives a right to data portability.
+
+**Two shapes of the same idea, with very different risk:**
+
+1. A tool that asks you to **paste your session token into its UI**. The
+   credential leaves the browser and enters an application. For a product whose
+   pitch is privacy, asking for this is self-defeating.
+2. A script you paste into the **console of your own logged-in tab**. It reuses
+   the session the browser already has, no token is pasted anywhere, and the
+   result is a JSON file downloaded locally.
+
+The second keeps the credential inside the browser entirely. It is the basis of
+D-024: Mind Archive never contacts OpenAI and never handles a token; the fast
+path is a user-run browser script whose output is dropped into the inbox like
+any other file.
+
+**Unverified:** whether the unofficial endpoints return the same structure as
+`conversations.json`. The detail endpoint is believed to return the same
+`mapping` tree, since the export is generated from the same data, but this needs
+checking against both. `scripts/inspect_export.py` runs on either and reports
+structure, which is how to compare them.
+
+**Revisit when:** a real export has been imported, or when the endpoints change.
+
+**Sources:** OpenAI Help Center on exporting history and data; OpenAI developer
+community threads on retrieving ChatGPT conversations via the API; the README
+disclaimers of `ezwep/chatgpt-exporter` and similar tools.
+
+---
+
+## R-005 — Import speed is bounded by the filesystem, not by our code
+
+Measured 2026-09-08 against a synthetic export of 2,000 conversations
+(`scripts/make_fixture_export.py`), inside the API container.
+
+| Where the archive is written | Write | Index | Total |
+|---|---|---|---|
+| Container filesystem (`/tmp`) | 1.9s | 2.8s | **4.7s** |
+| Windows bind mount (`./data` via Docker Desktop) | 48.2s | 79.2s | **127.4s** |
+
+Parsing the export itself takes 1.3s in both cases — it never touches the disk.
+
+**The bind mount is 27× slower.** The same code, the same data, the same
+container; only the filesystem differs. Import speed is dominated by
+per-file I/O across the Windows/Linux boundary, and each conversation is two
+small file writes plus a read-back when indexing.
+
+**What this means:**
+
+- **Do not optimise the importer against this number.** Batching writes or
+  pooling SQLite connections would win almost nothing; the cost is in the
+  filesystem crossing, not in our code. 4.7s for 2,000 conversations is the
+  honest measure of the code's speed.
+- It is the same root cause as the existing advice in `docs/DEVELOPMENT.md` to
+  keep the repository inside the WSL2 filesystem rather than `/mnt/c`.
+- On Linux, macOS, or with the archive inside the WSL2 filesystem, imports are
+  effectively instant.
+- It justifies scanning the inbox on a background thread: on a slow filesystem
+  a large import takes minutes, and doing it inline would leave the server
+  refusing connections throughout.
+
+**Revisit when:** someone reports a slow import on a native Linux filesystem.
+That would mean the bottleneck has genuinely moved into our code, and the
+measurement should be repeated before anything is changed.
+
+---
+
 ## R-003 — Repository structure reduces agent token usage
 
 Coding agents can spend a substantial share of their interaction budget simply

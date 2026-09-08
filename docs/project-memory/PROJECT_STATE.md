@@ -6,7 +6,7 @@ If this file and the code disagree, the code is right and this file needs
 updating. Keep it honest — it is the file people trust to know where things
 stand.
 
-**Last updated:** 2026-09-08 · **Milestone 3 complete** · Version 0.1.0
+**Last updated:** 2026-09-08 · **Milestone 3.5 complete** · Version 0.1.0
 
 > **Workflow note.** Checks do not run on every change. Verification is
 > developer-controlled and required at milestone boundaries, pull requests and
@@ -20,6 +20,10 @@ stand.
 Mind Archive imports a ChatGPT export, stores it as readable Markdown and JSON
 on your own disk, and lets you browse, search and read it. That is a whole
 useful loop: the product does its core job.
+
+Getting an export out of ChatGPT takes days, so importing one takes no effort:
+drop it into `data/inbox/` and it imports itself. Re-importing reports what is
+genuinely new and rewrites nothing else.
 
 What it cannot do yet is **organise** — no tags, no projects, no editing or
 deleting from the interface. That is Milestone 4.
@@ -66,6 +70,7 @@ the interface loads and displays live backend status.
 | `routes/config.py` | `GET /api/config` — non-sensitive config only, with a test enforcing that |
 | `routes/import_.py` | `GET /api/importers`, `POST /api/import` |
 | `routes/conversations.py` | `GET /api/conversations`, `GET /api/conversations/{path}`, `POST /api/index/rebuild` |
+| `inbox.py` | The watched folder. Owned and tidied by default; a folder you chose is read but never rearranged |
 
 **Frontend** — `apps/web`
 
@@ -112,11 +117,11 @@ Everything below was actually run, not inspected.
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`) | **197 passed** |
+| Backend tests (`pytest`) | **217 passed** |
 | Backend lint (`ruff check`) | **passed** |
 | Backend formatting (`ruff format --check`) | **passed**, 34 files |
 | Backend types (`mypy src`, strict) | **passed**, 22 files, no issues |
-| Frontend tests (`vitest`) | **45 passed** |
+| Frontend tests (`vitest`) | **54 passed** |
 | Frontend types (`tsc --noEmit`) | **passed** |
 | Frontend lint (`eslint`) | **passed** |
 | Frontend build (`vite build`) | **passed** — 147.84 kB JS, 47.73 kB gzipped |
@@ -162,6 +167,12 @@ All verification above was run inside Docker for this reason.
   disk so edits are visible immediately.
 - **Paging is Previous/Next, not virtualised.** Fine for thousands of
   conversations; revisit if anyone has hundreds of thousands.
+- **Import speed is bounded by the filesystem, not the code.** 2,000
+  conversations take 4.7s on a native filesystem and 127s across a Windows
+  Docker bind mount (R-005). Do not optimise the importer against the second
+  number.
+- **No progress reporting during a long import.** It runs on a background
+  thread so nothing blocks, but the interface says nothing while it works.
 - **The importer has only seen synthetic exports.** Tests cover malformed and
   hostile input thoroughly, but no real ChatGPT export has been imported yet.
   `local/` exists (git-ignored) for exactly this. **This is the outstanding
