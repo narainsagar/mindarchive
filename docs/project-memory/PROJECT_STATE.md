@@ -6,7 +6,7 @@ If this file and the code disagree, the code is right and this file needs
 updating. Keep it honest — it is the file people trust to know where things
 stand.
 
-**Last updated:** 2026-09-08 · **Milestone 1 complete** · Version 0.1.0
+**Last updated:** 2026-09-08 · **Milestone 2 complete** · Version 0.1.0
 
 > **Workflow note.** Checks do not run on every change. Verification is
 > developer-controlled and required at milestone boundaries, pull requests and
@@ -17,12 +17,15 @@ stand.
 
 ## In one paragraph
 
-Mind Archive has a runnable, tested, documented foundation: a FastAPI backend, a
-React + TypeScript + Vite frontend with light and dark modes, Docker Compose
-wiring them together, CI, and complete project memory. **It cannot import or
-browse conversations yet** — that is Milestone 2, and it is the entire reason
-the product exists. What is here is scaffolding: correct, verified scaffolding,
-but scaffolding.
+Mind Archive can import a ChatGPT export and store it as readable Markdown and
+JSON on your own disk. That is the product's reason to exist, and it works.
+
+What it cannot do yet is **show you what you imported** — there is no browsing,
+no reading and no search in the interface. You import, and then you open the
+files yourself. That is Milestone 3.
+
+Underneath: a FastAPI backend, a React + TypeScript + Vite frontend with light
+and dark modes, Docker Compose, CI, and complete project memory.
 
 ## What runs
 
@@ -47,16 +50,25 @@ the interface loads and displays live backend status.
 | `main.py` | FastAPI app, lifespan, CORS restricted to the local frontend |
 | `config.py` | Typed settings via pydantic-settings; finds the repo root by marker, not by counting parents |
 | `events.py` | In-process event bus; a failing handler cannot break the publisher |
-| `paths.py` | Traversal-safe path joining and filename cleaning. Unused so far — it exists for Milestone 2 |
+| `paths.py` | Traversal-safe path joining and filename cleaning. Now genuinely exercised: conversation titles become folder names through it |
+| `models.py` | `Conversation` and `Message` — the archive's own model, shaped like no provider's export |
+| `importers/__init__.py` | The registry. Core code asks it which adapter can read a file |
+| `importers/base.py` | The `Importer` protocol: `detect()`, `validate()`, `parse()` |
+| `importers/zip_safety.py` | Reading archives someone else produced: zip slip, zip bombs, size caps |
+| `importers/chatgpt.py` | The ChatGPT adapter, including the branching `mapping` tree |
+| `archive/writer.py` | Conversations to `conversation.md` + `metadata.json`, one folder each |
 | `routes/health.py` | `GET /api/health` |
 | `routes/config.py` | `GET /api/config` — non-sensitive config only, with a test enforcing that |
+| `routes/import_.py` | `GET /api/importers`, `POST /api/import` |
 
 **Frontend** — `apps/web`
 
 Single-page workspace, minimal header, no router and no sidebar. Light default,
 dark toggle, system preference honoured, choice persisted to `localStorage` with
-every access wrapped in try/catch. Status panel showing backend health, archive
-location and cloud state. Plain CSS custom properties, no UI framework.
+every access wrapped in try/catch. An import panel that explains where to find a
+ChatGPT export, reports what was imported, and lists what could not be read. A
+status panel showing backend health, archive location and cloud state. Plain CSS
+custom properties, no UI framework.
 
 **Project**
 
@@ -68,10 +80,14 @@ project-memory check, committed-secrets check) · GitHub Pages foundation ·
 
 ## What is deliberately absent
 
-No importer. No archive browsing. No search. No SQLite schema — only a path
-where the database will live. No cloud or sync code of any kind. No
+No archive browsing or reading in the interface. No search. No SQLite schema —
+only a path where the database will live. No cloud or sync code of any kind. No
 authentication. No settings beyond the theme toggle and read-only configuration
 display.
+
+Within the importer, deliberately not done: attachments and images (recorded as
+placeholders in the Markdown, not copied), and abandoned conversation branches
+from edits and regenerations.
 
 Each belongs to a later milestone. See [MILESTONES.md](MILESTONES.md).
 
@@ -81,11 +97,11 @@ Everything below was actually run, not inspected.
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`) | **33 passed** |
+| Backend tests (`pytest`) | **137 passed** |
 | Backend lint (`ruff check`) | **passed** |
-| Backend formatting (`ruff format --check`) | **passed**, 12 files |
-| Backend types (`mypy src`, strict) | **passed**, 8 files, no issues |
-| Frontend tests (`vitest`) | **19 passed** |
+| Backend formatting (`ruff format --check`) | **passed**, 26 files |
+| Backend types (`mypy src`, strict) | **passed**, 16 files, no issues |
+| Frontend tests (`vitest`) | **29 passed** |
 | Frontend types (`tsc --noEmit`) | **passed** |
 | Frontend lint (`eslint`) | **passed** |
 | Frontend build (`vite build`) | **passed** — 147.84 kB JS, 47.73 kB gzipped |
@@ -94,13 +110,15 @@ Everything below was actually run, not inspected.
 | `GET /api/health` | 200, correct payload |
 | `GET /api/config` | 200, cloud disabled, local storage |
 | Web interface | HTTP 200, correct title |
-| `git check-ignore data/ .env` | both correctly ignored |
+| `git check-ignore data/ .env local/` | all correctly ignored |
 | `scripts/session.py check` | passes |
+| **End-to-end import** | a synthetic export with a normal, an awkward and a broken conversation uploaded through `POST /api/import`: 2 imported, 1 skipped and reported, correct files on disk |
 
-Three real bugs were found by running things rather than reading them, and
-fixed: `parents[4]` failed inside the container, `vite.config.ts` had no `node`
-types and an untyped `test` block, and Vitest 2 pulled a second copy of Vite
-that broke type checking.
+Bugs found by running things rather than reading them, and fixed. In Milestone 1:
+`parents[4]` failed inside the container, `vite.config.ts` had no `node` types,
+and Vitest 2 pulled a second copy of Vite. In Milestone 2: a hostile archive was
+reported as merely "not recognised", the interface showed the container's path
+rather than the user's, and an unwritable archive folder produced a raw 500.
 
 ## Environment reality
 
@@ -121,8 +139,12 @@ All verification above was run inside Docker for this reason.
   expects a lockfile for caching; commit one on the first native `npm install`.
 - **The frontend Docker image runs the dev server**, not a production build.
   Fine locally; a production image is Milestone 7.
-- **`paths.py` is untested against real archives** because no importer exists.
-  Its unit tests pass, but Milestone 2 is where it earns its place.
+- **The importer has only seen synthetic exports.** Tests cover malformed and
+  hostile input thoroughly, but no real ChatGPT export has been imported yet.
+  `local/` exists (git-ignored) for exactly this. **This is the outstanding
+  verification for Milestone 2.**
+- **Attachments are not imported** — images and files appear as placeholders in
+  the Markdown.
 
 ## Licence
 
@@ -135,7 +157,11 @@ accepted. It does not exist yet.
 
 ## Next step
 
-**Milestone 2 — the ChatGPT importer.** Start by reading
-[MILESTONES.md](MILESTONES.md), then build the `Importer` interface against the
-real ChatGPT export format. Treat every imported file as hostile input and use
-`paths.py` for anything that becomes a filename.
+**Verify the importer against a real ChatGPT export** placed in `local/`, and
+fix whatever genuine data reveals. Synthetic fixtures are thorough but they were
+written by the same mind that wrote the parser, so they cannot find an
+assumption that is simply wrong.
+
+Then **Milestone 3 — the archive browser and search**: read what you have
+imported, render the Markdown, and build the SQLite index. The index must stay
+rebuildable from the files on disk.

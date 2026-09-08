@@ -9,8 +9,30 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+**Milestone 2 — the ChatGPT importer.** Mind Archive can now actually archive
+something.
+
+- Import a ChatGPT export (`.zip`, or a bare `conversations.json`) and store it
+  as readable Markdown with JSON metadata, one folder per conversation
+- `Importer` adapter interface and a registry, so core code never imports a
+  provider-specific module
+- ChatGPT parser that follows the branch you last saw, since edits and
+  regenerations make the export a tree rather than a list
+- Hostile-input handling for zip slip, zip bombs, oversized members and
+  traversal via conversation titles
+- `GET /api/importers` and `POST /api/import`
+- An import panel in the interface, reporting what was imported and what could
+  not be read
+- `MIND_ARCHIVE_DISPLAY_DATA_DIR`, so the interface shows a path that exists on
+  your machine rather than one inside the container
+
 - `scripts/dev.py` — one entry point for running checks and managing Docker.
   Nothing runs automatically; the developer decides when.
+
+### Fixed
+
+- An unwritable archive folder — an unplugged drive, a permissions problem —
+  now produces a clear explanation instead of a 500 error.
 
 ### Changed
 

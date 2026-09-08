@@ -314,6 +314,100 @@ a {
   border: 1px solid var(--error);
 }
 
+.message--ok {
+  background: var(--ok-surface);
+  color: var(--ok);
+  border: 1px solid var(--ok);
+}
+
+.message p + p {
+  margin-top: 8px;
+}
+
+/* -----------------------------------------------------------------------
+   Import
+   ----------------------------------------------------------------------- */
+.import__intro {
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+  max-width: 62ch;
+  margin-bottom: 18px;
+}
+
+.import__intro strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.import__intro code,
+.import__location code {
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+}
+
+.import__controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 4px;
+}
+
+.import__file input[type="file"] {
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text-soft);
+  max-width: 100%;
+}
+
+.import__file input[type="file"]::file-selector-button {
+  font: inherit;
+  font-size: 0.875rem;
+  color: var(--text-soft);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.import__file input[type="file"]::file-selector-button:hover {
+  border-color: var(--border-strong);
+  color: var(--text);
+}
+
+.import__location {
+  opacity: 0.85;
+}
+
+.import__problems {
+  margin-top: 10px;
+  font-size: 0.875rem;
+}
+
+.import__problems summary {
+  cursor: pointer;
+}
+
+.import__problems ul {
+  margin: 8px 0 0;
+  padding-left: 20px;
+}
+
+/* Available to screen readers, invisible on screen. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .message code {
   font-family: var(--font-mono);
   font-size: 0.875em;
@@ -365,6 +459,22 @@ a {
 .button__icon {
   font-size: 0.9375rem;
   line-height: 1;
+}
+
+.button--primary {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+.button--primary:hover:not(:disabled) {
+  color: var(--accent-text);
+  opacity: 0.9;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* -----------------------------------------------------------------------

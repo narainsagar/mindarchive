@@ -38,6 +38,16 @@ apps/api/data/
 # Imported provider exports (ChatGPT, Claude, Gemini, ...)
 *.zip
 conversations.json
+chat.html
+user.json
+message_feedback.json
+model_comparisons.json
+
+# Scratch space for real provider exports used while developing.
+# Put your own ChatGPT export in local/ — everything in there is ignored
+# except the README that explains what it is for.
+/local/*
+!/local/README.md
 
 # ---------------------------------------------------------------
 # Python

@@ -53,7 +53,7 @@ def get_config(
         version=__version__,
         storage_mode=settings.storage_mode,
         cloud_enabled=settings.cloud_enabled,
-        archive_location=str(settings.archive_dir),
+        archive_location=settings.archive_location,
         database_location=str(settings.database_path),
         privacy_note=privacy_note,
     )

@@ -19,7 +19,7 @@ The decisions behind this document are recorded in
       +----------------+----------------+
       |        |        |       |       |
   Importers  Archive  Search  Events  Storage
-   (later)   (later)  (later)   (now)  adapters
+    (now)     (now)   (later)   (now)  adapters
       |        |        |       |       |
       +----------------+----------------+
                        |
@@ -42,9 +42,18 @@ apps/api/src/mind_archive/
 ├── config.py          Typed settings from environment variables
 ├── events.py          Small in-process event bus
 ├── paths.py           Safe resolution of filesystem paths
+├── models.py          Conversation and Message, the archive's own model
+├── importers/
+│   ├── __init__.py    The registry: which importer can read this file
+│   ├── base.py        The Importer protocol every provider satisfies
+│   ├── zip_safety.py  Reading archives someone else produced
+│   └── chatgpt.py     The ChatGPT adapter
+├── archive/
+│   └── writer.py      Conversations to Markdown and JSON on disk
 └── routes/
     ├── health.py      GET /api/health
-    └── config.py      GET /api/config
+    ├── config.py      GET /api/config
+    └── import_.py     GET /api/importers, POST /api/import
 ```
 
 **Configuration** is typed and read from the environment through
@@ -80,6 +89,7 @@ apps/web/src/
 └── components/
     ├── Header.tsx
     ├── ThemeToggle.tsx
+    ├── ImportPanel.tsx
     └── StatusPanel.tsx
 ```
 
@@ -122,20 +132,34 @@ Every AI provider is an importer adapter behind one interface:
 
 ```python
 class Importer(Protocol):
-    name: str
-    supported_formats: list[str]
+    name: str                      # "chatgpt"
+    display_name: str              # "ChatGPT"
+    supported_formats: list[str]   # [".zip", ".json"]
 
     def detect(self, path: Path) -> bool: ...
     def validate(self, path: Path) -> ValidationResult: ...
-    def normalize(self, raw: Any) -> list[Conversation]: ...
-    def import_(self, path: Path) -> ImportResult: ...
+    def parse(self, path: Path) -> ImportResult: ...
 ```
 
-Core code never imports a provider-specific module. ChatGPT is the first
+`parse` returns `Conversation` objects and writes nothing. Storing them is the
+archive's job, which keeps parsing testable without touching the filesystem.
+
+Core code never imports a provider-specific module — it asks the registry in
+`importers/__init__.py` which adapter can read a file. Adding a provider means
+writing an adapter and adding it to one list. ChatGPT is the first
 implementation and carries no special privileges in the design.
 
 The interface will be generalised against a genuine second implementation in
 Milestone 5, not guessed at in advance.
+
+### Untrusted input
+
+An export is a file from outside the application, so importers treat it as
+hostile. `zip_safety.py` refuses path traversal, zip bombs and oversized
+archives; every JSON field is checked before use; conversation titles become
+folder names only through `paths.py`. One unreadable conversation is skipped
+and reported rather than failing the whole import. See
+[SECURITY.md](SECURITY.md).
 
 ## Cloud
 

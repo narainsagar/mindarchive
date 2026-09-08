@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, fetchConfig, fetchHealth } from "./api";
 import type { Health, PublicConfig } from "./api";
 import { Header } from "./components/Header";
+import { ImportPanel } from "./components/ImportPanel";
 import { StatusPanel } from "./components/StatusPanel";
 import { applyTheme, getInitialTheme } from "./theme";
 import type { Theme } from "./theme";
@@ -82,12 +83,13 @@ export default function App() {
           </div>
         )}
 
+        {health && <ImportPanel />}
+
         <StatusPanel health={health} config={config} />
 
         <section className="next">
           <h3>What is coming next</h3>
           <ul>
-            <li>Import your ChatGPT export</li>
             <li>Read and search everything you have imported</li>
             <li>Organise it with projects and tags</li>
             <li>Import from Claude, Gemini and others</li>

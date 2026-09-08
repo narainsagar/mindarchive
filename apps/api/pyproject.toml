@@ -17,6 +17,8 @@ dependencies = [
     "uvicorn[standard]>=0.32",
     "pydantic>=2.9",
     "pydantic-settings>=2.6",
+    # Required by FastAPI to accept an uploaded export file.
+    "python-multipart>=0.0.20",
 ]
 
 [project.optional-dependencies]

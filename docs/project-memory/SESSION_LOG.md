@@ -5,6 +5,49 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-08 — Milestone 2: the ChatGPT importer
+
+**Session:** [2026-09-08-03-milestone-2-chatgpt-importer](sessions/2026-09-08-03-milestone-2-chatgpt-importer/SESSION.md)
+· [prompts](sessions/2026-09-08-03-milestone-2-chatgpt-importer/PROMPTS.md)
+· [format and security notes](sessions/2026-09-08-03-milestone-2-chatgpt-importer/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+Mind Archive can now archive something.
+
+**The importer interface.** `detect()`, `validate()`, `parse()` and a registry,
+so core code never imports a provider module. `parse()` writes nothing — it
+returns `Conversation` objects and storing them is the archive's job, which kept
+every parser test filesystem-free.
+
+**The ChatGPT parser.** The format's real difficulty is that `mapping` is a
+tree, not a list: editing or regenerating a message forks the conversation
+rather than replacing anything. Walking up from `current_node` gives what the
+person last saw. Abandoned branches are deliberately not imported. Full notes in
+the session report.
+
+**Hostile input** is the theme of this milestone. Zip slip, zip bombs, size
+caps, and conversation titles that try to escape the archive when they become
+folder names. `local/` was created and git-ignored *before* any importer code,
+so a real export can never be committed by accident.
+
+**Three real problems found and fixed.** A hostile archive was being reported as
+merely "not recognised", which was untrue. The interface showed
+`/data/archive` — the path inside the container, which does not exist on the
+user's machine; `MIND_ARCHIVE_DISPLAY_DATA_DIR` fixes that. An unwritable
+archive folder produced a raw 500 instead of an explanation.
+
+**Verified** with `dev.py verify`: 137 backend tests (was 33), 29 frontend
+tests, ruff, mypy strict, eslint, tsc, production build — all passed. Also
+tested end-to-end against the running stack with a synthetic export containing a
+normal, an awkward and a broken conversation.
+
+**Outstanding:** only synthetic exports have been tested. The user is placing a
+real ChatGPT export in `local/`; verifying against it is the next step, before
+Milestone 3.
+
+---
+
 ## 2026-09-08 — Archive cleanup and developer-controlled workflow
 
 **Session:** [2026-09-08-02-archive-cleanup-and-dev-workflow](sessions/2026-09-08-02-archive-cleanup-and-dev-workflow/SESSION.md)

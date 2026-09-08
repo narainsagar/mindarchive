@@ -61,6 +61,16 @@ class Settings(BaseSettings):
         description="Folder holding the archive and the metadata database.",
     )
 
+    # What to call the archive's location when telling the user where their
+    # conversations went.
+    #
+    # Inside a container the archive really is at /data, but on the user's own
+    # machine it is ./data — and sending someone to a folder that does not
+    # exist on their computer is worse than saying nothing. Docker Compose sets
+    # this to the host path. Left empty, the real path is used, which is
+    # correct when running natively.
+    display_data_dir: str = ""
+
     # The server.
     api_host: str = "127.0.0.1"
     api_port: int = 8000
@@ -95,6 +105,13 @@ class Settings(BaseSettings):
         must always be rebuildable from the files in ``archive_dir``.
         """
         return self.data_dir / "mind_archive.db"
+
+    @property
+    def archive_location(self) -> str:
+        """Where the archive is, described so the user can actually find it."""
+        if self.display_data_dir:
+            return f"{self.display_data_dir.rstrip('/')}/archive"
+        return str(self.archive_dir)
 
     @property
     def cors_origin_list(self) -> list[str]:

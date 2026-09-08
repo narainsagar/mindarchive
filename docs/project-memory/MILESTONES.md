@@ -36,23 +36,28 @@ cloud or sync code, authentication, multi-user support.
 
 ---
 
-## Milestone 2 — ChatGPT importer ⬜
+## Milestone 2 — ChatGPT importer ✅
 
 **Goal:** import a ChatGPT export and store it as human-readable files.
 
-- `Importer` adapter interface: `name`, `supported_formats`, `detect()`,
-  `validate()`, `import()`, `normalize()`
-- ChatGPT export parser (`conversations.json` inside the export archive)
-- Normalisation into the internal conversation model
-- Write conversations to disk as Markdown with JSON metadata
-- Treat every imported file as untrusted: validate structure, guard against
-  path traversal, cap sizes
-- Emit `archive.imported` and `conversation.created`
-- Import UI: choose a file, see progress, see a plain-language result
-- Tests covering malformed, truncated and hostile inputs
+| Item | Status |
+|---|---|
+| `Importer` protocol: `detect()`, `validate()`, `parse()` | ✅ |
+| Registry so core code never imports a provider module | ✅ |
+| ChatGPT parser, including the branching `mapping` tree | ✅ |
+| Normalisation into `Conversation` / `Message` | ✅ |
+| Markdown + JSON metadata on disk, one folder per conversation | ✅ |
+| Hostile-input handling: zip slip, zip bombs, size caps, path traversal | ✅ |
+| `archive.imported` and `conversation.created` events | ✅ |
+| Import UI: choose a file, see progress, plain-language result | ✅ |
+| Tests for malformed, truncated and hostile input | ✅ |
 
-**Do not** generalise the adapter interface to other providers yet. One real
-importer first; generalise against a second real case in Milestone 5.
+**Deliberately excluded:** browsing or reading imported conversations, search,
+the SQLite schema, attachments and images (recorded as placeholders in the
+Markdown), abandoned conversation branches.
+
+**Not generalised.** The adapter interface stays shaped by one real importer.
+It gets generalised in Milestone 5 against a genuine second case.
 
 ---
 

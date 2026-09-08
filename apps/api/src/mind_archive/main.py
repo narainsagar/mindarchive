@@ -21,6 +21,7 @@ from mind_archive.config import get_settings
 from mind_archive.events import events
 from mind_archive.routes import config as config_routes
 from mind_archive.routes import health as health_routes
+from mind_archive.routes import import_ as import_routes
 
 logger = logging.getLogger("mind_archive")
 
@@ -76,6 +77,7 @@ app.add_middleware(
 
 app.include_router(health_routes.router)
 app.include_router(config_routes.router)
+app.include_router(import_routes.router)
 
 
 @app.get("/", tags=["health"], summary="What this is")

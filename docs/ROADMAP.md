@@ -20,7 +20,7 @@ project memory.
 
 ---
 
-## Milestone 2 — ChatGPT importer 🎯 next
+## Milestone 2 — ChatGPT importer ✅
 
 The point at which Mind Archive becomes useful.
 
@@ -31,7 +31,7 @@ that reports what happened in plain language.
 
 ---
 
-## Milestone 3 — Archive browser and search
+## Milestone 3 — Archive browser and search 🎯 next
 
 Browse and read imported conversations. Markdown rendering. A SQLite schema for
 metadata and indexing, with full-text search through SQLite FTS. The database
