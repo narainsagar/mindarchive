@@ -4,14 +4,39 @@ A clean run from nothing, and how to check each part works. Fifteen minutes.
 
 You need **Docker Desktop running**. Nothing else.
 
-> **`python` or `python3`?** On Windows it is `python`. On Linux, WSL and macOS
-> it is usually `python3` — Ubuntu ships no bare `python`. Every `python ...`
-> command below works either way; use whichever your shell has.
+> **`python` or `python3`?** On Linux, WSL and macOS it is `python3` — Ubuntu
+> ships no bare `python`. On Windows PowerShell it is `python`. Every command
+> below works either way; use whichever your shell has.
 
-> **On Windows, use PowerShell** unless you have deliberately enabled Docker
-> Desktop's WSL integration. Running from WSL against `/mnt/c` is both the
-> slowest path and the one most likely to fail with a missing Docker socket —
-> see [If something goes wrong](#if-something-goes-wrong).
+### On Windows: WSL2 works, with two things to set up first
+
+WSL2 is a fully supported path, and the better one if you already live in a
+Linux shell. Docker Desktop needs two adjustments that it does not make for you,
+and both fail with errors that do not explain themselves:
+
+**1. Turn on WSL integration for your distribution.**
+Docker Desktop → Settings → Resources → WSL integration → enable your distro →
+Apply & restart. Without it there is no `/var/run/docker.sock` and every command
+fails with *"failed to connect to the docker API"*.
+
+**2. Remove the Windows credential helper from WSL.**
+
+```bash
+cp ~/.docker/config.json ~/.docker/config.json.bak
+printf '{}
+' > ~/.docker/config.json
+```
+
+Docker Desktop writes `{"credsStore": "desktop.exe"}` into WSL's config, and the
+Linux CLI cannot execute a Windows `.exe`. Builds fail on the very first image
+pull with *"docker-credential-desktop.exe: exec format error"*. The setting only
+affects signing in to private registries; Mind Archive pulls public images only.
+
+**A note on speed.** A checkout under `/mnt/c` is on the Windows filesystem, and
+file I/O across that boundary is roughly **27× slower** than native — measured,
+see project-memory RESEARCH R-005. Everything works; imports just take minutes
+instead of seconds. Cloning into your WSL home (`~/`) instead makes it
+near-instant.
 
 ---
 
@@ -52,15 +77,19 @@ python scripts/make_fixture_export.py data/inbox/test.zip --conversations 200
 Deliberately messy: missing titles, missing dates, every content type, edited
 branches, some deliberately broken. Good for seeing how it copes.
 
-### B. Your real ChatGPT export — the official way
+### B. Your real export — ChatGPT or Claude
 
-In ChatGPT: **Settings → Data controls → Export data**.
+| | Where | What to expect |
+|---|---|---|
+| **ChatGPT** | Settings → Data controls → Export data | Email says it "may take a few days" |
+| **Claude** | Settings → Privacy → Export Data | Emailed link, also expires in 24 hours |
 
-- ChatGPT's email says preparing it **may take a few days**
-- **The download link expires 24 hours after that email arrives**
-- **Asking again cancels your previous request** — ask once, then wait
+For both: **the download link expires 24 hours after the email arrives**, and
+**asking again cancels your previous request**. Ask once, then wait.
 
-When it arrives, save the `.zip` into `data/inbox/`.
+When it arrives, save the `.zip` into `data/inbox/`. Mind Archive works out
+which provider it came from by looking inside the file — both providers name
+theirs `conversations.json`, so the filename proves nothing.
 
 ### C. Your real conversations, today
 
@@ -110,7 +139,41 @@ Back in the interface:
 
 ---
 
-## 6. Worth trying, because these are the interesting cases
+## 6. Tag something
+
+Open any conversation. Under the title there is a tag box.
+
+- Add a tag — it appears immediately
+- Go **Back**: a filter bar has appeared above the list, with a count
+- Click the tag to filter; click it again, or **All**, to clear it
+- Search *and* filter at once — they combine, they do not replace each other
+
+Then look at where it went:
+
+```bash
+cat "data/archive/chatgpt/<the folder>/metadata.json"
+```
+
+Your tag is in there, in the file, beside the conversation. **Not in the
+database** — that is deliberate, and the next check shows why.
+
+---
+
+## 7. Take it all with you
+
+Click **Export everything** at the top of the archive.
+
+Unzip what you get and look inside. It is your archive folder — the same
+Markdown, the same JSON, the same layout — plus a `README.txt` for whoever
+opens it in five years without this application. No database, nothing that
+needs Mind Archive to read it.
+
+That is the whole promise of the product in one button, so it is worth actually
+opening the zip rather than taking my word for it.
+
+---
+
+## 8. Worth trying, because these are the interesting cases
 
 **Import the same file twice.** Save it into the inbox again.
 
@@ -118,15 +181,22 @@ Back in the interface:
 
 Nothing is rewritten. Check with `ls -l` — the timestamps do not move.
 
-**Delete the search index.**
+**Tag something, then re-import.** Your tags survive. Every export is a *full*
+export, so importing next month's download rewrites all your metadata — and an
+export contains no tags. Getting this wrong would erase months of your own
+filing without anyone noticing.
+
+**Delete the search index — after tagging something.**
 
 ```bash
 rm data/mind_archive.db
 python scripts/dev.py down && python scripts/dev.py up
 ```
 
-Everything comes back. The database is an index, never your archive — if that
-ever stops being true, it is a bug.
+Everything comes back, **including your tags**. The database is an index, never
+your archive. Tags are the one thing here you made rather than imported, so if
+they had lived only in SQLite, deleting a rebuildable cache would have destroyed
+original work. If that ever stops being true, it is a bug.
 
 **Edit a conversation by hand.** Open any `conversation.md`, change a word, save.
 Refresh the interface — your edit is there. The files are the source of truth.
@@ -143,7 +213,7 @@ Restart. Your files are read but **left exactly where they are**.
 
 ---
 
-## 7. Check nothing leaks
+## 9. Check nothing leaks
 
 ```bash
 python scripts/inspect_export.py data/inbox/imported/test.zip
@@ -162,7 +232,7 @@ git check-ignore data .env local/*.zip  # all three should be listed
 
 ---
 
-## 8. Run the tests
+## 10. Run the tests
 
 ```bash
 python scripts/dev.py verify
@@ -175,7 +245,7 @@ Nothing runs automatically while you work — you decide when to check.
 
 ---
 
-## 9. Stop
+## 11. Stop
 
 ```bash
 python scripts/dev.py down     # stop; your archive stays in ./data
@@ -221,8 +291,16 @@ original is kept as `config.json.bak`.
 | **Milestone 2** | ChatGPT importer |
 | **Milestone 3** | Browse, read and search |
 | **Milestone 3.5** | The inbox, honest re-import reporting, the faster route |
-| **Milestone 4** | Next: tags, projects, organisation |
+| **Milestone 4** | Tags |
+| **Milestone 5** | Claude importer, whole-archive export |
+| **Milestone 6** | Next: optional cloud, off by default |
 
-**Not there yet:** tags and projects, editing or deleting from the interface,
-attachments (recorded as placeholders), any provider but ChatGPT, and anything
-cloud. See [ROADMAP.md](ROADMAP.md).
+**Not there yet:** projects, editing or deleting from the interface, attachments
+(recorded as placeholders in the Markdown), providers beyond ChatGPT and Claude,
+and anything cloud. See [ROADMAP.md](ROADMAP.md).
+
+**Worth knowing before you judge it:** neither importer has ever seen a real
+export. Both were written from documented formats and third-party parsers. If
+something looks wrong with real data, that is the most useful bug you can find —
+`python scripts/inspect_export.py <your-export.zip>` reports the structure
+safely, without any conversation content.

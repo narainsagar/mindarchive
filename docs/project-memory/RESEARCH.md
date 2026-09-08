@@ -27,6 +27,22 @@ Measured on the primary development machine, Windows 11 Home 10.0.26200:
 3. Docker and Compose are current and working, so containers are the reliable
    path for the backend.
 
+**The development environment is WSL2**, deliberately and permanently. The
+developer keeps the Windows host free of developer tooling and works in bash;
+git, python3 and Node are already installed in the distribution. Documentation
+should therefore lead with bash and `python3`, and a WSL problem should be
+fixed rather than routed around with "use PowerShell instead".
+
+Two Docker Desktop defaults break WSL and neither explains itself, so both are
+documented in `docs/DEVELOPMENT.md` and `docs/TRY_IT.md`:
+
+1. WSL integration is off per-distribution by default — no
+   `/var/run/docker.sock`.
+2. `~/.docker/config.json` is written as `{"credsStore": "desktop.exe"}`, and
+   the Linux CLI cannot execute a Windows `.exe`, so the first image pull fails
+   with `exec format error`. Fixed by emptying the file; it only affects
+   private-registry logins.
+
 **Assumption this supports:** Docker is the primary supported backend path
 (see [DECISIONS.md](DECISIONS.md) D-006) and Python 3.11+ is the floor (D-007).
 

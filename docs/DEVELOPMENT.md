@@ -111,9 +111,26 @@ cd mind-archive
 code .                                  # opens VS Code attached to WSL
 ```
 
-Install the **WSL** extension for VS Code. Docker Desktop should have WSL2
-integration enabled for your distribution (Settings → Resources → WSL
-integration).
+Install the **WSL** extension for VS Code.
+
+Docker Desktop needs two adjustments inside WSL, and neither is made for you:
+
+**Enable WSL integration** for your distribution — Docker Desktop → Settings →
+Resources → WSL integration → Apply & restart. Without it there is no
+`/var/run/docker.sock` and every `docker` command fails.
+
+**Remove the Windows credential helper**, which Docker Desktop writes into
+WSL's config as `{"credsStore": "desktop.exe"}`. The Linux CLI cannot execute a
+Windows `.exe`, so image pulls fail with `exec format error`:
+
+```bash
+cp ~/.docker/config.json ~/.docker/config.json.bak
+printf '{}
+' > ~/.docker/config.json
+```
+
+It only affects signing in to private registries. This project pulls public
+images only.
 
 If your distribution has an old Python, use the Docker path, or install a
 current Python with `pyenv` or the deadsnakes PPA. Do not replace the system
