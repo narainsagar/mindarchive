@@ -124,6 +124,8 @@ export interface ConversationSummary {
   created_at: string | null;
   updated_at: string | null;
   message_count: number;
+  /** Labels you applied. Stored on disk, never derived from an export. */
+  tags: string[];
   /**
    * Matching text with the match wrapped in `<<` and `>>`.
    *
@@ -139,6 +141,8 @@ export interface ConversationList {
   limit: number;
   offset: number;
   sources: Record<string, number>;
+  /** Every tag in use, and how many conversations carry it. */
+  tags: Record<string, number>;
 }
 
 export interface ConversationDetail extends ConversationSummary {
@@ -154,10 +158,16 @@ export interface RebuildResult {
 }
 
 export function fetchConversations(
-  options: { query?: string; limit?: number; offset?: number } = {},
+  options: {
+    query?: string;
+    tag?: string;
+    limit?: number;
+    offset?: number;
+  } = {},
 ): Promise<ConversationList> {
   const params = new URLSearchParams();
   if (options.query) params.set("q", options.query);
+  if (options.tag) params.set("tag", options.tag);
   if (options.limit !== undefined) params.set("limit", String(options.limit));
   if (options.offset !== undefined) params.set("offset", String(options.offset));
 
@@ -168,10 +178,31 @@ export function fetchConversations(
 }
 
 export function fetchConversation(path: string): Promise<ConversationDetail> {
-  // Each segment is encoded separately: the slashes are real path structure,
-  // but anything inside a segment is a title and could contain any character.
-  const encoded = path.split("/").map(encodeURIComponent).join("/");
-  return request<ConversationDetail>(`/api/conversations/${encoded}`);
+  return request<ConversationDetail>(`/api/conversations/${encodePath(path)}`);
+}
+
+/** Encode an archive path for a URL, one segment at a time. */
+function encodePath(path: string): string {
+  // The slashes are real structure; anything inside a segment is a title and
+  // could contain any character at all.
+  return path.split("/").map(encodeURIComponent).join("/");
+}
+
+/**
+ * Replace a conversation's tags.
+ *
+ * Saved into that conversation's metadata.json on your disk, not into the
+ * search index — tags are the one thing here you made rather than imported.
+ */
+export function setTags(
+  path: string,
+  tags: string[],
+): Promise<ConversationSummary> {
+  return request<ConversationSummary>(`/api/conversations/${encodePath(path)}/tags`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ tags }),
+  });
 }
 
 export function rebuildIndex(): Promise<RebuildResult> {

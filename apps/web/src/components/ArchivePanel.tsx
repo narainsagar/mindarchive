@@ -28,6 +28,8 @@ function formatDate(value: string | null): string | null {
  */
 export function ArchivePanel() {
   const [query, setQuery] = useState("");
+  const [tag, setTag] = useState("");
+  const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
   const [conversations, setConversations] = useState<ConversationSummary[]>([]);
   const [total, setTotal] = useState(0);
   const [offset, setOffset] = useState(0);
@@ -39,53 +41,66 @@ export function ArchivePanel() {
   // overwrite the results of a later one.
   const latest = useRef(0);
 
-  const load = useCallback(async (search: string, page: number) => {
-    const request = ++latest.current;
-    setLoading(true);
+  const load = useCallback(
+    async (search: string, filterTag: string, page: number) => {
+      const request = ++latest.current;
+      setLoading(true);
 
-    try {
-      const result = await fetchConversations({
-        query: search,
-        limit: PAGE_SIZE,
-        offset: page * PAGE_SIZE,
-      });
-      if (request !== latest.current) return;
+      try {
+        const result = await fetchConversations({
+          query: search,
+          tag: filterTag,
+          limit: PAGE_SIZE,
+          offset: page * PAGE_SIZE,
+        });
+        if (request !== latest.current) return;
 
-      setConversations(result.conversations);
-      setTotal(result.total);
-      setError(null);
-    } catch (caught) {
-      if (request !== latest.current) return;
-      setError(
-        caught instanceof ApiError
-          ? caught.message
-          : "Could not read your archive.",
-      );
-    } finally {
-      if (request === latest.current) setLoading(false);
-    }
-  }, []);
+        setConversations(result.conversations);
+        setTotal(result.total);
+        // Defensive: a response without tags must narrow the view, not
+        // blank it. Object.entries(undefined) throws.
+        setTagCounts(result.tags ?? {});
+        setError(null);
+      } catch (caught) {
+        if (request !== latest.current) return;
+        setError(
+          caught instanceof ApiError
+            ? caught.message
+            : "Could not read your archive.",
+        );
+      } finally {
+        if (request === latest.current) setLoading(false);
+      }
+    },
+    [],
+  );
 
   // Search as you type, but wait for a pause first.
   useEffect(() => {
     const timer = setTimeout(() => {
       setOffset(0);
-      void load(query, 0);
+      void load(query, tag, 0);
     }, 200);
     return () => clearTimeout(timer);
-  }, [query, load]);
+  }, [query, tag, load]);
 
   useEffect(() => {
-    if (offset > 0) void load(query, offset);
-    // Paging only: `query` changes are handled by the effect above.
+    if (offset > 0) void load(query, tag, offset);
+    // Paging only: query and tag changes are handled by the effect above.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
 
   if (openPath) {
     return (
-      <ConversationView path={openPath} onClose={() => setOpenPath(null)} />
+      <ConversationView
+        path={openPath}
+        onClose={() => setOpenPath(null)}
+        onTagsChanged={() => void load(query, tag, offset)}
+      />
     );
   }
+
+  const allTags = Object.entries(tagCounts);
 
   const pages = Math.ceil(total / PAGE_SIZE);
   const searching = query.trim().length > 0;
@@ -113,6 +128,29 @@ export function ArchivePanel() {
         />
       </label>
 
+      {allTags.length > 0 && (
+        <div className="tagbar" role="group" aria-label="Filter by tag">
+          <button
+            type="button"
+            className={`tagbar__tag${tag === "" ? " tagbar__tag--on" : ""}`}
+            onClick={() => setTag("")}
+          >
+            All
+          </button>
+          {allTags.map(([name, count]) => (
+            <button
+              key={name}
+              type="button"
+              className={`tagbar__tag${tag === name ? " tagbar__tag--on" : ""}`}
+              aria-pressed={tag === name}
+              onClick={() => setTag(tag === name ? "" : name)}
+            >
+              {name} <span className="tagbar__count">{count}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       {error && (
         <p className="message message--error" role="alert">
           {error}
@@ -121,9 +159,11 @@ export function ArchivePanel() {
 
       {!error && !loading && conversations.length === 0 && (
         <p className="archive__empty">
-          {searching
-            ? "Nothing matched that search."
-            : "Nothing here yet. Import a ChatGPT export to get started."}
+          {tag && !searching
+            ? `Nothing is tagged ${tag}.`
+            : searching
+              ? "Nothing matched that search."
+              : "Nothing here yet. Import a ChatGPT export to get started."}
         </p>
       )}
 
@@ -152,6 +192,16 @@ export function ArchivePanel() {
                       {conversation.source}
                     </span>
                   </span>
+
+                  {(conversation.tags ?? []).length > 0 && (
+                    <span className="archive__tags">
+                      {conversation.tags.map((name: string) => (
+                        <span key={name} className="archive__tag">
+                          {name}
+                        </span>
+                      ))}
+                    </span>
+                  )}
 
                   {conversation.snippet && (
                     <Snippet text={conversation.snippet} />

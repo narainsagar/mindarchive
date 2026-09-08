@@ -19,11 +19,12 @@ from __future__ import annotations
 
 import json
 from collections.abc import Iterator
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
 from mind_archive.archive.writer import CONVERSATION_FILE, METADATA_FILE
+from mind_archive.models import clean_tags
 
 #: Refuse to read a conversation file larger than this. Nothing we write comes
 #: close; a file this big means something is wrong, and loading it would block
@@ -43,6 +44,9 @@ class StoredConversation:
     created_at: str | None
     updated_at: str | None
     message_count: int
+
+    #: Labels the user applied. Stored on disk, never derived from an export.
+    tags: list[str] = field(default_factory=list)
 
     #: The Markdown body, front matter removed. `None` when only metadata was
     #: asked for, which is the case when listing.
@@ -112,6 +116,7 @@ def read_conversation(
         created_at=_as_str(raw.get("created_at")),
         updated_at=_as_str(raw.get("updated_at")),
         message_count=count if isinstance(count, int) and count >= 0 else 0,
+        tags=clean_tags(raw.get("tags") or []),
         body=body,
     )
 

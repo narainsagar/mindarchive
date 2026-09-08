@@ -42,6 +42,7 @@ class Indexer:
         try:
             with connection:
                 connection.execute("DELETE FROM search")
+                connection.execute("DELETE FROM tags")
                 connection.execute("DELETE FROM conversations")
 
             count = 0
@@ -84,6 +85,9 @@ class Indexer:
                     "DELETE FROM search WHERE rowid = ?", (existing["id"],)
                 )
                 connection.execute(
+                    "DELETE FROM tags WHERE conversation_id = ?", (existing["id"],)
+                )
+                connection.execute(
                     "DELETE FROM conversations WHERE id = ?", (existing["id"],)
                 )
 
@@ -110,6 +114,12 @@ class Indexer:
                 "INSERT INTO search (rowid, title, body) VALUES (?, ?, ?)",
                 (cursor.lastrowid, conversation.title, conversation.body or ""),
             )
+
+            if conversation.tags:
+                connection.executemany(
+                    "INSERT OR IGNORE INTO tags (conversation_id, tag) VALUES (?, ?)",
+                    [(cursor.lastrowid, tag) for tag in conversation.tags],
+                )
 
     # -- Housekeeping -------------------------------------------------------
 

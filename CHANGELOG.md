@@ -9,6 +9,19 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+**Tags.** Organise your archive.
+
+- Add and remove tags on any conversation
+- Filter by tag, on its own or combined with a search
+- Every tag in use is shown with a count
+- **Tags are stored in your archive files, not the database.** They are the one
+  thing here you made rather than imported, so they live beside the conversation
+  they belong to, travel with the folder, and survive anything happening to the
+  search index
+- **Importing never removes a tag.** Every ChatGPT export is a full export, so
+  re-importing rewrites your metadata — tags are carried forward rather than
+  overwritten
+
 **Import ergonomics.** Getting an export out of ChatGPT takes days; importing
 one should take no effort at all.
 
@@ -69,6 +82,9 @@ something.
 
 ### Fixed
 
+- The archive list no longer breaks entirely if the backend returns a response
+  without tags — an older backend against a newer interface used to blank the
+  whole panel.
 - The import panel said an export takes "up to 24 hours". That was wrong: 24
   hours is how long the download link lasts, not how long the export takes.
 - An unusable archive folder no longer stops the application starting. It logs

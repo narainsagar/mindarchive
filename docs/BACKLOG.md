@@ -81,6 +81,17 @@ Still open:
 - **Verify the browser script's output shape** against a real official export.
   Believed identical; unconfirmed.
 
+## Organisation
+
+- **Projects.** Deferred in Milestone 4 (D-026). If still wanted after living
+  with tags, most likely a reserved tag namespace (`project/bread`) rather than
+  a parallel hierarchy — a second way to organise the same things needs a real
+  reason to exist.
+- **Renaming a tag everywhere**, and merging two tags.
+- **Bulk tagging** from the list rather than one conversation at a time.
+- **Suggested tags** from what is already in use, once there are enough to make
+  typing them again tedious.
+
 ## Product ideas
 
 - Import from Claude, Gemini, Google AI Studio, Copilot and local tools

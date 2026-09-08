@@ -26,7 +26,7 @@ from pathlib import Path
 from typing import Literal
 
 from mind_archive.events import EventBus, events
-from mind_archive.models import Conversation
+from mind_archive.models import Conversation, clean_tags
 from mind_archive.paths import safe_filename, safe_join
 
 CONVERSATION_FILE = "conversation.md"
@@ -153,6 +153,14 @@ class ArchiveWriter:
         """
         folder = self._folder_for(conversation)
 
+        # An export contains no tags, but this conversation may already be
+        # tagged on disk. Carry those forward before writing, or importing next
+        # month's export would quietly erase every label the user ever applied.
+        # See DECISIONS.md D-025.
+        conversation = conversation.model_copy(
+            update={"tags": self._merge_tags(folder, conversation.tags)}
+        )
+
         markdown = render_markdown(conversation)
         metadata = (
             json.dumps(_metadata(conversation), indent=2, ensure_ascii=False) + "\n"
@@ -186,6 +194,17 @@ class ArchiveWriter:
         )
 
         return Written(folder=folder, status="updated" if existed else "new")
+
+    def _merge_tags(self, folder: Path, incoming: list[str]) -> list[str]:
+        """Combine tags already on disk with any supplied.
+
+        Existing tags come first: they are the user's, and an import has no
+        business reordering them either.
+        """
+        existing = read_tags(folder / METADATA_FILE)
+        if not existing:
+            return clean_tags(incoming)
+        return clean_tags(existing + list(incoming))
 
     def _folder_for(self, conversation: Conversation) -> Path:
         """Build a readable, unique, traversal-safe folder name.
@@ -244,6 +263,46 @@ class ArchiveWriter:
         )
 
 
+def read_tags(metadata_path: Path) -> list[str]:
+    """The tags already stored for a conversation, if any.
+
+    Reads the file directly rather than going through the index, because this
+    is called while writing and the index may not have caught up. The archive
+    is the source of truth; that applies to tags too.
+    """
+    try:
+        raw = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError):
+        return []
+
+    if not isinstance(raw, dict):
+        return []
+
+    return clean_tags(raw.get("tags") or [])
+
+
+def write_tags(metadata_path: Path, tags: list[str]) -> list[str]:
+    """Replace the tags on a conversation, leaving everything else alone.
+
+    Rewrites only the `tags` key, so nothing derived from the export is
+    disturbed by someone relabelling a conversation.
+    """
+    try:
+        raw = json.loads(metadata_path.read_text(encoding="utf-8"))
+    except (OSError, json.JSONDecodeError, UnicodeDecodeError) as error:
+        raise ValueError("That conversation's metadata could not be read.") from error
+
+    if not isinstance(raw, dict):
+        raise ValueError("That conversation's metadata is not in the expected form.")
+
+    cleaned = clean_tags(tags)
+    raw["tags"] = cleaned
+    metadata_path.write_text(
+        json.dumps(raw, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
+    )
+    return cleaned
+
+
 def _unchanged(path: Path, content: str) -> bool:
     """Is the file already exactly this text?
 
@@ -264,6 +323,7 @@ def _metadata(conversation: Conversation) -> dict[str, object]:
         "created_at": _iso(conversation.created_at),
         "updated_at": _iso(conversation.updated_at),
         "message_count": conversation.message_count,
+        "tags": conversation.tags,
         "metadata": conversation.metadata,
     }
 

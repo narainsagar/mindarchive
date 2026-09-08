@@ -50,14 +50,17 @@ yourself in your own browser.
 
 ---
 
-## Milestone 4 — Organisation 🎯 next
+## Milestone 4 — Organisation ✅
 
-Projects, tags and metadata. The fuller archive model — Conversation, Message,
-Document, Memory, Tag, Attachment, Source. Broader use of the event system.
+Tag your conversations, filter by tag, and combine that with search. Tags are
+stored in your archive files, not in the database, so they travel with it and
+survive anything happening to the index.
+
+Projects were deliberately deferred — see decision D-026.
 
 ---
 
-## Milestone 5 — More providers, and export
+## Milestone 5 — More providers, and export 🎯 next
 
 A second real importer, most likely Claude or Gemini, used to generalise the
 adapter interface against a genuine second case rather than a guess. The

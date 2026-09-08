@@ -5,6 +5,48 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-08 — Milestone 4: tags
+
+**Session:** [2026-09-08-06-milestone-4-tags-and-organisation](sessions/2026-09-08-06-milestone-4-tags-and-organisation/SESSION.md)
+· [prompts](sessions/2026-09-08-06-milestone-4-tags-and-organisation/PROMPTS.md)
+· [report](sessions/2026-09-08-06-milestone-4-tags-and-organisation/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**One question shaped the whole milestone.** Everything in the archive so far is
+*derived* — conversations from an export, Markdown from those, the index from
+the Markdown. Tags are the first thing a person **makes**. Putting them in
+SQLite would have made a rebuildable cache load-bearing and broken D-004 exactly
+where it would destroy original work. They live in `metadata.json`; SQLite
+indexes them and holds nothing else (**D-025**).
+
+**And the bug that would have followed.** Every ChatGPT export is a full export,
+so re-importing rewrites every `metadata.json` — and an export has no tags. Done
+naively, next month's import would have erased months of someone's filing,
+silently, with nobody noticing until far too late. The writer merges tags
+forward, and the test is named after that failure.
+
+**Scope.** Only tags, not the full "Project, Memory, Document..." list
+originally specified (**D-026**). Tags plus search already answer *"where is
+that conversation about X?"*; building a second hierarchical scheme at the same
+time means guessing how they interact before anyone has used either.
+
+**Found by the tooling.** `Object.entries(undefined)` blanked the entire archive
+panel when a response lacked `tags` — a fair stand-in for a cached frontend
+meeting a newer backend. mypy caught a signature that lied: `clean_tags` claimed
+`list[str]` while genuinely reading untrusted JSON. Six SQL-injection warnings
+were checked rather than suppressed — the tag is a bound parameter and only our
+own literals are interpolated — and each suppression carries its reasoning.
+
+**Verified** with `dev.py verify`: 254 backend tests (was 217), 64 frontend (was
+54), full gate green. **Not yet clicked through in a browser** — the user's WSL
+environment is still the blocker, not the code.
+
+**Outstanding, still:** no real ChatGPT export has been imported. Four
+milestones now.
+
+---
+
 ## 2026-09-08 — Import ergonomics: the inbox and honest re-import reporting
 
 **Session:** [2026-09-08-05-import-ergonomics-inbox-and-re-import-reporting](sessions/2026-09-08-05-import-ergonomics-inbox-and-re-import-reporting/SESSION.md)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from collections.abc import Iterator
 from datetime import UTC, datetime
 from pathlib import Path
@@ -267,3 +268,102 @@ def test_an_imported_conversation_becomes_searchable(tmp_path: Path) -> None:
         app.dependency_overrides.clear()
 
     assert found["total"] == 1
+
+
+# ---------------------------------------------------------------------------
+# Tags
+# ---------------------------------------------------------------------------
+
+
+def first_path(client: TestClient) -> str:
+    return client.get("/api/conversations").json()["conversations"][0]["path"]
+
+
+def test_tags_can_be_set(client: TestClient) -> None:
+    path = first_path(client)
+
+    body = client.put(
+        f"/api/conversations/{path}/tags", json={"tags": ["recipes", "bread"]}
+    ).json()
+
+    assert body["tags"] == ["recipes", "bread"]
+
+
+def test_tags_are_written_to_disk_not_just_the_index(client: TestClient) -> None:
+    """D-025: tags are the one thing here a person made rather than imported."""
+    path = first_path(client)
+    client.put(f"/api/conversations/{path}/tags", json={"tags": ["recipes"]})
+
+    folder = client.settings.archive_dir / path  # type: ignore[attr-defined]
+    stored = json.loads((folder / "metadata.json").read_text(encoding="utf-8"))
+
+    assert stored["tags"] == ["recipes"]
+
+
+def test_tags_appear_when_reading_a_conversation(client: TestClient) -> None:
+    path = first_path(client)
+    client.put(f"/api/conversations/{path}/tags", json={"tags": ["recipes"]})
+
+    assert client.get(f"/api/conversations/{path}").json()["tags"] == ["recipes"]
+
+
+def test_conversations_can_be_filtered_by_tag(client: TestClient) -> None:
+    path = first_path(client)
+    client.put(f"/api/conversations/{path}/tags", json={"tags": ["recipes"]})
+
+    body = client.get("/api/conversations", params={"tag": "recipes"}).json()
+
+    assert body["total"] == 1
+    assert body["conversations"][0]["path"] == path
+
+
+def test_the_listing_reports_every_tag_in_use(client: TestClient) -> None:
+    path = first_path(client)
+    client.put(f"/api/conversations/{path}/tags", json={"tags": ["recipes", "bread"]})
+
+    assert client.get("/api/conversations").json()["tags"] == {
+        "bread": 1,
+        "recipes": 1,
+    }
+
+
+def test_tags_are_tidied_before_being_stored(client: TestClient) -> None:
+    path = first_path(client)
+
+    body = client.put(
+        f"/api/conversations/{path}/tags",
+        json={"tags": ["  Recipes  ", "recipes", "", "   "]},
+    ).json()
+
+    assert body["tags"] == ["Recipes"]
+
+
+def test_tags_can_be_cleared(client: TestClient) -> None:
+    path = first_path(client)
+    client.put(f"/api/conversations/{path}/tags", json={"tags": ["recipes"]})
+
+    assert (
+        client.put(f"/api/conversations/{path}/tags", json={"tags": []}).json()["tags"]
+        == []
+    )
+
+
+def test_tagging_an_unknown_conversation_is_a_404(client: TestClient) -> None:
+    response = client.put(
+        "/api/conversations/chatgpt/nope/tags", json={"tags": ["recipes"]}
+    )
+
+    assert response.status_code == 404
+
+
+@pytest.mark.parametrize(
+    "hostile",
+    ["../../../etc/passwd", "chatgpt/../../../etc/passwd"],
+)
+def test_tagging_cannot_escape_the_archive(client: TestClient, hostile: str) -> None:
+    response = client.put(
+        f"/api/conversations/{hostile}/tags", json={"tags": ["recipes"]}
+    )
+
+    assert response.status_code == 404
+    assert "/etc" not in response.text

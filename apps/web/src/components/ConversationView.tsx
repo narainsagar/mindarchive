@@ -3,10 +3,13 @@ import Markdown from "react-markdown";
 
 import { ApiError, fetchConversation } from "../api";
 import type { ConversationDetail } from "../api";
+import { TagEditor } from "./TagEditor";
 
 interface Props {
   path: string;
   onClose: () => void;
+  /** Called when tags change, so the list behind can refresh its filters. */
+  onTagsChanged?: () => void;
 }
 
 /**
@@ -38,7 +41,7 @@ function withoutLeadingTitle(body: string, title: string): string {
  * markup or script into the page. Raw HTML in the Markdown is not enabled, so
  * a conversation containing `<script>` renders as those characters.
  */
-export function ConversationView({ path, onClose }: Props) {
+export function ConversationView({ path, onClose, onTagsChanged }: Props) {
   const [conversation, setConversation] = useState<ConversationDetail | null>(
     null,
   );
@@ -106,6 +109,12 @@ export function ConversationView({ path, onClose }: Props) {
             {conversation.message_count === 1 ? "message" : "messages"} · from{" "}
             {conversation.source}
           </p>
+
+          <TagEditor
+            path={conversation.path}
+            tags={conversation.tags ?? []}
+            onChanged={() => onTagsChanged?.()}
+          />
 
           <div className="conversation__body">
             <Markdown>

@@ -12,13 +12,27 @@ break and closer to what someone typing into a search box expects.
 
 This is a correctness measure, not a security one — the query is still passed
 as a bound parameter, so it was never an injection risk.
+
+## About the `# noqa: S608` comments
+
+Several queries are assembled with f-strings, which a security linter rightly
+flags. The safety property, in every case:
+
+- **The tag itself is never interpolated.** It is a bound `?` parameter, exactly
+  like the search text.
+- The only interpolated values are `_tag_filter`'s fixed clause, the literals
+  `"conversations.id"` / `"c.id"` / `"WHERE"` / `"AND"` written at the call
+  sites, and a run of `?` characters.
+
+Nothing derived from a request reaches the SQL text. The suppressions are
+deliberate and each one is worth re-checking if these queries change.
 """
 
 from __future__ import annotations
 
 import re
 import sqlite3
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from mind_archive.index.schema import connect
@@ -44,6 +58,7 @@ class SearchHit:
     created_at: str | None
     updated_at: str | None
     message_count: int
+    tags: list[str] = field(default_factory=list)
 
     #: A short piece of matching text with the match marked, when searching.
     snippet: str | None = None
@@ -82,13 +97,16 @@ class SearchIndex:
         self,
         query: str = "",
         *,
+        tag: str = "",
         limit: int = DEFAULT_LIMIT,
         offset: int = 0,
     ) -> tuple[list[SearchHit], int]:
         """Find conversations. Returns the page and the total match count.
 
         An empty query lists everything, newest first — which is what a person
-        expects to see when they open the archive without searching.
+        expects to see when they open the archive without searching. A `tag`
+        narrows either case, and combines with a search rather than replacing
+        it: "what I tagged `recipes` that also mentions sourdough".
         """
         limit = max(1, min(limit, MAX_LIMIT))
         offset = max(0, offset)
@@ -97,8 +115,8 @@ class SearchIndex:
         connection = connect(self.database_path)
         try:
             if match is None:
-                return self._list(connection, limit, offset)
-            return self._search(connection, match, limit, offset)
+                return self._list(connection, tag, limit, offset)
+            return self._search(connection, match, tag, limit, offset)
         except sqlite3.OperationalError:
             # A query FTS5 still refuses. Better an empty result than a 500.
             return [], 0
@@ -106,56 +124,101 @@ class SearchIndex:
             connection.close()
 
     def _list(
-        self, connection: sqlite3.Connection, limit: int, offset: int
+        self, connection: sqlite3.Connection, tag: str, limit: int, offset: int
     ) -> tuple[list[SearchHit], int]:
+        where, params = _tag_filter(tag, "conversations.id")
+
         total = int(
-            connection.execute("SELECT COUNT(*) AS n FROM conversations").fetchone()[
-                "n"
-            ]
+            connection.execute(
+                f"SELECT COUNT(*) AS n FROM conversations {where}",  # noqa: S608
+                params,
+            ).fetchone()["n"]
         )
 
         rows = connection.execute(
-            """
-            SELECT path, title, source, created_at, updated_at, message_count
+            f"""
+            SELECT id, path, title, source, created_at, updated_at, message_count
             FROM conversations
+            {where}
             -- Undated conversations sort last rather than first: a missing
             -- date should not push a conversation to the top of the archive.
             ORDER BY created_at IS NULL, created_at DESC, title
             LIMIT ? OFFSET ?
-            """,
-            (limit, offset),
+            """,  # noqa: S608 - only our own literals are interpolated
+            (*params, limit, offset),
         ).fetchall()
 
-        return [_hit(row) for row in rows], total
+        return self._with_tags(connection, rows, snippets=False), total
 
     def _search(
         self,
         connection: sqlite3.Connection,
         match: str,
+        tag: str,
         limit: int,
         offset: int,
     ) -> tuple[list[SearchHit], int]:
+        where, params = _tag_filter(tag, "c.id", prefix="AND")
+
         total = int(
             connection.execute(
-                "SELECT COUNT(*) AS n FROM search WHERE search MATCH ?", (match,)
+                f"""
+                SELECT COUNT(*) AS n
+                FROM search
+                JOIN conversations AS c ON c.id = search.rowid
+                WHERE search MATCH ? {where}
+                """,  # noqa: S608 - only our own literals are interpolated
+                (match, *params),
             ).fetchone()["n"]
         )
 
         rows = connection.execute(
-            """
-            SELECT c.path, c.title, c.source, c.created_at, c.updated_at,
+            f"""
+            SELECT c.id, c.path, c.title, c.source, c.created_at, c.updated_at,
                    c.message_count,
                    snippet(search, 1, '<<', '>>', '…', 24) AS snippet
             FROM search
             JOIN conversations AS c ON c.id = search.rowid
-            WHERE search MATCH ?
+            WHERE search MATCH ? {where}
             ORDER BY rank
             LIMIT ? OFFSET ?
-            """,
-            (match, limit, offset),
+            """,  # noqa: S608 - only our own literals are interpolated
+            (match, *params, limit, offset),
         ).fetchall()
 
-        return [_hit(row, snippet=row["snippet"]) for row in rows], total
+        return self._with_tags(connection, rows, snippets=True), total
+
+    def _with_tags(
+        self,
+        connection: sqlite3.Connection,
+        rows: list[sqlite3.Row],
+        *,
+        snippets: bool,
+    ) -> list[SearchHit]:
+        """Attach each conversation's tags in one query rather than one each."""
+        if not rows:
+            return []
+
+        ids = [row["id"] for row in rows]
+        placeholders = ",".join("?" * len(ids))
+
+        by_id: dict[int, list[str]] = {}
+        for tag_row in connection.execute(
+            # placeholders is a run of "?" characters and nothing else.
+            f"SELECT conversation_id, tag FROM tags "  # noqa: S608
+            f"WHERE conversation_id IN ({placeholders}) ORDER BY tag",
+            ids,
+        ):
+            by_id.setdefault(tag_row["conversation_id"], []).append(tag_row["tag"])
+
+        return [
+            _hit(
+                row,
+                snippet=row["snippet"] if snippets else None,
+                tags=by_id.get(row["id"], []),
+            )
+            for row in rows
+        ]
 
     def get(self, path: str) -> SearchHit | None:
         """One conversation's indexed metadata, by its archive path."""
@@ -163,12 +226,31 @@ class SearchIndex:
         try:
             row = connection.execute(
                 """
-                SELECT path, title, source, created_at, updated_at, message_count
+                SELECT id, path, title, source, created_at, updated_at,
+                       message_count
                 FROM conversations WHERE path = ?
                 """,
                 (path,),
             ).fetchone()
-            return _hit(row) if row else None
+            if row is None:
+                return None
+            return self._with_tags(connection, [row], snippets=False)[0]
+        finally:
+            connection.close()
+
+    def tags(self) -> dict[str, int]:
+        """Every tag in use, and how many conversations carry it."""
+        connection = connect(self.database_path)
+        try:
+            return {
+                row["tag"]: int(row["n"])
+                for row in connection.execute(
+                    """
+                    SELECT tag, COUNT(*) AS n FROM tags
+                    GROUP BY tag ORDER BY n DESC, tag
+                    """
+                )
+            }
         finally:
             connection.close()
 
@@ -189,7 +271,30 @@ class SearchIndex:
             connection.close()
 
 
-def _hit(row: sqlite3.Row, snippet: str | None = None) -> SearchHit:
+def _tag_filter(
+    tag: str, id_column: str, prefix: str = "WHERE"
+) -> tuple[str, tuple[str, ...]]:
+    """SQL narrowing results to one tag, or nothing at all if none was given.
+
+    Matched case-insensitively: someone filtering for "recipes" means the same
+    thing as the "Recipes" they typed when tagging.
+    """
+    label = " ".join(tag.split())
+    if not label:
+        return "", ()
+
+    # The tag is a bound parameter. `prefix` and `id_column` are literals
+    # written at the call sites, never anything from a request.
+    return (
+        f"{prefix} EXISTS (SELECT 1 FROM tags WHERE tags.conversation_id = "  # noqa: S608
+        f"{id_column} AND tags.tag = ? COLLATE NOCASE)",
+        (label,),
+    )
+
+
+def _hit(
+    row: sqlite3.Row, snippet: str | None = None, tags: list[str] | None = None
+) -> SearchHit:
     return SearchHit(
         path=row["path"],
         title=row["title"],
@@ -197,5 +302,6 @@ def _hit(row: sqlite3.Row, snippet: str | None = None) -> SearchHit:
         created_at=row["created_at"],
         updated_at=row["updated_at"],
         message_count=row["message_count"],
+        tags=tags or [],
         snippet=snippet,
     )

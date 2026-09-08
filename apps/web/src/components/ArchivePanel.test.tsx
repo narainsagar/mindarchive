@@ -24,6 +24,7 @@ function summary(overrides: Partial<ConversationList["conversations"][0]> = {}) 
     created_at: "2024-03-14T09:30:00+00:00",
     updated_at: null,
     message_count: 2,
+    tags: [],
     snippet: null,
     ...overrides,
   };
@@ -36,6 +37,7 @@ function list(overrides: Partial<ConversationList> = {}): ConversationList {
     limit: 25,
     offset: 0,
     sources: { chatgpt: 1 },
+    tags: {},
     ...overrides,
   };
 }

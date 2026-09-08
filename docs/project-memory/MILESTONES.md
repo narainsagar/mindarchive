@@ -104,12 +104,24 @@ Mind Archive (D-024).
 
 ---
 
-## Milestone 4 — Projects, tags, metadata and events ⬜
+## Milestone 4 — Tags ✅
 
-- Archive model: Project, Conversation, Message, Document, Memory, Tag,
-  Attachment, Source, Metadata, Event
-- Tagging and organisation
-- Broader use of the event system
+| Item | Status |
+|---|---|
+| Tags stored in `metadata.json`, indexed in SQLite | ✅ |
+| An import never removes a tag | ✅ enforced by a test |
+| Add and remove tags on a conversation | ✅ |
+| Filter by tag, combined with search | ✅ |
+| Tag counts | ✅ |
+| `conversation.tagged` event | ✅ |
+
+**Deliberately excluded** (D-026): Projects, and the `Memory` / `Document` /
+`Attachment` model types originally listed here. Tags plus full-text search
+already answer the question people actually have. A schema with no feature
+behind it is one nobody has tested against a real need.
+
+Projects are in `docs/BACKLOG.md`, most likely as a reserved tag namespace
+rather than a parallel hierarchy.
 
 ---
 

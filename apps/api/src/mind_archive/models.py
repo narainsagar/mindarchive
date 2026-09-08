@@ -12,6 +12,7 @@ years.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from datetime import datetime
 
 from pydantic import BaseModel, Field
@@ -30,6 +31,50 @@ class Message(BaseModel):
     metadata: dict[str, str] = Field(default_factory=dict)
 
 
+#: A tag is a label, not a document.
+MAX_TAG_LENGTH = 50
+
+#: More than this on one conversation is a filing system, not a set of labels.
+MAX_TAGS = 50
+
+
+def clean_tags(tags: Sequence[object]) -> list[str]:
+    """Tidy a list of tags into the form the archive stores.
+
+    Takes `object`, not `str`, on purpose: tags arrive from `metadata.json` and
+    from request bodies, and a file on someone's disk can contain anything at
+    all. The type says what is actually accepted rather than what we hope for.
+
+    Trimmed, internal whitespace collapsed, empties dropped, length and count
+    capped, and duplicates removed **case-insensitively** — "Bread" and "bread"
+    are the same label, and keeping both would split a person's own filing
+    without them noticing. The first spelling wins, because that is the one
+    they chose.
+    """
+    cleaned: list[str] = []
+    seen: set[str] = set()
+
+    for tag in tags:
+        if not isinstance(tag, str):
+            continue
+
+        label = " ".join(tag.split())[:MAX_TAG_LENGTH].strip()
+        if not label:
+            continue
+
+        key = label.casefold()
+        if key in seen:
+            continue
+
+        seen.add(key)
+        cleaned.append(label)
+
+        if len(cleaned) >= MAX_TAGS:
+            break
+
+    return cleaned
+
+
 class Conversation(BaseModel):
     """A single conversation, normalised."""
 
@@ -45,6 +90,10 @@ class Conversation(BaseModel):
 
     created_at: datetime | None = None
     updated_at: datetime | None = None
+
+    #: Labels the *user* applied. Never set by an importer — an export contains
+    #: no tags, and an import must never remove one. See DECISIONS.md D-025.
+    tags: list[str] = Field(default_factory=list)
 
     metadata: dict[str, str] = Field(default_factory=dict)
 

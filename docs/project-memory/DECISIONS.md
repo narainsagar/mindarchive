@@ -214,6 +214,63 @@ updates; see `LICENSING.md` and `docs/BACKLOG.md`.
 
 ---
 
+## D-025 — Tags live in `metadata.json`, and an import never removes them
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Tags are stored in each conversation's `metadata.json`, on disk, beside the
+conversation they belong to. SQLite indexes them for filtering and counting and
+holds nothing else.
+
+**Why:** Everything else in the archive is *derived* from a provider export, so
+losing the index costs nothing but time. Tags are different: **you make them**.
+They exist nowhere else in the world. Storing them only in `mind_archive.db`
+would mean deleting a rebuildable cache destroyed original work, which breaks
+D-004 in the one place it would actually hurt.
+
+Putting them in `metadata.json` also means they travel with the archive: copy
+the folder to another machine and your organisation comes with it, because it
+was never separate from it.
+
+**The consequence that needed the most care:** an export contains no tags, and
+re-importing rewrites `metadata.json`. Done naively, importing your monthly
+export would silently erase every tag you had ever applied. So the writer
+**reads the existing metadata and merges tags forward** before writing. There is
+a test for exactly this, because it is the kind of data loss nobody notices
+until months later.
+
+**Consequences:**
+
+- `Conversation.tags` is part of the model; importers never set it.
+- Tags are trimmed, collapsed, deduplicated case-insensitively, and capped in
+  length and number. A tag is a label, not a document.
+- The schema gains a `tags` table and `SCHEMA_VERSION` becomes 2. The index
+  rebuilds itself, which costs nothing precisely because it is derived.
+- Editing `metadata.json` by hand is a supported way to tag things.
+
+---
+
+## D-026 — Projects are deferred; tags first
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Milestone 4 was specified as "Project, Conversation, Message, Document, Memory,
+Tag, Attachment, Source, Metadata, Event". Only tags are being built.
+
+**Why:** Tags plus the existing full-text search already answer the question
+people actually have — *"where is that conversation about X?"*. Projects add a
+second, hierarchical way to organise the same things, and building both at once
+means guessing at how they interact before anyone has used either.
+
+Building the whole model list now would also be the kind of speculative
+structure this project has avoided since Milestone 1. A `Memory` or `Document`
+type with no feature behind it is a schema nobody has tested against a real
+need.
+
+**Consequences:** If projects are still wanted after living with tags, they are
+straightforward to add — likely as a reserved tag namespace rather than a
+parallel hierarchy. Recorded in `docs/BACKLOG.md` rather than dropped.
+
+---
+
 ## D-023 — A watched inbox folder, owned by default and configurable
 **Date:** 2026-09-08 · **Status:** Accepted
 

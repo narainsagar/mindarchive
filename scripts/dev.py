@@ -78,7 +78,21 @@ else:
 
 
 def say(message: str, colour: str = "") -> None:
-    print(f"{colour}{message}{RESET}" if colour else message)
+    """Print, without ever being the thing that fails.
+
+    Section headings are plain ASCII on purpose. Windows consoles frequently
+    default to cp1252, which cannot represent box-drawing characters, and
+    printing one raises UnicodeEncodeError and takes down the whole command.
+    A tool that reports on your project should not fall over on the way.
+
+    The try/except covers whatever else finds its way in here.
+    """
+    text = f"{colour}{message}{RESET}" if colour else message
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        encoding = getattr(sys.stdout, "encoding", None) or "ascii"
+        print(text.encode(encoding, "replace").decode(encoding, "replace"))
 
 
 def run(command: list, capture: bool = False) -> int:
@@ -131,7 +145,7 @@ def cmd_down(args) -> int:
     if args.volumes:
         command.append("--volumes")
         say("Removing Docker volumes. Your ./data folder is a bind mount and", YELLOW)
-        say("is NOT affected — your archive is safe.", YELLOW)
+        say("is NOT affected - your archive is safe.", YELLOW)
     code = run(command)
     if code == 0:
         say("Stopped.", GREEN)
@@ -213,12 +227,12 @@ def cmd_test(args) -> int:
     failures = []
 
     if target in ("backend", "all"):
-        say("\n── Backend tests ──", DIM)
+        say("\n-- Backend tests --", DIM)
         if run(backend("pytest")) != 0:
             failures.append("backend tests")
 
     if target in ("frontend", "all"):
-        say("\n── Frontend tests ──", DIM)
+        say("\n-- Frontend tests --", DIM)
         if run(frontend("npm", "test")) != 0:
             failures.append("frontend tests")
 
@@ -229,11 +243,11 @@ def cmd_lint(args) -> int:
     require_docker()
     failures = []
 
-    say("\n── Backend lint ──", DIM)
+    say("\n-- Backend lint --", DIM)
     if run(backend("ruff", "check", ".")) != 0:
         failures.append("backend lint")
 
-    say("\n── Frontend lint ──", DIM)
+    say("\n-- Frontend lint --", DIM)
     if run(frontend("npm", "run", "lint")) != 0:
         failures.append("frontend lint")
 
@@ -244,11 +258,11 @@ def cmd_types(args) -> int:
     require_docker()
     failures = []
 
-    say("\n── Backend types ──", DIM)
+    say("\n-- Backend types --", DIM)
     if run(backend("mypy", "src")) != 0:
         failures.append("backend types")
 
-    say("\n── Frontend types ──", DIM)
+    say("\n-- Frontend types --", DIM)
     if run(frontend("npm", "run", "typecheck")) != 0:
         failures.append("frontend types")
 
@@ -259,17 +273,17 @@ def cmd_format(args) -> int:
     require_docker()
 
     if args.fix:
-        say("\n── Formatting backend ──", DIM)
+        say("\n-- Formatting backend --", DIM)
         run(backend("ruff", "check", "--fix", "."))
         return run(backend("ruff", "format", "."))
 
-    say("\n── Backend formatting ──", DIM)
+    say("\n-- Backend formatting --", DIM)
     return report([] if run(backend("ruff", "format", "--check", ".")) == 0 else ["formatting"])
 
 
 def cmd_build(args) -> int:
     require_docker()
-    say("\n── Frontend production build ──", DIM)
+    say("\n-- Frontend production build --", DIM)
     return report([] if run(frontend("npm", "run", "build")) == 0 else ["frontend build"])
 
 
@@ -295,12 +309,12 @@ def cmd_verify(args) -> int:
     ]
 
     for name, command in steps:
-        say(f"\n── {name} ──", DIM)
+        say(f"\n-- {name} --", DIM)
         if run(command) != 0:
             failures.append(name)
 
     if not args.keep_up:
-        say("\n── Tidying up ──", DIM)
+        say("\n-- Tidying up --", DIM)
         run(["docker", "compose", "down"], capture=True)
 
     return report(failures, gate=True)
@@ -378,7 +392,7 @@ def main() -> int:
         "build", help="CHECK the frontend production build compiles"
     ).set_defaults(func=cmd_build)
 
-    verify = sub.add_parser("verify", help="every check — the milestone gate")
+    verify = sub.add_parser("verify", help="every check - the milestone gate")
     verify.add_argument(
         "--keep-up", action="store_true", help="leave the stack running afterwards"
     )

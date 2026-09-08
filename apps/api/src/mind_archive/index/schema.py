@@ -20,7 +20,7 @@ from pathlib import Path
 
 #: Bumped when the schema changes. A mismatch rebuilds from disk rather than
 #: migrating — which is free, because nothing here is original.
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 SCHEMA = """
 CREATE TABLE conversations (
@@ -40,6 +40,18 @@ CREATE TABLE conversations (
 
 CREATE INDEX conversations_source  ON conversations (source);
 CREATE INDEX conversations_created ON conversations (created_at DESC);
+
+-- Tags the user applied. Derived, like everything else here: the originals
+-- live in each conversation's metadata.json, because they are the one thing
+-- in this database that a person made rather than imported. See D-025.
+CREATE TABLE tags (
+    conversation_id INTEGER NOT NULL
+        REFERENCES conversations (id) ON DELETE CASCADE,
+    tag             TEXT    NOT NULL,
+    PRIMARY KEY (conversation_id, tag)
+);
+
+CREATE INDEX tags_tag ON tags (tag);
 
 -- Full-text search. Contentless would save space, but keeping the text here
 -- lets SQLite produce snippets without re-reading files from disk.
@@ -82,7 +94,7 @@ def _needs_rebuild(connection: sqlite3.Connection) -> bool:
             "SELECT name FROM sqlite_master WHERE type IN ('table')"
         )
     }
-    return not {"conversations", "search"}.issubset(tables)
+    return not {"conversations", "search", "tags"}.issubset(tables)
 
 
 def _create(connection: sqlite3.Connection) -> None:
@@ -93,6 +105,7 @@ def _create(connection: sqlite3.Connection) -> None:
     """
     with connection:
         connection.execute("DROP TABLE IF EXISTS search")
+        connection.execute("DROP TABLE IF EXISTS tags")
         connection.execute("DROP TABLE IF EXISTS conversations")
         connection.executescript(SCHEMA)
         connection.execute(f"PRAGMA user_version = {SCHEMA_VERSION}")

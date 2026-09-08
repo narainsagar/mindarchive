@@ -6,7 +6,7 @@ If this file and the code disagree, the code is right and this file needs
 updating. Keep it honest — it is the file people trust to know where things
 stand.
 
-**Last updated:** 2026-09-08 · **Milestone 3.5 complete** · Version 0.1.0
+**Last updated:** 2026-09-08 · **Milestone 4 complete** · Version 0.1.0
 
 > **Workflow note.** Checks do not run on every change. Verification is
 > developer-controlled and required at milestone boundaries, pull requests and
@@ -25,8 +25,12 @@ Getting an export out of ChatGPT takes days, so importing one takes no effort:
 drop it into `data/inbox/` and it imports itself. Re-importing reports what is
 genuinely new and rewrites nothing else.
 
-What it cannot do yet is **organise** — no tags, no projects, no editing or
-deleting from the interface. That is Milestone 4.
+You can tag conversations and filter by tag. Tags are stored in your archive
+files, not the database, so they survive anything happening to the index and
+travel with the folder.
+
+What it cannot do yet: import from anything but ChatGPT, edit or delete
+conversations from the interface, or export the whole archive. Milestone 5.
 
 Underneath: a FastAPI backend, a React + TypeScript + Vite frontend with light
 and dark modes, SQLite with FTS5 as a rebuildable index, Docker Compose, CI, and
@@ -71,6 +75,7 @@ the interface loads and displays live backend status.
 | `routes/import_.py` | `GET /api/importers`, `POST /api/import` |
 | `routes/conversations.py` | `GET /api/conversations`, `GET /api/conversations/{path}`, `POST /api/index/rebuild` |
 | `inbox.py` | The watched folder. Owned and tidied by default; a folder you chose is read but never rearranged |
+| `models.py` `clean_tags` | Tidies what people type: trims, collapses, dedupes case-insensitively keeping the first spelling |
 
 **Frontend** — `apps/web`
 
@@ -117,11 +122,11 @@ Everything below was actually run, not inspected.
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`) | **217 passed** |
+| Backend tests (`pytest`) | **254 passed** |
 | Backend lint (`ruff check`) | **passed** |
 | Backend formatting (`ruff format --check`) | **passed**, 34 files |
 | Backend types (`mypy src`, strict) | **passed**, 22 files, no issues |
-| Frontend tests (`vitest`) | **54 passed** |
+| Frontend tests (`vitest`) | **64 passed** |
 | Frontend types (`tsc --noEmit`) | **passed** |
 | Frontend lint (`eslint`) | **passed** |
 | Frontend build (`vite build`) | **passed** — 147.84 kB JS, 47.73 kB gzipped |
@@ -171,6 +176,9 @@ All verification above was run inside Docker for this reason.
   conversations take 4.7s on a native filesystem and 127s across a Windows
   Docker bind mount (R-005). Do not optimise the importer against the second
   number.
+- **Milestone 4 has not been clicked through in a browser.** 254 backend and
+  64 frontend tests pass, but the tag interface has never been used by a
+  person. The blocker is the development environment, not the code.
 - **No progress reporting during a long import.** It runs on a background
   thread so nothing blocks, but the interface says nothing while it works.
 - **The importer has only seen synthetic exports.** Tests cover malformed and
@@ -190,6 +198,10 @@ A Contributor Licence Agreement must exist before outside contributions can be
 accepted. It does not exist yet.
 
 ## Next step
+
+**Run it and click through it.** Two milestones have now shipped without anyone
+using them. `docs/TRY_IT.md` is the walkthrough; PowerShell avoids the WSL
+problems that have blocked it so far.
 
 **Verify against a real ChatGPT export** placed in `local/`, and fix whatever
 genuine data reveals. Synthetic fixtures are thorough, but they were written by
