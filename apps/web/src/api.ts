@@ -33,11 +33,11 @@ export class ApiError extends Error {
   }
 }
 
-async function request<T>(path: string): Promise<T> {
+async function request<T>(path: string, init?: RequestInit): Promise<T> {
   let response: Response;
 
   try {
-    response = await fetch(`${BASE_URL}${path}`);
+    response = await fetch(`${BASE_URL}${path}`, init);
   } catch {
     // Almost always means the backend is not running. Say that, rather than
     // showing the browser's own wording.
@@ -83,6 +83,67 @@ export function fetchConfig(): Promise<PublicConfig> {
 
 export function fetchImporters(): Promise<ImporterInfo[]> {
   return request<ImporterInfo[]>("/api/importers");
+}
+
+export interface ConversationSummary {
+  path: string;
+  title: string;
+  source: string;
+  created_at: string | null;
+  updated_at: string | null;
+  message_count: number;
+  /**
+   * Matching text with the match wrapped in `<<` and `>>`.
+   *
+   * Delimited rather than HTML, so nothing from a conversation is ever
+   * rendered as markup.
+   */
+  snippet: string | null;
+}
+
+export interface ConversationList {
+  conversations: ConversationSummary[];
+  total: number;
+  limit: number;
+  offset: number;
+  sources: Record<string, number>;
+}
+
+export interface ConversationDetail extends ConversationSummary {
+  /** Markdown, exactly as stored on disk minus the front matter. */
+  body: string;
+  source_id: string | null;
+}
+
+export interface RebuildResult {
+  ok: boolean;
+  message: string;
+  indexed: number;
+}
+
+export function fetchConversations(
+  options: { query?: string; limit?: number; offset?: number } = {},
+): Promise<ConversationList> {
+  const params = new URLSearchParams();
+  if (options.query) params.set("q", options.query);
+  if (options.limit !== undefined) params.set("limit", String(options.limit));
+  if (options.offset !== undefined) params.set("offset", String(options.offset));
+
+  const query = params.toString();
+  return request<ConversationList>(
+    `/api/conversations${query ? `?${query}` : ""}`,
+  );
+}
+
+export function fetchConversation(path: string): Promise<ConversationDetail> {
+  // Each segment is encoded separately: the slashes are real path structure,
+  // but anything inside a segment is a title and could contain any character.
+  const encoded = path.split("/").map(encodeURIComponent).join("/");
+  return request<ConversationDetail>(`/api/conversations/${encoded}`);
+}
+
+export function rebuildIndex(): Promise<RebuildResult> {
+  return request<RebuildResult>("/api/index/rebuild", { method: "POST" });
 }
 
 /**

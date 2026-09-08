@@ -61,15 +61,22 @@ It gets generalised in Milestone 5 against a genuine second case.
 
 ---
 
-## Milestone 3 — Archive browser, Markdown and search ⬜
+## Milestone 3 — Archive browser, Markdown and search ✅
 
-- Browse imported conversations
-- Render Markdown for reading
-- SQLite schema for metadata and indexing
-- Full-text search using SQLite FTS
-- The database must be rebuildable from the files on disk
+| Item | Status |
+|---|---|
+| Browse imported conversations | ✅ |
+| Render Markdown for reading | ✅ |
+| SQLite schema for metadata and indexing | ✅ |
+| Full-text search using SQLite FTS5 | ✅ |
+| The database is rebuildable from the files on disk | ✅ enforced by a test |
+| Rebuild on startup, and on demand | ✅ |
 
-No Elasticsearch or external search infrastructure.
+No Elasticsearch or external search infrastructure, as planned.
+
+**Deliberately excluded:** editing or deleting conversations from the
+interface, tags, projects, and any per-message structure — the whole Markdown
+file is rendered rather than parsed back into messages.
 
 ---
 

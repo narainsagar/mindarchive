@@ -31,7 +31,7 @@ that reports what happened in plain language.
 
 ---
 
-## Milestone 3 — Archive browser and search 🎯 next
+## Milestone 3 — Archive browser and search ✅
 
 Browse and read imported conversations. Markdown rendering. A SQLite schema for
 metadata and indexing, with full-text search through SQLite FTS. The database
@@ -39,7 +39,7 @@ stays rebuildable from the files on disk.
 
 ---
 
-## Milestone 4 — Organisation
+## Milestone 4 — Organisation 🎯 next
 
 Projects, tags and metadata. The fuller archive model — Conversation, Message,
 Document, Memory, Tag, Attachment, Source. Broader use of the event system.

@@ -9,6 +9,19 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+**Milestone 3 — the archive browser and search.** You can now read what you
+imported.
+
+- Browse your archive, newest first, with paging
+- Full-text search across every conversation, using SQLite FTS5
+- Search matches all your words and treats the last as a prefix, so results
+  narrow as you type
+- Read a conversation with its Markdown rendered
+- `GET /api/conversations`, `GET /api/conversations/{path}`,
+  `POST /api/index/rebuild`
+- The index rebuilds itself when the archive has content but the database does
+  not — so copying your archive folder to another computer is enough
+
 **Milestone 2 — the ChatGPT importer.** Mind Archive can now actually archive
 something.
 
@@ -31,6 +44,10 @@ something.
 
 ### Fixed
 
+- An unusable archive folder no longer stops the application starting. It logs
+  the problem and carries on, so the interface can explain it.
+- The handler that indexes an imported conversation now uses the configuration
+  the application was started with, rather than re-reading a cached copy.
 - An unwritable archive folder — an unplugged drive, a permissions problem —
   now produces a clear explanation instead of a 500 error.
 

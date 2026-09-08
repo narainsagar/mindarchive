@@ -19,7 +19,7 @@ The decisions behind this document are recorded in
       +----------------+----------------+
       |        |        |       |       |
   Importers  Archive  Search  Events  Storage
-    (now)     (now)   (later)   (now)  adapters
+    (now)     (now)    (now)    (now)  adapters
       |        |        |       |       |
       +----------------+----------------+
                        |
@@ -30,8 +30,9 @@ Two applications, one repository. They talk over plain HTTP with JSON. There is
 no shared runtime, no build-time coupling, and no reason for either to know how
 the other is implemented.
 
-Items marked *(later)* are extension points with a defined place in the design;
-they are not implemented yet. See
+Storage adapters are the one piece still to come: local storage is currently
+direct filesystem access, and the interface is introduced in Milestone 5 against
+a real second implementation rather than guessed at now. See
 [project-memory/MILESTONES.md](project-memory/MILESTONES.md).
 
 ## Backend — `apps/api`
@@ -49,11 +50,17 @@ apps/api/src/mind_archive/
 │   ├── zip_safety.py  Reading archives someone else produced
 │   └── chatgpt.py     The ChatGPT adapter
 ├── archive/
-│   └── writer.py      Conversations to Markdown and JSON on disk
+│   ├── writer.py      Conversations to Markdown and JSON on disk
+│   └── reader.py      ... and back off disk again
+├── index/
+│   ├── schema.py      The SQLite schema. Derived, droppable, rebuildable
+│   ├── indexer.py     Building the index by reading the archive
+│   └── search.py      FTS5 queries, and rewriting what people type
 └── routes/
     ├── health.py      GET /api/health
     ├── config.py      GET /api/config
-    └── import_.py     GET /api/importers, POST /api/import
+    ├── import_.py     GET /api/importers, POST /api/import
+    └── conversations.py  GET /api/conversations, POST /api/index/rebuild
 ```
 
 **Configuration** is typed and read from the environment through
@@ -90,6 +97,9 @@ apps/web/src/
     ├── Header.tsx
     ├── ThemeToggle.tsx
     ├── ImportPanel.tsx
+    ├── ArchivePanel.tsx      Browse and search
+    ├── ConversationView.tsx  Read one
+    ├── Snippet.tsx           A search match, marked
     └── StatusPanel.tsx
 ```
 
@@ -116,6 +126,14 @@ SQLite.
 The rule that keeps these honest: **deleting the SQLite database must never
 destroy your content.** It must be rebuildable by re-reading the files on disk.
 This is what prevents the archive from becoming another proprietary silo.
+
+That rule is enforced by a test — `test_deleting_the_database_loses_nothing`
+deletes the database, rebuilds it, and checks the results are identical. If it
+ever fails, something has started living only in SQLite, and that is a bug.
+
+The index is rebuilt automatically at startup when the archive has content but
+the index does not, which is what makes copying the archive folder to another
+machine enough. `POST /api/index/rebuild` does the same on demand.
 
 ```
 data/
@@ -160,6 +178,22 @@ archives; every JSON field is checked before use; conversation titles become
 folder names only through `paths.py`. One unreadable conversation is skipped
 and reported rather than failing the whole import. See
 [SECURITY.md](SECURITY.md).
+
+## Search
+
+SQLite FTS5, with the porter tokenizer so "bake" finds "baking". No
+Elasticsearch: a personal archive is thousands of conversations, and adding a
+search server would be infrastructure without a requirement.
+
+`MATCH` takes a query *language*, not a string, so what someone types is
+rewritten before it gets there. `C++`, a lone `"`, or `NEAR(` are all syntax
+errors in FTS5 and none of them should be an error in a search box. The input is
+split into words, each is quoted, and they are joined with `AND`; the last word
+gets a prefix wildcard so results narrow as you type. A query with nothing
+searchable in it means "no filter", not "no results".
+
+This is about correctness rather than security — the query was always a bound
+parameter.
 
 ## Cloud
 

@@ -32,3 +32,6 @@ Record new architectural and product decisions there, numbered and dated.
 | D-017 | Repository stays local until there is a product worth showing |
 | D-018 | Verification is developer-controlled; required at milestone boundaries |
 | D-019 | Docker containers are disposable and never left running |
+| D-020 | A conversation is served and rendered as one Markdown file |
+| D-021 | Markdown rendered with `react-markdown`; raw HTML stays off |
+| D-022 | Search matches all words, last word as a prefix |

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 
 import { ApiError, fetchConfig, fetchHealth } from "./api";
 import type { Health, PublicConfig } from "./api";
+import { ArchivePanel } from "./components/ArchivePanel";
 import { Header } from "./components/Header";
 import { ImportPanel } from "./components/ImportPanel";
 import { StatusPanel } from "./components/StatusPanel";
@@ -19,6 +20,8 @@ export default function App() {
   const [health, setHealth] = useState<Health | null>(null);
   const [config, setConfig] = useState<PublicConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
+  // Bumped after an import so the archive list reloads and shows what arrived.
+  const [archiveVersion, setArchiveVersion] = useState(0);
 
   useEffect(() => {
     applyTheme(theme);
@@ -83,16 +86,24 @@ export default function App() {
           </div>
         )}
 
-        {health && <ImportPanel />}
+        {health && (
+          <ArchivePanel key={archiveVersion} />
+        )}
+
+        {health && (
+          <ImportPanel
+            onImported={() => setArchiveVersion((version) => version + 1)}
+          />
+        )}
 
         <StatusPanel health={health} config={config} />
 
         <section className="next">
           <h3>What is coming next</h3>
           <ul>
-            <li>Read and search everything you have imported</li>
             <li>Organise it with projects and tags</li>
             <li>Import from Claude, Gemini and others</li>
+            <li>Optional backup to storage you choose</li>
           </ul>
         </section>
       </main>

@@ -214,6 +214,68 @@ updates; see `LICENSING.md` and `docs/BACKLOG.md`.
 
 ---
 
+## D-020 — A conversation is served and rendered as one Markdown file
+**Date:** 2026-09-08 · **Status:** Accepted
+
+The API returns `conversation.md` as Markdown, front matter removed, and the
+interface renders the whole file. It does not parse the file back into
+individual messages.
+
+**Why:** Round-tripping our own rendering would be fragile — a message whose
+text contains `## You` would break it — and it would gain nothing. The file on
+disk *is* the readable artefact; that is the entire point of storing Markdown
+(D-004). Rendering it whole means what you see in the interface is exactly what
+you see if you open the file in any editor.
+
+**Consequences:** No per-message structure in the interface: no speaker bubbles,
+no per-message actions, no reply-level anchors. Speaker headings render as
+headings, which reads correctly for a document archive. If per-message
+behaviour is ever genuinely needed, the honest fix is to store structure in
+`metadata.json` rather than to parse prose.
+
+The conversation is read from disk rather than from the index, so editing a
+file by hand shows immediately without waiting for a re-index.
+
+---
+
+## D-021 — Markdown is rendered with `react-markdown`, and raw HTML stays off
+**Date:** 2026-09-08 · **Status:** Accepted
+
+The one frontend dependency added in Milestone 3.
+
+**Why:** Conversation text comes from a provider export — untrusted content that
+must never become markup in the page. `react-markdown` builds React elements
+instead of setting HTML, and does not render embedded HTML unless explicitly
+enabled, which it is not. The alternative, a Markdown-to-HTML library plus a
+sanitiser and `dangerouslySetInnerHTML`, is two dependencies and one mistake
+away from an injection.
+
+**Consequences:** Raw HTML inside a conversation appears as characters, which is
+the correct and safe behaviour. Search snippets take the same approach from the
+other direction: the backend marks matches with `<<` and `>>` rather than
+sending HTML, and the interface splits on those markers. Both are covered by
+tests that assert an `<img onerror=...>` in content never becomes an element.
+
+---
+
+## D-022 — Search matches all words, and the last word as a prefix
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Typed words are combined with `AND`. The final word also matches as a prefix,
+so "sourd" finds "sourdough". Anything unsearchable means "no filter", not "no
+results".
+
+**Why:** This is what a search box is expected to do. `AND` because a personal
+archive is searched to find one remembered thing, not to browse loosely.
+Prefix-matching the last word makes search-as-you-type feel responsive rather
+than empty until the final keystroke.
+
+**Consequences:** Phrase search, `OR` and negation are not available — typing
+them searches for those words literally. That is a deliberate trade for never
+showing someone a syntax error. Revisit if anyone actually asks for operators.
+
+---
+
 ## D-018 — Verification is developer-controlled during development, and required at milestone boundaries
 **Date:** 2026-09-08 · **Status:** Accepted
 

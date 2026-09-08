@@ -25,6 +25,9 @@
 
   --accent: #6b5b45;
   --accent-text: #ffffff;
+  /* Search-match highlight. Tinted rather than bright yellow, so a page of
+     results still reads as a document. */
+  --highlight: #f2e6c9;
 
   --ok: #2f6b46;
   --ok-surface: #eaf3ed;
@@ -64,6 +67,7 @@
 
     --accent: #c3ad8a;
     --accent-text: #171614;
+    --highlight: #4a3f28;
 
     --ok: #7cc39a;
     --ok-surface: #1d2a23;
@@ -91,6 +95,7 @@
 
   --accent: #c3ad8a;
   --accent-text: #171614;
+  --highlight: #4a3f28;
 
   --ok: #7cc39a;
   --ok-surface: #1d2a23;
@@ -485,4 +490,241 @@ a {
   padding: 20px 0;
   color: var(--text-faint);
   font-size: 0.8125rem;
+}
+
+/* -----------------------------------------------------------------------
+   Browsing the archive
+   ----------------------------------------------------------------------- */
+.archive__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.archive__count {
+  color: var(--text-soft);
+  font-size: 0.875rem;
+}
+
+.archive__search {
+  display: block;
+  margin: 14px 0 18px;
+}
+
+.archive__search input {
+  font: inherit;
+  width: 100%;
+  padding: 10px 12px;
+  color: var(--text);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.archive__search input:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+.archive__empty {
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+  padding: 8px 0 4px;
+}
+
+.archive__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* A whole row is the target: easier to hit than a link inside it. */
+.archive__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 12px 14px;
+  cursor: pointer;
+}
+
+.archive__item:hover {
+  background: var(--surface-sunken);
+}
+
+.archive__item:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.archive__title {
+  display: block;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+.archive__meta {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  color: var(--text-soft);
+  font-size: 0.8125rem;
+}
+
+.archive__source {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+}
+
+.snippet {
+  display: block;
+  margin-top: 6px;
+  color: var(--text-soft);
+  font-size: 0.875rem;
+  line-height: 1.55;
+}
+
+.snippet mark {
+  background: var(--highlight);
+  color: inherit;
+  padding: 0 1px;
+  border-radius: 2px;
+}
+
+.archive__paging {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.archive__page {
+  color: var(--text-soft);
+  font-size: 0.875rem;
+}
+
+/* -----------------------------------------------------------------------
+   Reading a conversation
+   ----------------------------------------------------------------------- */
+.conversation__header {
+  margin-bottom: 18px;
+}
+
+.conversation__title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.conversation__meta {
+  color: var(--text-soft);
+  font-size: 0.8125rem;
+  margin-bottom: 24px;
+}
+
+/* Generous line length and spacing: this is for reading, not scanning. */
+.conversation__body {
+  max-width: 72ch;
+  line-height: 1.7;
+}
+
+.conversation__body h2 {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-soft);
+  margin: 32px 0 10px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+
+.conversation__body h2:first-child {
+  margin-top: 0;
+  padding-top: 0;
+  border-top: 0;
+}
+
+.conversation__body h3 {
+  font-size: 1rem;
+  margin: 24px 0 8px;
+}
+
+.conversation__body p {
+  margin: 0 0 14px;
+}
+
+.conversation__body em {
+  color: var(--text-soft);
+  font-size: 0.8125rem;
+}
+
+.conversation__body ul,
+.conversation__body ol {
+  margin: 0 0 14px;
+  padding-left: 24px;
+}
+
+.conversation__body li {
+  margin-bottom: 4px;
+}
+
+.conversation__body code {
+  font-family: var(--font-mono);
+  font-size: 0.8125em;
+  background: var(--surface-sunken);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.conversation__body pre {
+  background: var(--surface-sunken);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  overflow-x: auto;
+  margin: 0 0 16px;
+}
+
+.conversation__body pre code {
+  background: none;
+  padding: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.conversation__body blockquote {
+  margin: 0 0 16px;
+  padding-left: 16px;
+  border-left: 3px solid var(--border);
+  color: var(--text-soft);
+}
+
+.conversation__body img {
+  max-width: 100%;
+  height: auto;
+}
+
+.conversation__body table {
+  border-collapse: collapse;
+  margin-bottom: 16px;
+  display: block;
+  overflow-x: auto;
+}
+
+.conversation__body th,
+.conversation__body td {
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  text-align: left;
 }

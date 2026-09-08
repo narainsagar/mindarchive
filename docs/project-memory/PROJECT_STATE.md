@@ -6,7 +6,7 @@ If this file and the code disagree, the code is right and this file needs
 updating. Keep it honest — it is the file people trust to know where things
 stand.
 
-**Last updated:** 2026-09-08 · **Milestone 2 complete** · Version 0.1.0
+**Last updated:** 2026-09-08 · **Milestone 3 complete** · Version 0.1.0
 
 > **Workflow note.** Checks do not run on every change. Verification is
 > developer-controlled and required at milestone boundaries, pull requests and
@@ -17,15 +17,16 @@ stand.
 
 ## In one paragraph
 
-Mind Archive can import a ChatGPT export and store it as readable Markdown and
-JSON on your own disk. That is the product's reason to exist, and it works.
+Mind Archive imports a ChatGPT export, stores it as readable Markdown and JSON
+on your own disk, and lets you browse, search and read it. That is a whole
+useful loop: the product does its core job.
 
-What it cannot do yet is **show you what you imported** — there is no browsing,
-no reading and no search in the interface. You import, and then you open the
-files yourself. That is Milestone 3.
+What it cannot do yet is **organise** — no tags, no projects, no editing or
+deleting from the interface. That is Milestone 4.
 
 Underneath: a FastAPI backend, a React + TypeScript + Vite frontend with light
-and dark modes, Docker Compose, CI, and complete project memory.
+and dark modes, SQLite with FTS5 as a rebuildable index, Docker Compose, CI, and
+complete project memory.
 
 ## What runs
 
@@ -57,18 +58,29 @@ the interface loads and displays live backend status.
 | `importers/zip_safety.py` | Reading archives someone else produced: zip slip, zip bombs, size caps |
 | `importers/chatgpt.py` | The ChatGPT adapter, including the branching `mapping` tree |
 | `archive/writer.py` | Conversations to `conversation.md` + `metadata.json`, one folder each |
+| `archive/reader.py` | ... and back off disk, tolerating folders that are not conversations |
+| `index/schema.py` | The SQLite schema. Derived, droppable, rebuildable |
+| `index/indexer.py` | Building the index by reading the archive |
+| `index/search.py` | FTS5 queries, and rewriting whatever someone types |
 | `routes/health.py` | `GET /api/health` |
 | `routes/config.py` | `GET /api/config` — non-sensitive config only, with a test enforcing that |
 | `routes/import_.py` | `GET /api/importers`, `POST /api/import` |
+| `routes/conversations.py` | `GET /api/conversations`, `GET /api/conversations/{path}`, `POST /api/index/rebuild` |
 
 **Frontend** — `apps/web`
 
 Single-page workspace, minimal header, no router and no sidebar. Light default,
 dark toggle, system preference honoured, choice persisted to `localStorage` with
-every access wrapped in try/catch. An import panel that explains where to find a
-ChatGPT export, reports what was imported, and lists what could not be read. A
-status panel showing backend health, archive location and cloud state. Plain CSS
-custom properties, no UI framework.
+every access wrapped in try/catch.
+
+An archive panel with a debounced search box, results with marked snippets, and
+paging; opening a conversation renders its Markdown in place. An import panel
+that explains where to find a ChatGPT export and reports what could not be read.
+A status panel showing backend health, archive location and cloud state.
+
+Plain CSS custom properties, no UI framework. One rendering dependency,
+`react-markdown`, chosen because it builds React elements rather than setting
+HTML (D-021).
 
 **Project**
 
@@ -80,14 +92,17 @@ project-memory check, committed-secrets check) · GitHub Pages foundation ·
 
 ## What is deliberately absent
 
-No archive browsing or reading in the interface. No search. No SQLite schema —
-only a path where the database will live. No cloud or sync code of any kind. No
-authentication. No settings beyond the theme toggle and read-only configuration
-display.
+No tags, projects or organisation. No editing or deleting conversations from
+the interface. No cloud or sync code of any kind. No authentication. No settings
+beyond the theme toggle and read-only configuration display.
 
 Within the importer, deliberately not done: attachments and images (recorded as
 placeholders in the Markdown, not copied), and abandoned conversation branches
 from edits and regenerations.
+
+Within search: no phrase search, `OR` or negation — a deliberate trade so that
+nothing typed into the box can produce a syntax error (D-022). No per-message
+structure in the reading view, because the whole file is rendered (D-020).
 
 Each belongs to a later milestone. See [MILESTONES.md](MILESTONES.md).
 
@@ -97,11 +112,11 @@ Everything below was actually run, not inspected.
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`) | **137 passed** |
+| Backend tests (`pytest`) | **197 passed** |
 | Backend lint (`ruff check`) | **passed** |
-| Backend formatting (`ruff format --check`) | **passed**, 26 files |
-| Backend types (`mypy src`, strict) | **passed**, 16 files, no issues |
-| Frontend tests (`vitest`) | **29 passed** |
+| Backend formatting (`ruff format --check`) | **passed**, 34 files |
+| Backend types (`mypy src`, strict) | **passed**, 22 files, no issues |
+| Frontend tests (`vitest`) | **45 passed** |
 | Frontend types (`tsc --noEmit`) | **passed** |
 | Frontend lint (`eslint`) | **passed** |
 | Frontend build (`vite build`) | **passed** — 147.84 kB JS, 47.73 kB gzipped |
@@ -113,6 +128,8 @@ Everything below was actually run, not inspected.
 | `git check-ignore data/ .env local/` | all correctly ignored |
 | `scripts/session.py check` | passes |
 | **End-to-end import** | a synthetic export with a normal, an awkward and a broken conversation uploaded through `POST /api/import`: 2 imported, 1 skipped and reported, correct files on disk |
+| **End-to-end browse** | list, search, prefix search, read one, rebuild the index — all against the running stack |
+| **End-to-end hostile input** | `C++`, `NEAR(`, `"`, `a AND OR b` all return results rather than errors; URL-encoded traversal returns 404 |
 
 Bugs found by running things rather than reading them, and fixed. In Milestone 1:
 `parents[4]` failed inside the container, `vite.config.ts` had no `node` types,
@@ -139,6 +156,12 @@ All verification above was run inside Docker for this reason.
   expects a lockfile for caching; commit one on the first native `npm install`.
 - **The frontend Docker image runs the dev server**, not a production build.
   Fine locally; a production image is Milestone 7.
+- **The index is rebuilt only when it is empty**, not when the archive has
+  changed underneath it. Editing files by hand needs
+  `POST /api/index/rebuild`, though reading a conversation always comes from
+  disk so edits are visible immediately.
+- **Paging is Previous/Next, not virtualised.** Fine for thousands of
+  conversations; revisit if anyone has hundreds of thousands.
 - **The importer has only seen synthetic exports.** Tests cover malformed and
   hostile input thoroughly, but no real ChatGPT export has been imported yet.
   `local/` exists (git-ignored) for exactly this. **This is the outstanding
@@ -157,11 +180,11 @@ accepted. It does not exist yet.
 
 ## Next step
 
-**Verify the importer against a real ChatGPT export** placed in `local/`, and
-fix whatever genuine data reveals. Synthetic fixtures are thorough but they were
-written by the same mind that wrote the parser, so they cannot find an
-assumption that is simply wrong.
+**Verify against a real ChatGPT export** placed in `local/`, and fix whatever
+genuine data reveals. Synthetic fixtures are thorough, but they were written by
+the same mind that wrote the parser, so they cannot find an assumption that is
+simply wrong. This has been outstanding since Milestone 2 and is now the highest
+value check available.
 
-Then **Milestone 3 — the archive browser and search**: read what you have
-imported, render the Markdown, and build the SQLite index. The index must stay
-rebuildable from the files on disk.
+Then **Milestone 4 — projects, tags and metadata**: organising the archive once
+there is enough in it to need organising.

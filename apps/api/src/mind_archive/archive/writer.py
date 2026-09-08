@@ -90,7 +90,10 @@ class ArchiveWriter:
             "conversation.created",
             {
                 "source": conversation.source,
-                "folder": folder.name,
+                # The folder relative to the archive root — the conversation's
+                # identity everywhere else. Published rather than left to be
+                # reconstructed, so a subscriber cannot rebuild it wrongly.
+                "path": folder.relative_to(self.archive_dir).as_posix(),
                 "messages": str(conversation.message_count),
             },
         )

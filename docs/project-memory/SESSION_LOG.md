@@ -5,6 +5,54 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-08 — Milestone 3: archive browser and search
+
+**Session:** [2026-09-08-04-milestone-3-archive-browser-and-search](sessions/2026-09-08-04-milestone-3-archive-browser-and-search/SESSION.md)
+· [prompts](sessions/2026-09-08-04-milestone-3-archive-browser-and-search/PROMPTS.md)
+· [index and search notes](sessions/2026-09-08-04-milestone-3-archive-browser-and-search/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+You can now read and search what you imported, rather than opening the files
+yourself.
+
+**The index stays honest.** SQLite with FTS5, built three ways from one code
+path: at startup when the archive has content but the index does not, on import
+through the `conversation.created` event, and on demand. The D-004 rule — the
+database is derived, never original — is enforced by
+`test_deleting_the_database_loses_nothing`, which deletes it, rebuilds, and
+requires identical results.
+
+**Search takes what people type.** `MATCH` is a query language; a search box is
+not. `C++`, `NEAR(` and a lone `"` are all FTS5 syntax errors, so input is split
+into quoted words joined with `AND`, last word prefixed. All words must match,
+the last matches as a prefix, and nothing searchable means no filter rather than
+no results (D-022).
+
+**Conversations are rendered as whole Markdown files** (D-020) rather than
+parsed back into messages — round-tripping our own rendering would break on a
+message containing `## You`, and the file is the readable artefact anyway. Read
+from disk, not the index, so a hand-edited file shows immediately.
+
+**Untrusted content cannot become markup.** `react-markdown` with raw HTML off
+for bodies (D-021), and `<<`/`>>` delimiters rather than HTML for search
+snippets. Both tested with an `<img onerror=...>`.
+
+**A real design flaw, found by a failing test.** The index event handler called
+the cached `get_settings()`, so it ignored dependency overrides and indexed the
+real archive while the route wrote to a temporary one. Settings are now bound
+when the handler is built; `lifespan` had the same problem. Separately, an
+unusable archive folder used to crash startup and now logs and continues.
+
+**Verified** with `dev.py verify`: 197 backend tests (was 137), 45 frontend
+(was 29), ruff, mypy strict, eslint, tsc, production build — all passed. Also
+end-to-end against the running stack: import, list, search, prefix search, read,
+rebuild, hostile paths, and the web interface serving.
+
+**Outstanding, unchanged:** no real ChatGPT export has been imported yet.
+
+---
+
 ## 2026-09-08 — Milestone 2: the ChatGPT importer
 
 **Session:** [2026-09-08-03-milestone-2-chatgpt-importer](sessions/2026-09-08-03-milestone-2-chatgpt-importer/SESSION.md)
