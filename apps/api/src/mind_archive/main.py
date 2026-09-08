@@ -25,6 +25,7 @@ from mind_archive.index import Indexer, supports_fts5
 from mind_archive.paths import safe_join
 from mind_archive.routes import config as config_routes
 from mind_archive.routes import conversations as conversation_routes
+from mind_archive.routes import export as export_routes
 from mind_archive.routes import health as health_routes
 from mind_archive.routes import import_ as import_routes
 
@@ -184,6 +185,7 @@ app.include_router(health_routes.router)
 app.include_router(config_routes.router)
 app.include_router(import_routes.router)
 app.include_router(conversation_routes.router)
+app.include_router(export_routes.router)
 
 
 @app.get("/", tags=["health"], summary="What this is")

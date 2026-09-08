@@ -14,10 +14,17 @@ from pathlib import Path
 
 from mind_archive.importers.base import Importer, ImportResult, ValidationResult
 from mind_archive.importers.chatgpt import ChatGPTImporter
+from mind_archive.importers.claude import ClaudeImporter
 
-#: Every importer the application knows about, in the order they are tried.
+#: Every importer the application knows about.
+#:
+#: Order does not matter, and that is deliberate: each `detect()` inspects the
+#: *shape* of the file rather than its name. Both providers ship a file called
+#: `conversations.json`, so an order-dependent registry would quietly hand a
+#: Claude export to whichever importer happened to be listed first.
 IMPORTERS: list[Importer] = [
     ChatGPTImporter(),
+    ClaudeImporter(),
 ]
 
 __all__ = [

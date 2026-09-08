@@ -6,7 +6,7 @@ If this file and the code disagree, the code is right and this file needs
 updating. Keep it honest — it is the file people trust to know where things
 stand.
 
-**Last updated:** 2026-09-08 · **Milestone 4 complete** · Version 0.1.0
+**Last updated:** 2026-09-08 · **Milestone 5 complete** · Version 0.1.0
 
 > **Workflow note.** Checks do not run on every change. Verification is
 > developer-controlled and required at milestone boundaries, pull requests and
@@ -29,8 +29,12 @@ You can tag conversations and filter by tag. Tags are stored in your archive
 files, not the database, so they survive anything happening to the index and
 travel with the folder.
 
-What it cannot do yet: import from anything but ChatGPT, edit or delete
-conversations from the interface, or export the whole archive. Milestone 5.
+It imports from ChatGPT and Claude, and exports the whole archive as a zip of
+ordinary files that need nothing to read them.
+
+What it cannot do yet: edit or delete conversations from the interface, import
+attachments, or store anything anywhere but your own disk. Cloud is Milestone 6
+and is off by default when it arrives.
 
 Underneath: a FastAPI backend, a React + TypeScript + Vite frontend with light
 and dark modes, SQLite with FTS5 as a rebuildable index, Docker Compose, CI, and
@@ -65,6 +69,9 @@ the interface loads and displays live backend status.
 | `importers/base.py` | The `Importer` protocol: `detect()`, `validate()`, `parse()` |
 | `importers/zip_safety.py` | Reading archives someone else produced: zip slip, zip bombs, size caps |
 | `importers/chatgpt.py` | The ChatGPT adapter, including the branching `mapping` tree |
+| `importers/claude.py` | The Claude adapter: a flat message list, ISO timestamps, content blocks |
+| `importers/reading.py` | Untrusted-JSON coercion and zip member loading, shared by both |
+| `routes/export.py` | `GET /api/export` — the archive folder, zipped, plus a README |
 | `archive/writer.py` | Conversations to `conversation.md` + `metadata.json`, one folder each |
 | `archive/reader.py` | ... and back off disk, tolerating folders that are not conversations |
 | `index/schema.py` | The SQLite schema. Derived, droppable, rebuildable |
@@ -122,11 +129,11 @@ Everything below was actually run, not inspected.
 
 | Check | Result |
 |---|---|
-| Backend tests (`pytest`) | **254 passed** |
+| Backend tests (`pytest`) | **295 passed** |
 | Backend lint (`ruff check`) | **passed** |
 | Backend formatting (`ruff format --check`) | **passed**, 34 files |
 | Backend types (`mypy src`, strict) | **passed**, 22 files, no issues |
-| Frontend tests (`vitest`) | **64 passed** |
+| Frontend tests (`vitest`) | **66 passed** |
 | Frontend types (`tsc --noEmit`) | **passed** |
 | Frontend lint (`eslint`) | **passed** |
 | Frontend build (`vite build`) | **passed** — 147.84 kB JS, 47.73 kB gzipped |
@@ -176,7 +183,10 @@ All verification above was run inside Docker for this reason.
   conversations take 4.7s on a native filesystem and 127s across a Windows
   Docker bind mount (R-005). Do not optimise the importer against the second
   number.
-- **Milestone 4 has not been clicked through in a browser.** 254 backend and
+- **The Claude importer has never seen a real Claude export.** Written from
+  Anthropic's documented format and third-party parsers. Same caveat the
+  ChatGPT importer carried at this stage.
+- **Nothing since Milestone 3 has been clicked through in a browser.** 254 backend and
   64 frontend tests pass, but the tag interface has never been used by a
   person. The blocker is the development environment, not the code.
 - **No progress reporting during a long import.** It runs on a background

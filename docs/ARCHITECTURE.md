@@ -47,8 +47,10 @@ apps/api/src/mind_archive/
 ├── importers/
 │   ├── __init__.py    The registry: which importer can read this file
 │   ├── base.py        The Importer protocol every provider satisfies
+│   ├── reading.py     Reading untrusted JSON, shared by every importer
 │   ├── zip_safety.py  Reading archives someone else produced
-│   └── chatgpt.py     The ChatGPT adapter
+│   ├── chatgpt.py     The ChatGPT adapter
+│   └── claude.py      The Claude adapter
 ├── archive/
 │   ├── writer.py      Conversations to Markdown and JSON on disk
 │   └── reader.py      ... and back off disk again
@@ -59,8 +61,9 @@ apps/api/src/mind_archive/
 └── routes/
     ├── health.py      GET /api/health
     ├── config.py      GET /api/config
-    ├── import_.py     GET /api/importers, POST /api/import
-    └── conversations.py  GET /api/conversations, POST /api/index/rebuild
+    ├── import_.py     GET /api/importers, POST /api/import, the inbox
+    ├── conversations.py  GET /api/conversations, tags, POST /api/index/rebuild
+    └── export.py      GET /api/export — the whole archive as a zip
 ```
 
 **Configuration** is typed and read from the environment through
@@ -164,11 +167,27 @@ archive's job, which keeps parsing testable without touching the filesystem.
 
 Core code never imports a provider-specific module — it asks the registry in
 `importers/__init__.py` which adapter can read a file. Adding a provider means
-writing an adapter and adding it to one list. ChatGPT is the first
-implementation and carries no special privileges in the design.
+writing an adapter and adding it to one list.
 
-The interface will be generalised against a genuine second implementation in
-Milestone 5, not guessed at in advance.
+**Detection inspects the file's shape, not its name** (D-027). ChatGPT and
+Claude both ship a file called `conversations.json`, so matching on the filename
+had the ChatGPT importer confidently claiming Claude exports. That defect had
+existed since Milestone 2, and only a second real provider could expose it —
+which is precisely why the interface was generalised against a genuine second
+case rather than a guessed one.
+
+The two formats share almost nothing:
+
+| | ChatGPT | Claude |
+|---|---|---|
+| Messages | a `mapping` tree plus `current_node` | a flat `chat_messages` list |
+| Title / id | `title` / `conversation_id` | `name` / `uuid` |
+| Timestamps | Unix epoch floats | ISO 8601 strings |
+| Speaker | `author.role`, `"user"` | `sender`, `"human"` |
+
+What they *do* share — reading a JSON member out of a zip, coercing untrusted
+values, refusing to raise on a bad field — moved into `importers/reading.py`
+once two real callers wanted it, rather than when one might.
 
 ### Untrusted input
 
@@ -194,6 +213,19 @@ searchable in it means "no filter", not "no results".
 
 This is about correctness rather than security — the query was always a bound
 parameter.
+
+## Taking it all with you
+
+`GET /api/export` zips the archive folder and hands it over. What comes out is
+not a bundle in some format of ours — it is exactly the folder from disk: same
+Markdown, same JSON, same layout, plus a `README.txt` explaining how to read it
+without Mind Archive.
+
+This is what makes "your data is yours" a property rather than a claim.
+
+**Storage adapters are still direct filesystem access.** A `StorageProvider`
+interface with a single implementation would be a guess about the second, so it
+waits for Milestone 6, where a real cloud adapter can shape it (D-028).
 
 ## Cloud
 

@@ -205,6 +205,17 @@ export function setTags(
   });
 }
 
+/**
+ * Where to download the whole archive from.
+ *
+ * A plain link rather than a fetch: the browser handles the download, shows
+ * progress, and saves the file wherever the person keeps things. Reading a
+ * large zip into memory first would be worse in every way.
+ */
+export function exportUrl(): string {
+  return `${BASE_URL}/api/export`;
+}
+
 export function rebuildIndex(): Promise<RebuildResult> {
   return request<RebuildResult>("/api/index/rebuild", { method: "POST" });
 }

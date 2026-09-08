@@ -81,6 +81,12 @@ Still open:
 - **Verify the browser script's output shape** against a real official export.
   Believed identical; unconfirmed.
 
+## Storage
+
+- **`StorageProvider` interface.** Deferred from Milestone 5 to Milestone 6
+  (D-028), where a real cloud adapter can shape it. An interface with one
+  implementation is a guess about the second.
+
 ## Organisation
 
 - **Projects.** Deferred in Milestone 4 (D-026). If still wanted after living
@@ -94,7 +100,7 @@ Still open:
 
 ## Product ideas
 
-- Import from Claude, Gemini, Google AI Studio, Copilot and local tools
+- Import from Gemini, Google AI Studio, Copilot and local tools
 - Attachments and images inside imported conversations
 - Saved searches
 - Timeline view of an archive

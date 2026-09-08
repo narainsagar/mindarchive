@@ -125,13 +125,27 @@ rather than a parallel hierarchy.
 
 ---
 
-## Milestone 5 — Importer and plugin architecture expansion ⬜
+## Milestone 5 — A second provider, and getting everything back out ✅
 
-- A second real importer (Claude or Gemini export), generalising the interface
-  against a genuine second case
-- Storage provider interface: `StorageProvider`, with `LocalStorageProvider` as
-  the only implementation
-- Export the whole archive
+| Item | Status |
+|---|---|
+| A second real importer (Claude) | ✅ |
+| The `Importer` interface generalised against it | ✅ |
+| Shared JSON reading extracted once two callers wanted it | ✅ |
+| Export the whole archive as ordinary files | ✅ |
+| `StorageProvider` interface | ⬜ **deferred to Milestone 6** (D-028) |
+
+**What the second provider revealed.** ChatGPT and Claude both ship a file
+called `conversations.json`, and detection matched on the filename — so the
+ChatGPT importer would have claimed a Claude export and reported it empty. A
+latent bug from Milestone 2 that no amount of testing one importer could find.
+Detection now inspects shape (D-027).
+
+**Why `StorageProvider` waits.** An interface with one implementation is a guess
+about the second, and this milestone is the evidence: the `Importer` interface
+only revealed its defect when a real second case arrived. Building
+`StorageProvider` now — with cloud still a milestone away — would repeat the
+mistake this milestone just corrected (D-028).
 
 ---
 

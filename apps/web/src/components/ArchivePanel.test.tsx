@@ -268,3 +268,32 @@ describe("reading a conversation", () => {
     );
   });
 });
+
+describe("exporting the archive", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    vi.mocked(fetchConversations).mockResolvedValue(list());
+    vi.mocked(fetchConversation).mockResolvedValue(detail);
+  });
+
+  it("offers a download of everything", async () => {
+    render(<ArchivePanel />);
+
+    const link = await screen.findByRole("link", { name: /export everything/i });
+    expect(link).toHaveAttribute("href", expect.stringContaining("/api/export"));
+    expect(link).toHaveAttribute("download");
+  });
+
+  it("does not offer an export of an empty archive", async () => {
+    vi.mocked(fetchConversations).mockResolvedValue(
+      list({ conversations: [], total: 0 }),
+    );
+
+    render(<ArchivePanel />);
+
+    await screen.findByText(/Nothing here yet/);
+    expect(
+      screen.queryByRole("link", { name: /export everything/i }),
+    ).not.toBeInTheDocument();
+  });
+});

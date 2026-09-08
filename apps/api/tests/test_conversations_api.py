@@ -367,3 +367,72 @@ def test_tagging_cannot_escape_the_archive(client: TestClient, hostile: str) -> 
 
     assert response.status_code == 404
     assert "/etc" not in response.text
+
+
+# ---------------------------------------------------------------------------
+# Taking the whole archive with you
+# ---------------------------------------------------------------------------
+
+
+def test_the_whole_archive_can_be_exported(client: TestClient) -> None:
+    response = client.get("/api/export")
+
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "application/zip"
+
+
+def test_the_export_contains_the_files_from_disk(client: TestClient) -> None:
+    """Not a proprietary bundle — exactly the folder, so it can be read with
+    nothing but a text editor."""
+    import io
+    import zipfile
+
+    response = client.get("/api/export")
+
+    with zipfile.ZipFile(io.BytesIO(response.content)) as bundle:
+        names = bundle.namelist()
+
+    assert any(name.endswith("conversation.md") for name in names)
+    assert any(name.endswith("metadata.json") for name in names)
+    assert all(not name.endswith(".db") for name in names)
+
+
+def test_the_export_explains_itself(client: TestClient) -> None:
+    """Whoever opens this in five years may not have Mind Archive."""
+    import io
+    import zipfile
+
+    response = client.get("/api/export")
+
+    with zipfile.ZipFile(io.BytesIO(response.content)) as bundle:
+        readme = bundle.read("README.txt").decode("utf-8")
+
+    assert "conversation.md" in readme
+    assert "text editor" in readme
+
+
+def test_the_export_keeps_the_folder_layout(client: TestClient) -> None:
+    import io
+    import zipfile
+
+    response = client.get("/api/export")
+
+    with zipfile.ZipFile(io.BytesIO(response.content)) as bundle:
+        names = bundle.namelist()
+
+    assert any(name.startswith("chatgpt/") for name in names)
+
+
+def test_exporting_an_empty_archive_says_so(tmp_path: Path) -> None:
+    settings = Settings(data_dir=tmp_path / "empty")
+    settings.ensure_directories()
+    app.dependency_overrides[get_settings] = lambda: settings
+
+    try:
+        with TestClient(app) as empty_client:
+            response = empty_client.get("/api/export")
+    finally:
+        app.dependency_overrides.clear()
+
+    assert response.status_code == 404
+    assert "nothing in your archive" in response.json()["detail"]

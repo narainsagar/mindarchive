@@ -9,6 +9,15 @@ and the project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
+**Import from Claude**, as well as ChatGPT. Get an export from Claude under
+**Settings → Privacy → Export Data** and drop it in the inbox like any other.
+Mind Archive works out which provider a file came from by looking inside it.
+
+**Export everything.** One button downloads your whole archive as a zip — the
+same Markdown and JSON files that are on your disk, in the same layout, with a
+README explaining how to read them without Mind Archive. No database, no
+proprietary bundle, nothing that needs this application to open.
+
 **Tags.** Organise your archive.
 
 - Add and remove tags on any conversation
@@ -82,6 +91,10 @@ something.
 
 ### Fixed
 
+- A Claude export is no longer mistaken for a ChatGPT one. Both providers name
+  their file `conversations.json`, and Mind Archive used to match on the name
+  alone — so a Claude export would have been read by the wrong importer and
+  reported as empty.
 - The archive list no longer breaks entirely if the backend returns a response
   without tags — an older backend against a newer interface used to blank the
   whole panel.

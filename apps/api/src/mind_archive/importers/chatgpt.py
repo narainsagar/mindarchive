@@ -50,18 +50,21 @@ read and saying so.
 
 from __future__ import annotations
 
-import json
-from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
 from mind_archive.importers.base import ImportResult, ValidationResult
-from mind_archive.importers.zip_safety import (
-    UnsafeArchiveError,
-    find_member,
-    inspect,
-    read_member,
+from mind_archive.importers.reading import (
+    ImportProblem,
+    as_dict,
+    as_list,
+    as_text,
+    epoch_to_time,
+    has_member,
+    load_json_member,
+    peek_conversations,
 )
+from mind_archive.importers.zip_safety import UnsafeArchiveError
 from mind_archive.models import Conversation, Message
 
 CONVERSATIONS_FILE = "conversations.json"
@@ -75,37 +78,31 @@ MAX_NODES_PER_CONVERSATION = 100_000
 KEPT_ROLES = {"user", "assistant", "tool"}
 
 
-# ---------------------------------------------------------------------------
-# Small helpers for reading untrusted JSON.
-# Each returns a safe default rather than raising, so one odd field cannot
-# take down an entire import.
-# ---------------------------------------------------------------------------
+def looks_like_chatgpt(conversations: list[Any]) -> bool:
+    """Does this list of conversations come from ChatGPT rather than Claude?
 
+    Both providers ship a file called `conversations.json`, so matching on the
+    filename alone claims the other provider's export. Before this existed, the
+    ChatGPT importer would confidently accept a Claude export and then find
+    nothing in it. `mapping` is ChatGPT's shape; `chat_messages` is Claude's.
 
-def _as_dict(value: Any) -> dict[str, Any]:
-    return value if isinstance(value, dict) else {}
-
-
-def _as_list(value: Any) -> list[Any]:
-    return value if isinstance(value, list) else []
-
-
-def _as_text(value: Any) -> str:
-    return value.strip() if isinstance(value, str) else ""
-
-
-def _as_time(value: Any) -> datetime | None:
-    """Convert a ChatGPT epoch timestamp, or give up.
-
-    A missing or nonsensical timestamp becomes `None`. An archive people will
-    read in ten years is better with a gap than with a fabricated date.
+    **ChatGPT is the fallback when the shape says nothing** — an empty export,
+    or one whose conversations carry neither key. It is the primary target, and
+    more importantly its validation messages are specific ("that export contains
+    no conversations", "not valid JSON on line 4"). Refusing to claim an
+    ambiguous file would replace all of those with "not recognised", which tells
+    the user nothing about a file that is very nearly right.
     """
-    if not isinstance(value, (int, float)) or isinstance(value, bool):
-        return None
-    try:
-        return datetime.fromtimestamp(float(value), tz=UTC)
-    except (ValueError, OSError, OverflowError):
-        return None
+    for raw in conversations[:20]:
+        conversation = as_dict(raw)
+        if not conversation:
+            continue
+        if "chat_messages" in conversation:
+            return False
+        if "mapping" in conversation:
+            return True
+
+    return True
 
 
 def _extract_text(content: dict[str, Any]) -> str:
@@ -116,24 +113,24 @@ def _extract_text(content: dict[str, Any]) -> str:
     text, so a new content type degrades to "imported, possibly plainly" rather
     than "silently lost".
     """
-    content_type = _as_text(content.get("content_type"))
+    content_type = as_text(content.get("content_type"))
 
     # Code, execution output and browsing results carry a "text" field.
     if content_type in {"code", "execution_output", "system_error"}:
-        return _as_text(content.get("text"))
+        return as_text(content.get("text"))
 
     if content_type == "tether_browsing_display":
-        return _as_text(content.get("result")) or _as_text(content.get("text"))
+        return as_text(content.get("result")) or as_text(content.get("text"))
 
     if content_type == "tether_quote":
-        title = _as_text(content.get("title"))
-        text = _as_text(content.get("text"))
+        title = as_text(content.get("title"))
+        text = as_text(content.get("text"))
         return f"> **{title}**\n>\n> {text}" if title and text else text
 
     # "text" and "multimodal_text" both use parts. Parts are usually strings,
     # but in multimodal messages they can be dicts describing an image.
     pieces: list[str] = []
-    for part in _as_list(content.get("parts")):
+    for part in as_list(content.get("parts")):
         if isinstance(part, str):
             if part.strip():
                 pieces.append(part.strip())
@@ -146,7 +143,7 @@ def _extract_text(content: dict[str, Any]) -> str:
         return "\n\n".join(pieces)
 
     # Unknown content type with no parts: take a "text" field if there is one.
-    return _as_text(content.get("text"))
+    return as_text(content.get("text"))
 
 
 def _describe_asset(part: dict[str, Any]) -> str:
@@ -156,11 +153,11 @@ def _describe_asset(part: dict[str, Any]) -> str:
     so the archive records that something was there rather than pretending the
     message was empty.
     """
-    pointer = _as_text(part.get("asset_pointer"))
+    pointer = as_text(part.get("asset_pointer"))
     if not pointer:
         return ""
 
-    kind = _as_text(part.get("content_type")) or "file"
+    kind = as_text(part.get("content_type")) or "file"
     if "image" in kind or pointer.startswith(("file-service://", "sediment://")):
         return "_[image — not imported yet]_"
     return "_[attachment — not imported yet]_"
@@ -173,7 +170,7 @@ def _is_hidden(message: dict[str, Any], role: str) -> bool:
     them would make the archive noisier without making it more useful. A system
     message the *user* wrote — custom instructions — is kept.
     """
-    metadata = _as_dict(message.get("metadata"))
+    metadata = as_dict(message.get("metadata"))
 
     if metadata.get("is_visually_hidden_from_conversation") is True:
         return True
@@ -198,7 +195,7 @@ def _thread(mapping: dict[str, Any], current_node: str | None) -> list[dict[str,
 
     while node_id and node_id in mapping and node_id not in seen:
         seen.add(node_id)
-        node = _as_dict(mapping[node_id])
+        node = as_dict(mapping[node_id])
         nodes.append(node)
 
         parent = node.get("parent")
@@ -215,15 +212,15 @@ def _thread(mapping: dict[str, Any], current_node: str | None) -> list[dict[str,
     roots = [
         node_key
         for node_key, node in mapping.items()
-        if _as_dict(node).get("parent") is None
+        if as_dict(node).get("parent") is None
     ]
     if roots:
         node_id = roots[0]
         while node_id and node_id in mapping and node_id not in seen:
             seen.add(node_id)
-            node = _as_dict(mapping[node_id])
+            node = as_dict(mapping[node_id])
             nodes.append(node)
-            children = _as_list(node.get("children"))
+            children = as_list(node.get("children"))
             node_id = children[0] if children and isinstance(children[0], str) else None
             if len(nodes) > MAX_NODES_PER_CONVERSATION:
                 break
@@ -232,7 +229,7 @@ def _thread(mapping: dict[str, Any], current_node: str | None) -> list[dict[str,
 
     # The tree is unusable. Take everything, in file order.
     return [
-        _as_dict(node) for node in list(mapping.values())[:MAX_NODES_PER_CONVERSATION]
+        as_dict(node) for node in list(mapping.values())[:MAX_NODES_PER_CONVERSATION]
     ]
 
 
@@ -247,22 +244,17 @@ class ChatGPTImporter:
 
     def detect(self, path: Path) -> bool:
         """Does this look like a ChatGPT export? Never raises."""
-        try:
-            if path.suffix.lower() == ".zip":
-                with inspect(path) as archive:
-                    return find_member(archive, CONVERSATIONS_FILE) is not None
-            if path.suffix.lower() == ".json":
-                return path.name.lower() == CONVERSATIONS_FILE
-        except (UnsafeArchiveError, OSError):
-            return False
-        return False
+        conversations = peek_conversations(path, CONVERSATIONS_FILE)
+        if conversations is None:
+            # Either not our kind of file, or ours and unreadable. Claim the
+            # second so `validate` can say what is actually wrong with it.
+            return has_member(path, CONVERSATIONS_FILE)
+        return looks_like_chatgpt(conversations)
 
     def validate(self, path: Path) -> ValidationResult:
         try:
             payload = self._load(path)
-        except UnsafeArchiveError as error:
-            return ValidationResult.invalid(str(error))
-        except _ImportProblem as error:
+        except (UnsafeArchiveError, ImportProblem) as error:
             return ValidationResult.invalid(str(error))
 
         if not isinstance(payload, list):
@@ -286,7 +278,7 @@ class ChatGPTImporter:
 
         try:
             payload = self._load(path)
-        except (UnsafeArchiveError, _ImportProblem) as error:
+        except (UnsafeArchiveError, ImportProblem) as error:
             result.note_problem(str(error))
             return result
 
@@ -298,7 +290,7 @@ class ChatGPTImporter:
 
         for index, raw in enumerate(payload):
             try:
-                conversation = self._convert(_as_dict(raw))
+                conversation = self._convert(as_dict(raw))
             except Exception as error:  # noqa: BLE001 - one bad entry, not a failed import
                 result.note_problem(
                     f"Conversation {index + 1} could not be read "
@@ -320,55 +312,30 @@ class ChatGPTImporter:
     # -- Internals ----------------------------------------------------------
 
     def _load(self, path: Path) -> Any:
-        """Read and parse conversations.json from a zip or a bare JSON file."""
-        if path.suffix.lower() == ".zip":
-            with inspect(path) as archive:
-                member = find_member(archive, CONVERSATIONS_FILE)
-                if member is None:
-                    raise _ImportProblem(
-                        "That zip does not contain conversations.json, so it is "
-                        "not a ChatGPT export."
-                    )
-                data = read_member(archive, member)
-        else:
-            try:
-                data = path.read_bytes()
-            except OSError as error:
-                raise _ImportProblem("That file could not be read.") from error
-
-        try:
-            return json.loads(data.decode("utf-8"))
-        except UnicodeDecodeError as error:
-            raise _ImportProblem(
-                "conversations.json is not valid UTF-8 text."
-            ) from error
-        except json.JSONDecodeError as error:
-            raise _ImportProblem(
-                f"conversations.json is not valid JSON (line {error.lineno})."
-            ) from error
+        return load_json_member(path, CONVERSATIONS_FILE, "a ChatGPT")
 
     def _convert(self, raw: dict[str, Any]) -> Conversation | None:
         """Turn one raw ChatGPT conversation into our own model."""
-        mapping = _as_dict(raw.get("mapping"))
+        mapping = as_dict(raw.get("mapping"))
         current_node = raw.get("current_node")
 
         messages: list[Message] = []
         for node in _thread(
             mapping, current_node if isinstance(current_node, str) else None
         ):
-            message = self._convert_message(_as_dict(node.get("message")))
+            message = self._convert_message(as_dict(node.get("message")))
             if message is not None:
                 messages.append(message)
 
         if not messages:
             return None
 
-        title = _as_text(raw.get("title")) or "Untitled conversation"
+        title = as_text(raw.get("title")) or "Untitled conversation"
 
-        source_id = _as_text(raw.get("conversation_id")) or _as_text(raw.get("id"))
+        source_id = as_text(raw.get("conversation_id")) or as_text(raw.get("id"))
 
         metadata: dict[str, str] = {}
-        model = _as_text(raw.get("default_model_slug"))
+        model = as_text(raw.get("default_model_slug"))
         if model:
             metadata["model"] = model
         if raw.get("is_archived") is True:
@@ -379,8 +346,8 @@ class ChatGPTImporter:
             messages=messages,
             source=self.name,
             source_id=source_id or None,
-            created_at=_as_time(raw.get("create_time")),
-            updated_at=_as_time(raw.get("update_time")),
+            created_at=epoch_to_time(raw.get("create_time")),
+            updated_at=epoch_to_time(raw.get("update_time")),
             metadata=metadata,
         )
 
@@ -389,7 +356,7 @@ class ChatGPTImporter:
         if not raw:
             return None
 
-        role = _as_text(_as_dict(raw.get("author")).get("role"))
+        role = as_text(as_dict(raw.get("author")).get("role"))
         if not role or _is_hidden(raw, role):
             return None
 
@@ -399,22 +366,18 @@ class ChatGPTImporter:
         elif role not in KEPT_ROLES:
             return None
 
-        text = _extract_text(_as_dict(raw.get("content")))
+        text = _extract_text(as_dict(raw.get("content")))
         if not text:
             return None
 
         metadata: dict[str, str] = {}
-        model = _as_text(_as_dict(raw.get("metadata")).get("model_slug"))
+        model = as_text(as_dict(raw.get("metadata")).get("model_slug"))
         if model:
             metadata["model"] = model
 
         return Message(
             role=role,
             text=text,
-            created_at=_as_time(raw.get("create_time")),
+            created_at=epoch_to_time(raw.get("create_time")),
             metadata=metadata,
         )
-
-
-class _ImportProblem(Exception):
-    """Something in the file stopped the import, described for a person."""

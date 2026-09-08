@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { ApiError, fetchConversations } from "../api";
+import { ApiError, exportUrl, fetchConversations } from "../api";
 import type { ConversationSummary } from "../api";
 import { ConversationView } from "./ConversationView";
 import { Snippet } from "./Snippet";
@@ -112,9 +112,21 @@ export function ArchivePanel() {
           Your archive
         </h2>
         {total > 0 && (
-          <p className="archive__count">
-            {total} {total === 1 ? "conversation" : "conversations"}
-          </p>
+          <div className="archive__actions">
+            <p className="archive__count">
+              {total} {total === 1 ? "conversation" : "conversations"}
+            </p>
+            {/* A plain link: the browser downloads it, and the file is just
+                the archive folder zipped up. */}
+            <a
+              className="button"
+              href={exportUrl()}
+              download
+              title="Download every conversation as a zip of ordinary files"
+            >
+              Export everything
+            </a>
+          </div>
         )}
       </div>
 

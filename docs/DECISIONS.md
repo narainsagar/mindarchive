@@ -37,3 +37,7 @@ Record new architectural and product decisions there, numbered and dated.
 | D-022 | Search matches all words, last word as a prefix |
 | D-023 | A watched inbox folder, owned by default and configurable |
 | D-024 | The fast path is a user-run script; no credential enters the app |
+| D-025 | Tags live in `metadata.json`; an import never removes them |
+| D-026 | Projects deferred; tags first |
+| D-027 | Importers detect by shape, not by filename |
+| D-028 | `StorageProvider` waits for Milestone 6 |

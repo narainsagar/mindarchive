@@ -5,6 +5,50 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-08 — Milestone 5: a second provider, and archive export
+
+**Session:** [2026-09-08-07-milestone-5-second-importer-and-archive-export](sessions/2026-09-08-07-milestone-5-second-importer-and-archive-export/SESSION.md)
+· [prompts](sessions/2026-09-08-07-milestone-5-second-importer-and-archive-export/PROMPTS.md)
+· [report](sessions/2026-09-08-07-milestone-5-second-importer-and-archive-export/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**The second importer did exactly the job it was for.** ChatGPT and Claude both
+ship a file called `conversations.json`, and `detect()` matched on that
+filename — so the ChatGPT importer would have claimed a Claude export and
+reported it empty. A latent bug since Milestone 2 that no amount of testing one
+importer could find. Detection now inspects shape (**D-027**).
+
+That is the whole argument for generalising an interface against a real second
+case rather than a guessed one, and it is why **`StorageProvider` was
+deliberately not built** (**D-028**). An interface with one implementation is a
+guess about the second; with cloud a milestone away, building it now would
+repeat the mistake this milestone corrected.
+
+**The formats share almost nothing** — a flat `chat_messages` list against a
+`mapping` tree, `name` against `title`, ISO 8601 against epoch floats,
+`sender: "human"` against `author.role: "user"`. What they do share moved into
+`importers/reading.py`, now that two real callers want it.
+
+**Whole-archive export.** `GET /api/export` zips the archive folder: exactly the
+folder, plus a README for whoever opens it without Mind Archive. A test asserts
+no `.db` is included — the index belongs to the application, the conversations
+belong to the user.
+
+**Two things caught by failures.** Strict detection broke an empty and a corrupt
+export down to "not recognised" instead of a real explanation, fixed with a
+documented fallback. And adding decisions to the index in `docs/DECISIONS.md`
+failed because D-025 and D-026 had never been added there — Milestone 4 updated
+the log but not its summary.
+
+**Verified**: 295 backend tests (was 254), 66 frontend (was 64), full gate
+green.
+
+**Outstanding:** no real export from either provider has been imported, and
+nothing since Milestone 3 has been used in a browser.
+
+---
+
 ## 2026-09-08 — Milestone 4: tags
 
 **Session:** [2026-09-08-06-milestone-4-tags-and-organisation](sessions/2026-09-08-06-milestone-4-tags-and-organisation/SESSION.md)

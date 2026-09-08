@@ -60,15 +60,17 @@ Projects were deliberately deferred — see decision D-026.
 
 ---
 
-## Milestone 5 — More providers, and export 🎯 next
+## Milestone 5 — More providers, and export ✅
 
-A second real importer, most likely Claude or Gemini, used to generalise the
-adapter interface against a genuine second case rather than a guess. The
-`StorageProvider` interface. Full archive export.
+Import from Claude as well as ChatGPT, and download your whole archive as a zip
+of ordinary Markdown and JSON files that need nothing to read them.
+
+The second importer did its real job: it exposed a bug in how exports were
+recognised that only a second provider could have found.
 
 ---
 
-## Milestone 6 — Optional cloud
+## Milestone 6 — Optional cloud 🎯 next
 
 Opt-in synchronisation to storage you choose. Disabled by default, never
 enabled silently. `SyncProvider` kept separate from `StorageProvider`.

@@ -916,3 +916,15 @@ a {
   outline-offset: 1px;
   border-color: var(--accent);
 }
+
+.archive__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* The export link is a button, and should look like the others. */
+a.button {
+  text-decoration: none;
+  display: inline-block;
+}

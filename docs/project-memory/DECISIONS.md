@@ -214,6 +214,58 @@ updates; see `LICENSING.md` and `docs/BACKLOG.md`.
 
 ---
 
+## D-027 — Importers detect by shape, not by filename
+**Date:** 2026-09-08 · **Status:** Accepted
+
+`Importer.detect()` inspects the structure of the file's contents. It does not
+match on the filename, and the order importers are registered in does not
+matter.
+
+**Why:** ChatGPT and Claude both ship a file called `conversations.json`. The
+original ChatGPT importer returned `True` for any zip containing that name, so
+it would have confidently accepted a Claude export, found no `mapping` in
+anything, and reported that the user's export contained nothing readable.
+
+This was a latent bug from Milestone 2 that no amount of testing the ChatGPT
+importer could have found. It took a second real provider to expose it, which
+is the whole argument for generalising an interface against a genuine second
+case rather than a guessed one.
+
+**Consequences:** `looks_like_chatgpt` and `looks_like_claude` check for
+`mapping` and `chat_messages` respectively, and each rules out the other's key.
+A new importer must add its own shape check, not just a filename.
+
+**ChatGPT is the fallback when the shape says nothing** — an empty export, or
+one whose JSON cannot be parsed. Without that, a corrupt or empty export would
+match nothing and the user would be told the file was "not recognised" instead
+of "conversations.json is not valid JSON on line 4". A specific complaint about
+a nearly-right file beats a vague one.
+
+---
+
+## D-028 — `StorageProvider` waits for Milestone 6
+**Date:** 2026-09-08 · **Status:** Accepted
+
+Milestone 5 specified a `StorageProvider` interface with `LocalStorageProvider`
+as its only implementation. Not built.
+
+**Why:** An interface with one implementation is a guess about the second. This
+milestone is itself the evidence: the `Importer` interface only revealed its
+real defect — filename-based detection (D-027) — when a genuine second provider
+arrived. Writing `StorageProvider` now, with cloud storage still a milestone
+away, would repeat exactly the mistake that milestone just corrected.
+
+It would also be inconsistent. Projects were deferred in Milestone 4 for the
+same reason (D-026), and "do not build speculative structure" cannot be a rule
+that applies only when convenient.
+
+**Consequences:** Filesystem access stays direct until Milestone 6, where the
+interface gets designed against a real cloud adapter and a real local one at
+the same time. Recorded in `docs/BACKLOG.md` so it is deferred rather than
+forgotten.
+
+---
+
 ## D-025 — Tags live in `metadata.json`, and an import never removes them
 **Date:** 2026-09-08 · **Status:** Accepted
 
