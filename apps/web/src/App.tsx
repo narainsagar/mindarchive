@@ -3,20 +3,50 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, fetchConfig, fetchHealth } from "./api";
 import type { Health, PublicConfig } from "./api";
 import { ArchivePanel } from "./components/ArchivePanel";
+import { ContributePanel } from "./components/ContributePanel";
 import { Header } from "./components/Header";
+import { ImportButton } from "./components/ImportButton";
 import { ImportPanel } from "./components/ImportPanel";
+import { Modal } from "./components/Modal";
+import { NextPanel } from "./components/NextPanel";
+import { SiteFooter } from "./components/SiteFooter";
 import { StatusPanel } from "./components/StatusPanel";
-import { applyTheme, getInitialTheme } from "./theme";
-import type { Theme } from "./theme";
+import { SupportPanel } from "./components/SupportPanel";
+import { useInbox } from "./useInbox";
+import {
+  applyPalette,
+  applyTheme,
+  getInitialPalette,
+  getInitialTheme,
+  watchSystemTheme,
+} from "./theme";
+import type { Palette, ThemeChoice } from "./theme";
+
+/**
+ * The parts of the page the header can jump to.
+ *
+ * In-page anchors, not routes — there is still one view. See D-008, extended
+ * by D-030.
+ */
+const SECTIONS = [
+  { id: "archive", label: "Archive" },
+  { id: "next", label: "Coming next" },
+  { id: "status", label: "Status" },
+  { id: "support", label: "Support" },
+  { id: "contribute", label: "Contribute" },
+] as const;
 
 /**
  * The Mind Archive workspace.
  *
- * One page, no router, no sidebar. There is one view, so there is nothing to
- * navigate between. See docs/project-memory/DECISIONS.md D-008.
+ * One page, no router, no sidebar. There is one view; the header nav moves
+ * within it rather than between views. See docs/project-memory/DECISIONS.md
+ * D-008 and D-030.
  */
 export default function App() {
-  const [theme, setTheme] = useState<Theme>(getInitialTheme);
+  const [theme, setTheme] = useState<ThemeChoice>(getInitialTheme);
+  const [palette, setPalette] = useState<Palette>(getInitialPalette);
+  const [importOpen, setImportOpen] = useState(false);
   const [health, setHealth] = useState<Health | null>(null);
   const [config, setConfig] = useState<PublicConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -27,9 +57,27 @@ export default function App() {
     applyTheme(theme);
   }, [theme]);
 
-  const toggleTheme = useCallback(() => {
-    setTheme((current) => (current === "light" ? "dark" : "light"));
-  }, []);
+  useEffect(() => {
+    applyPalette(palette);
+  }, [palette]);
+
+  const inbox = useInbox();
+  const waiting = inbox.status?.waiting ?? 0;
+
+  const openImport = useCallback(() => setImportOpen(true), []);
+  const closeImport = useCallback(() => {
+    setImportOpen(false);
+    // Whatever happened in there may have emptied the inbox folder.
+    void inbox.refresh();
+  }, [inbox]);
+
+  // On "system", keep following the computer rather than freezing at whatever
+  // it said when the page loaded.
+  useEffect(() => {
+    if (theme !== "system") return;
+
+    return watchSystemTheme(() => applyTheme("system"));
+  }, [theme]);
 
   useEffect(() => {
     let cancelled = false;
@@ -63,10 +111,21 @@ export default function App() {
 
   return (
     <div className="app">
-      <Header theme={theme} onToggleTheme={toggleTheme} />
+      <Header
+        palette={palette}
+        theme={theme}
+        onPaletteChange={setPalette}
+        onThemeChange={setTheme}
+        sections={health ? SECTIONS : undefined}
+        navAction={
+          health ? (
+            <ImportButton waiting={waiting} onClick={openImport} />
+          ) : undefined
+        }
+      />
 
       <main className="workspace">
-        <section className="intro">
+        <section className="intro" id="top">
           <h2>Your archive, on your computer.</h2>
           <p>
             Mind Archive keeps your AI conversations, notes and files as
@@ -87,32 +146,30 @@ export default function App() {
         )}
 
         {health && (
-          <ArchivePanel key={archiveVersion} />
-        )}
-
-        {health && (
-          <ImportPanel
-            onImported={() => setArchiveVersion((version) => version + 1)}
+          <ArchivePanel
+            key={archiveVersion}
+            id="archive"
+            action={<ImportButton waiting={waiting} onClick={openImport} />}
           />
         )}
 
-        <StatusPanel health={health} config={config} />
+        <NextPanel id="next" />
 
-        <section className="next">
-          <h3>What is coming next</h3>
-          <ul>
-            <li>Organise it with projects and tags</li>
-            <li>Import from Claude, Gemini and others</li>
-            <li>Optional backup to storage you choose</li>
-          </ul>
-        </section>
+        <StatusPanel health={health} config={config} id="status" />
+
+        <SupportPanel id="support" />
+
+        <ContributePanel id="contribute" />
       </main>
 
-      <footer className="footer">
-        <div className="workspace">
-          Local first. Privacy first. Yours.
-        </div>
-      </footer>
+      <Modal open={importOpen} title="Import" onClose={closeImport}>
+        <ImportPanel
+          inbox={inbox}
+          onImported={() => setArchiveVersion((version) => version + 1)}
+        />
+      </Modal>
+
+      <SiteFooter />
     </div>
   );
 }

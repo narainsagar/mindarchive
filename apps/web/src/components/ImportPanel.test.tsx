@@ -2,9 +2,9 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { ImportSummary } from "../api";
+import type { ImportSummary, InboxStatus } from "../api";
 import { ApiError } from "../api";
-import { ImportPanel } from "./ImportPanel";
+import { ImportPanel as ImportPanelBase } from "./ImportPanel";
 
 vi.mock("../api", async () => {
   const actual = await vi.importActual<typeof import("../api")>("../api");
@@ -24,6 +24,30 @@ const inbox = {
   moves_files: true,
   waiting: 0,
 };
+
+/**
+ * The inbox now comes from `useInbox` in App rather than being fetched by the
+ * panel, so the tests supply it. `currentInbox` lets a test change what the
+ * panel sees before rendering.
+ */
+let currentInbox: InboxStatus | null = inbox;
+const refreshInbox = vi.fn(async () => {});
+
+function ImportPanel(props: { onImported?: () => void } = {}) {
+  return (
+    <ImportPanelBase
+      inbox={{ status: currentInbox, refresh: refreshInbox }}
+      {...props}
+    />
+  );
+}
+
+/** The export instructions live behind a disclosure now — open it. */
+async function openInstructions() {
+  const user = userEvent.setup();
+  await user.click(screen.getByText(/how do i get my export/i));
+  return user;
+}
 
 const success: ImportSummary = {
   ok: true,
@@ -52,12 +76,27 @@ async function chooseFile(file = exportFile()) {
 describe("the import panel", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    currentInbox = inbox;
     vi.mocked(importExport).mockResolvedValue(success);
     vi.mocked(fetchInbox).mockResolvedValue(inbox);
   });
 
-  it("explains where to get an export", () => {
+  it("keeps the export instructions out of the way until asked", () => {
     render(<ImportPanel />);
+
+    /* The instructions matter enormously the first time and never again, so
+       they sit behind a disclosure rather than filling the dialog. */
+    const disclosure = screen
+      .getByText(/how do i get my export/i)
+      .closest("details");
+
+    expect(disclosure).not.toBeNull();
+    expect(disclosure).not.toHaveAttribute("open");
+  });
+
+  it("explains where to get an export", async () => {
+    render(<ImportPanel />);
+    await openInstructions();
 
     expect(
       screen.getByText(/Settings → Data controls → Export data/),
@@ -180,11 +219,19 @@ describe("the inbox", () => {
   });
 
   it("says how many files are waiting", async () => {
-    vi.mocked(fetchInbox).mockResolvedValue({ ...inbox, waiting: 3 });
+    currentInbox = { ...inbox, waiting: 3 };
 
     render(<ImportPanel />);
 
-    expect(await screen.findByText(/3 files are waiting/i)).toBeInTheDocument();
+    expect(await screen.findByText(/3 files waiting/i)).toBeInTheDocument();
+  });
+
+  it("says nothing about waiting files when there are none", () => {
+    currentInbox = { ...inbox, waiting: 0 };
+
+    render(<ImportPanel />);
+
+    expect(screen.queryByText(/waiting/i)).not.toBeInTheDocument();
   });
 
   it("imports what is waiting when asked", async () => {

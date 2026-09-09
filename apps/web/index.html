@@ -10,18 +10,48 @@
     />
 
     <script>
-      // Set the theme before the first paint, so a dark-mode user never sees a
-      // flash of the light theme. Kept tiny and inline on purpose.
+      // Set the palette and theme before the first paint, so nobody sees a
+      // flash of the wrong colours. Kept tiny and inline on purpose, and kept
+      // in step with apps/web/src/theme.ts.
       (function () {
+        var root = document.documentElement;
+        var palette = "minimal";
+        var theme = "system";
+
         try {
-          var stored = localStorage.getItem("mind-archive-theme");
-          if (stored === "light" || stored === "dark") {
-            document.documentElement.setAttribute("data-theme", stored);
+          var storedPalette = localStorage.getItem("mind-archive-palette");
+          if (
+            storedPalette === "minimal" ||
+            storedPalette === "warm" ||
+            storedPalette === "violet"
+          ) {
+            palette = storedPalette;
+          }
+
+          var storedTheme = localStorage.getItem("mind-archive-theme");
+          if (
+            storedTheme === "light" ||
+            storedTheme === "dark" ||
+            storedTheme === "system"
+          ) {
+            theme = storedTheme;
           }
         } catch (error) {
-          // Storage unavailable; the CSS default and the system preference
-          // handle it from here.
+          // Storage unavailable; the defaults above stand.
         }
+
+        if (theme === "system") {
+          var dark = false;
+          try {
+            dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          } catch (error) {
+            // No matchMedia; light is the fallback.
+          }
+          theme = dark ? "dark" : "light";
+        }
+
+        root.setAttribute("data-palette", palette);
+        root.setAttribute("data-theme", theme);
       })();
     </script>
   </head>

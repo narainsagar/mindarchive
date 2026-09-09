@@ -19,6 +19,16 @@ function formatDate(value: string | null): string | null {
   });
 }
 
+interface Props {
+  /** Anchor target for the header nav. */
+  id?: string;
+  /**
+   * Rendered in this panel's header row. The Import button lives here, so
+   * importing never means scrolling past the archive to find it (D-030).
+   */
+  action?: React.ReactNode;
+}
+
 /**
  * Browse and search the archive.
  *
@@ -26,7 +36,7 @@ function formatDate(value: string | null): string | null {
  * one page, still no router, because there is still nothing to navigate
  * between (D-008).
  */
-export function ArchivePanel() {
+export function ArchivePanel({ id, action }: Props) {
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState("");
   const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
@@ -106,18 +116,23 @@ export function ArchivePanel() {
   const searching = query.trim().length > 0;
 
   return (
-    <section className="panel" aria-labelledby="archive-heading">
+    <section className="panel" id={id} aria-labelledby="archive-heading">
       <div className="archive__header">
         <h2 className="panel__title" id="archive-heading">
           Your archive
         </h2>
-        {total > 0 && (
-          <div className="archive__actions">
+        {/* Always rendered, even on an empty archive — that is exactly when
+            the Import button matters most. */}
+        <div className="archive__actions">
+          {total > 0 && (
             <p className="archive__count">
               {total} {total === 1 ? "conversation" : "conversations"}
             </p>
-            {/* A plain link: the browser downloads it, and the file is just
-                the archive folder zipped up. */}
+          )}
+          {action}
+          {total > 0 && (
+            /* A plain link: the browser downloads it, and the file is just
+               the archive folder zipped up. */
             <a
               className="button"
               href={exportUrl()}
@@ -126,8 +141,8 @@ export function ArchivePanel() {
             >
               Export everything
             </a>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       <label className="archive__search">

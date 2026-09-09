@@ -3,6 +3,8 @@ import type { Health, PublicConfig } from "../api";
 interface Props {
   health: Health | null;
   config: PublicConfig | null;
+  /** Anchor target for the header nav. */
+  id?: string;
 }
 
 /**
@@ -11,11 +13,11 @@ interface Props {
  * This panel exists to answer the question the product is built around, in
  * plain language, without the user having to trust a claim on a website.
  */
-export function StatusPanel({ health, config }: Props) {
+export function StatusPanel({ health, config, id }: Props) {
   return (
-    <section className="panel" aria-labelledby="status-heading">
+    <section className="panel" id={id} aria-labelledby="status-heading">
       <h2 className="panel__title" id="status-heading">
-        Your archive
+        Status
       </h2>
 
       <dl className="facts">

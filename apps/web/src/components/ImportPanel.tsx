@@ -1,9 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-import { ApiError, fetchInbox, importExport, scanInbox } from "../api";
-import type { ImportSummary, InboxStatus } from "../api";
+import { ApiError, importExport, scanInbox } from "../api";
+import type { ImportSummary } from "../api";
+import type { Inbox } from "../useInbox";
 
 interface Props {
+  inbox: Inbox;
   onImported?: () => void;
 }
 
@@ -18,40 +20,20 @@ interface Props {
  *
  * The guidance about timings is deliberately specific. "Up to 24 hours" — which
  * this panel used to say — is wrong and actively misleading: 24 hours is how
- * long the download link lasts, not how long the export takes.
+ * long the download link lasts, not how long the export takes. It sits behind a
+ * disclosure because it matters enormously the first time and never again, and
+ * this panel now opens above the archive rather than below it (D-030).
  */
-export function ImportPanel({ onImported }: Props) {
+export function ImportPanel({ inbox: inboxState, onImported }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [busy, setBusy] = useState(false);
   const [summary, setSummary] = useState<ImportSummary | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [inbox, setInbox] = useState<InboxStatus | null>(null);
   const [inboxMessage, setInboxMessage] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  const refreshInbox = useCallback(async () => {
-    try {
-      setInbox(await fetchInbox());
-    } catch {
-      // The inbox is a convenience. If it cannot be read, the panel still
-      // works — say nothing rather than showing an error about a folder.
-      setInbox(null);
-    }
-  }, []);
-
-  useEffect(() => {
-    void refreshInbox();
-  }, [refreshInbox]);
-
-  // Coming back to the tab is the moment a download is likely to have
-  // finished, so it is the natural time to look in the inbox again.
-  useEffect(() => {
-    function onFocus() {
-      void refreshInbox();
-    }
-    window.addEventListener("focus", onFocus);
-    return () => window.removeEventListener("focus", onFocus);
-  }, [refreshInbox]);
+  const inbox = inboxState.status;
+  const refreshInbox = inboxState.refresh;
 
   function choose(chosen: File | null) {
     setFile(chosen);
@@ -112,48 +94,19 @@ export function ImportPanel({ onImported }: Props) {
   }
 
   return (
-    <section className="panel" aria-labelledby="import-heading">
-      <h2 className="panel__title" id="import-heading">
+    <section className="import" aria-labelledby="import-heading">
+      <h3 className="visually-hidden" id="import-heading">
         Import
-      </h2>
+      </h3>
 
-      <div className="import__steps">
-        <p>
-          In ChatGPT, go to{" "}
-          <a
-            href="https://chatgpt.com/#settings/DataControls"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Settings → Data controls → Export data
-          </a>
-          . ChatGPT emails you when it is ready.
-        </p>
+      <div className="import__row">
+        {inbox && inbox.waiting > 0 && (
+          <span className="import__waiting">
+            {inbox.waiting} {inbox.waiting === 1 ? "file" : "files"} waiting
+          </span>
+        )}
 
-        <p className="import__warning">
-          <strong>ChatGPT says this can take a few days.</strong> Two things
-          catch people out: the download link{" "}
-          <strong>expires 24 hours after the email arrives</strong>, and asking
-          again <strong>cancels your previous request</strong>. Ask once, then
-          wait.
-        </p>
-      </div>
-
-      {inbox && (
-        <div className="import__inbox">
-          <p>
-            Save the file into{" "}
-            <code>{inbox.folder}</code> and it imports itself.
-            {inbox.waiting > 0 && (
-              <>
-                {" "}
-                <strong>
-                  {inbox.waiting} {inbox.waiting === 1 ? "file is" : "files are"}{" "}
-                  waiting.
-                </strong>
-              </>
-            )}
-          </p>
+        {inbox && (
           <button
             type="button"
             className="button"
@@ -162,12 +115,11 @@ export function ImportPanel({ onImported }: Props) {
           >
             {busy ? "Checking…" : "Check that folder now"}
           </button>
-        </div>
-      )}
+        )}
 
-      <div className="import__controls">
-        <label className="import__file">
+        <label className="button import__file">
           <span className="visually-hidden">Choose an export file</span>
+          <span aria-hidden="true">{file ? file.name : "Choose a file…"}</span>
           <input
             ref={inputRef}
             type="file"
@@ -186,6 +138,38 @@ export function ImportPanel({ onImported }: Props) {
           {busy ? "Importing…" : "Import"}
         </button>
       </div>
+
+      {inbox && (
+        <p className="import__inbox">
+          Save an export into <code>{inbox.folder}</code> and it imports
+          itself. Nothing leaves your machine.
+        </p>
+      )}
+
+      <details className="import__how">
+        <summary>How do I get my export?</summary>
+        <div className="import__steps">
+          <p>
+            In ChatGPT, go to{" "}
+            <a
+              href="https://chatgpt.com/#settings/DataControls"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              Settings → Data controls → Export data
+            </a>
+            . ChatGPT emails you when it is ready.
+          </p>
+
+          <p className="import__warning">
+            <strong>ChatGPT says this can take a few days.</strong> Two things
+            catch people out: the download link{" "}
+            <strong>expires 24 hours after the email arrives</strong>, and
+            asking again <strong>cancels your previous request</strong>. Ask
+            once, then wait.
+          </p>
+        </div>
+      </details>
 
       {busy && (
         <p className="note" role="status">
