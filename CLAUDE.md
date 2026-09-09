@@ -19,9 +19,9 @@ the files your task touches:
 Read as your task requires: `docs/ARCHITECTURE.md`, `docs/PRODUCT.md`,
 `docs/DEVELOPMENT.md`, `docs/SECURITY.md`, `docs/ROADMAP.md`, `docs/BACKLOG.md`.
 
-`MASTER.md` is the founding specification, kept for historical intent. Where it
-and `docs/` disagree, `docs/` is current — and the disagreement should be fixed,
-not ignored.
+`prompts/MASTER.md` is the founding specification, kept for historical intent.
+Where it and `docs/` disagree, `docs/` is current — and the disagreement should
+be fixed, not ignored.
 
 The original planning transcripts were merged into project memory and
 removed. They remain in git history at commit `fcf1f5c` if ever needed.

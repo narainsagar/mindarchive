@@ -43,8 +43,9 @@ Then locate only the files your task touches.
 Read as needed: `docs/ARCHITECTURE.md`, `docs/PRODUCT.md`,
 `docs/DEVELOPMENT.md`, `docs/SECURITY.md`.
 
-`MASTER.md` is the founding specification, kept for historical intent. Where it
-and `docs/` disagree, `docs/` is current — and the disagreement should be fixed.
+`prompts/MASTER.md` is the founding specification, kept for historical intent.
+Where it and `docs/` disagree, `docs/` is current — and the disagreement should
+be fixed.
 
 The full working method is in
 [`docs/project-memory/AI_AGENT_PROTOCOL.md`](docs/project-memory/AI_AGENT_PROTOCOL.md).

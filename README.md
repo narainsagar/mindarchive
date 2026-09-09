@@ -119,11 +119,11 @@ mind-archive/
 ├── docs/             Documentation
 │   └── project-memory/   Decisions, state, milestones, sessions
 ├── scripts/          Development helpers, and the optional browser script
+├── prompts/          The founding specification and AI coding guidance
 ├── data/
 │   ├── archive/      Your conversations. Never committed.
 │   └── inbox/        Drop exports here and they import themselves.
 ├── AGENTS.md         Instructions for AI agents and contributors
-├── MASTER.md         The founding specification
 └── docker-compose.yml
 ```
 

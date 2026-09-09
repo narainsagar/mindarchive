@@ -43,7 +43,7 @@ See [SESSION_PROTOCOL.md](SESSION_PROTOCOL.md).
 ## How this relates to the rest of the repository
 
 ```
-MASTER.md                  Founding specification. Historical intent.
+prompts/MASTER.md          Founding specification. Historical intent.
     |
     v
 docs/                      Living documentation. Current truth about the product.
@@ -56,7 +56,8 @@ AGENTS.md                  How to work here (all AI agents and humans).
 ```
 
 If any two of these conflict, `docs/` and `docs/project-memory/` win over
-`MASTER.md`, and the conflict must be resolved rather than left in place.
+`prompts/MASTER.md`, and the conflict must be resolved rather than left in
+place.
 
 ## Rules for writing to project memory
 

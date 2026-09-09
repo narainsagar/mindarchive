@@ -58,6 +58,14 @@ Your archive lives in `./data`, a bind mount rather than a Docker volume. **No
 cleanup command can delete it**, including `down --volumes` and `clean`. That
 separation is deliberate.
 
+The Compose project name is pinned to `mindarchive` in `docker-compose.yml`, so
+it does not follow the name of the directory you cloned into. Without that pin,
+renaming the folder makes Compose treat the already-running containers as
+belonging to a different project, and `up` fails with a container name conflict
+instead of reusing them. If you ever hit that error on an older checkout, remove
+the stale container — `docker rm -f mind-archive-api` — and start again; your
+archive is a bind mount and is not affected.
+
 ## Running natively
 
 ### Backend

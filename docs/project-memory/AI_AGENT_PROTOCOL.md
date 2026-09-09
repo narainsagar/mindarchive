@@ -25,8 +25,8 @@ Do not read the whole repository. Read these, in this order, and stop:
 Then, and only then, locate the files your specific task touches.
 
 Read `docs/ARCHITECTURE.md`, `docs/PRODUCT.md`, `docs/DEVELOPMENT.md` or
-`docs/SECURITY.md` when your task touches those areas. Read `MASTER.md` only for
-historical intent — `docs/` describes the product as it is now.
+`docs/SECURITY.md` when your task touches those areas. Read `prompts/MASTER.md`
+only for historical intent — `docs/` describes the product as it is now.
 
 ## Working method
 

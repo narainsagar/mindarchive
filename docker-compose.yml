@@ -9,6 +9,12 @@
 # Your archive is bind-mounted at ./data, so it stays on your machine and
 # survives 'docker compose down'. It is git-ignored.
 
+# Pinned so the project name does not follow the directory name. Without this,
+# renaming the folder you cloned into makes Compose treat the running
+# containers as a different project, and 'up' fails on the container names
+# below instead of reusing them.
+name: mindarchive
+
 services:
   api:
     build:
