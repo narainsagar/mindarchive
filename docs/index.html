@@ -1,522 +1,340 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Mind Archive — Own your AI memory</title>
-    <meta
-      name="description"
-      content="Keep your AI conversations as ordinary readable files on your own computer. Local-first, private, and yours — whichever AI you use next."
-    />
-    <link rel="canonical" href="https://mindarchive.app/" />
+---
+title: Mind Archive
+description: Keep your AI conversations as ordinary readable files on your own computer. Local-first, private, and yours — whichever AI you use next.
+layout_bare: true
+---
 
-    <style>
-      /*
-        The project website.
+<style>
+  /* Landing page only. Everything shared lives in assets/site.css. */
+  .hero {
+    padding: 72px 0 8px;
+  }
 
-        Token names are deliberately identical to apps/web/src/styles.css, and
-        the values are the Light minimal palette the application ships with
-        (D-029). Keeping the names in step is what stops the site and the
-        application drifting apart — if a colour changes there, it is obvious
-        what changes here.
+  .hero h2 {
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin: 0 0 16px;
+    text-wrap: balance;
+  }
 
-        One palette only. The application lets a person choose; a one-page site
-        does not need to.
-      */
-      :root {
-        --page: #ffffff;
-        --surface: #ffffff;
-        --surface-sunken: #f6f8fa;
-        --border: #e3e7ec;
-        --border-strong: #c6cdd6;
-        --text: #14171c;
-        --text-soft: #4b535d;
-        --text-faint: #79828d;
-        --accent: #0b5fbf;
-        --accent-text: #ffffff;
-        --accent-quiet: #eaf2fd;
-        --ok: #0f7a52;
-        --ok-surface: #e7f5ef;
-        --radius: 8px;
+  .lede {
+    color: var(--text-soft);
+    font-size: 1.125rem;
+    max-width: 58ch;
+    margin: 0 0 28px;
+  }
 
-        --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-          "Helvetica Neue", Arial, sans-serif;
-        --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
-          "Liberation Mono", monospace;
+  .cta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
 
-        color-scheme: light;
-      }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin: 56px 0 0;
+    background: var(--border);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
 
-      @media (prefers-color-scheme: dark) {
-        :root {
-          --page: #0f1215;
-          --surface: #171b20;
-          --surface-sunken: #13171b;
-          --border: #262c33;
-          --border-strong: #3a434d;
-          --text: #eef1f5;
-          --text-soft: #aeb7c1;
-          --text-faint: #7d868f;
-          --accent: #6fa8f5;
-          --accent-text: #0f1215;
-          --accent-quiet: #16202c;
-          --ok: #4fbf8b;
-          --ok-surface: #12241c;
+  .facts div {
+    background: var(--page);
+    padding: 18px 16px;
+  }
 
-          color-scheme: dark;
-        }
-      }
+  .facts b {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 6px;
+  }
 
-      * {
-        box-sizing: border-box;
-      }
+  .facts span {
+    font-size: 0.8125rem;
+    color: var(--text-soft);
+  }
 
-      body {
-        margin: 0;
-        background: var(--page);
-        color: var(--text);
-        font-family: var(--font);
-        font-size: 16px;
-        line-height: 1.6;
-        -webkit-font-smoothing: antialiased;
-      }
+  .home section {
+    padding: 56px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 56px;
+  }
 
-      :focus-visible {
-        outline: 2px solid var(--accent);
-        outline-offset: 2px;
-        border-radius: 4px;
-      }
+  .home h2 {
+    font-size: 1.375rem;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    margin: 0 0 12px;
+  }
 
-      .wrap {
-        max-width: 760px;
-        margin: 0 auto;
-        padding: 0 24px;
-      }
+  .home h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0 0 6px;
+  }
 
-      a {
-        color: var(--accent);
-      }
+  .home p {
+    color: var(--text-soft);
+    max-width: 62ch;
+    margin: 0 0 14px;
+  }
 
-      /* --- masthead --- */
-      .top {
-        border-bottom: 1px solid var(--border);
-        background: var(--surface);
-      }
+  .home p:last-child {
+    margin-bottom: 0;
+  }
 
-      .top__in {
-        max-width: 760px;
-        margin: 0 auto;
-        padding: 16px 24px;
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 8px 20px;
-      }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 28px;
+  }
 
-      .top__name {
-        font-weight: 600;
-        letter-spacing: -0.01em;
-      }
+  .card h3 {
+    padding-top: 14px;
+    border-top: 2px solid var(--accent);
+  }
 
-      .top__links {
-        margin-left: auto;
-        display: flex;
-        flex-wrap: wrap;
-        gap: 16px;
-        font-size: 0.875rem;
-      }
+  .card p {
+    font-size: 0.9375rem;
+  }
 
-      .top__links a {
-        color: var(--text-soft);
-        text-decoration: none;
-      }
+  .steps {
+    margin: 24px 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
 
-      .top__links a:hover {
-        color: var(--text);
-      }
+  .steps li {
+    counter-increment: step;
+    padding-left: 40px;
+    position: relative;
+    color: var(--text-soft);
+  }
 
-      /* --- hero --- */
-      .hero {
-        padding: 72px 0 8px;
-      }
+  .steps li::before {
+    content: counter(step);
+    position: absolute;
+    left: 0;
+    top: 1px;
+    width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--accent-quiet);
+    color: var(--accent);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
 
-      h1 {
-        font-size: clamp(2rem, 5vw, 2.75rem);
-        line-height: 1.1;
-        letter-spacing: -0.025em;
-        font-weight: 600;
-        margin: 0 0 16px;
-        text-wrap: balance;
-      }
+  .steps strong {
+    color: var(--text);
+    font-weight: 600;
+  }
 
-      .lede {
-        color: var(--text-soft);
-        font-size: 1.125rem;
-        max-width: 58ch;
-        margin: 0 0 28px;
-      }
+  .home pre {
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    overflow-x: auto;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.75;
+    color: var(--text-soft);
+    margin: 24px 0 0;
+  }
 
-      .cta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-      }
+  .home pre b {
+    color: var(--text);
+    font-weight: 500;
+  }
 
-      .button {
-        display: inline-flex;
-        align-items: center;
-        padding: 10px 18px;
-        border-radius: var(--radius);
-        border: 1px solid var(--border-strong);
-        background: var(--surface);
-        color: var(--text);
-        font-size: 0.9375rem;
-        font-weight: 500;
-        text-decoration: none;
-      }
+  .home code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--surface-sunken);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 5px;
+  }
 
-      .button--primary {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: var(--accent-text);
-      }
+  .home pre code {
+    background: none;
+    border: 0;
+    padding: 0;
+  }
 
-      /* --- the four facts --- */
-      .facts {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1px;
-        margin: 56px 0 0;
-        background: var(--border);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        overflow: hidden;
-      }
+  .licence {
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    background: var(--surface);
+    padding: 20px 22px;
+    margin-top: 24px;
+  }
 
-      .facts div {
-        background: var(--page);
-        padding: 18px 16px;
-      }
+  .home table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 0.9375rem;
+  }
 
-      .facts b {
-        display: block;
-        font-size: 1.5rem;
-        font-weight: 600;
-        line-height: 1;
-        letter-spacing: -0.02em;
-        margin-bottom: 6px;
-      }
+  .home th,
+  .home td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-soft);
+  }
 
-      .facts span {
-        font-size: 0.8125rem;
-        color: var(--text-soft);
-      }
+  .home th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: var(--text-faint);
+    font-weight: 600;
+  }
 
-      /* --- sections --- */
-      section {
-        padding: 56px 0;
-        border-top: 1px solid var(--border);
-        margin-top: 56px;
-      }
+  .home td strong {
+    color: var(--text);
+  }
 
-      section:first-of-type {
-        border-top: 0;
-        margin-top: 0;
-      }
+  .docs-list {
+    margin: 20px 0 0;
+    padding: 0;
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
 
-      h2 {
-        font-size: 1.375rem;
-        font-weight: 600;
-        letter-spacing: -0.015em;
-        margin: 0 0 12px;
-      }
+  .docs-list a {
+    font-weight: 500;
+    text-decoration: none;
+  }
 
-      h3 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin: 0 0 6px;
-      }
+  .docs-list a:hover {
+    text-decoration: underline;
+  }
 
-      p {
-        color: var(--text-soft);
-        max-width: 62ch;
-        margin: 0 0 14px;
-      }
+  .docs-list span {
+    color: var(--text-soft);
+  }
 
-      p:last-child {
-        margin-bottom: 0;
-      }
+  @media (max-width: 700px) {
+    .cards {
+      grid-template-columns: 1fr;
+    }
+    .facts {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
 
-      .cards {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 24px;
-        margin-top: 28px;
-      }
+<main class="wrap home">
+  <div class="hero">
+    <h2>Own your AI memory.</h2>
+    <p class="lede">
+      Mind Archive keeps your AI conversations, notes and files as ordinary
+      readable documents on your own computer — whichever AI you use next.
+    </p>
+    <div class="cta">
+      <a class="button button--primary" href="#start">Get started</a>
+      <a class="button" href="{{ '/DEVELOPMENT.html' | relative_url }}">
+        Read the docs
+      </a>
+    </div>
 
-      .card h3 {
-        padding-top: 14px;
-        border-top: 2px solid var(--accent);
-      }
+    <div class="facts">
+      <div><b>0</b><span>accounts to create</span></div>
+      <div><b>0</b><span>bytes sent anywhere</span></div>
+      <div><b>1</b><span>folder you can open</span></div>
+      <div><b>.md</b><span>files you can read</span></div>
+    </div>
+  </div>
 
-      .card p {
-        font-size: 0.9375rem;
-      }
+  <section id="what">
+    <h2>Import it, search it, keep it.</h2>
+    <p>Three things, done properly. Everything else is deliberately absent.</p>
 
-      .steps {
-        margin: 24px 0 0;
-        padding: 0;
-        list-style: none;
-        counter-reset: step;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .steps li {
-        counter-increment: step;
-        padding-left: 40px;
-        position: relative;
-        color: var(--text-soft);
-      }
-
-      .steps li::before {
-        content: counter(step);
-        position: absolute;
-        left: 0;
-        top: 1px;
-        width: 26px;
-        height: 26px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 50%;
-        background: var(--accent-quiet);
-        color: var(--accent);
-        font-family: var(--font-mono);
-        font-size: 0.75rem;
-        font-weight: 600;
-      }
-
-      .steps strong {
-        color: var(--text);
-        font-weight: 600;
-      }
-
-      pre {
-        background: var(--surface-sunken);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        padding: 16px 18px;
-        overflow-x: auto;
-        font-family: var(--font-mono);
-        font-size: 0.8125rem;
-        line-height: 1.75;
-        color: var(--text-soft);
-        margin: 24px 0 0;
-      }
-
-      pre b {
-        color: var(--text);
-        font-weight: 500;
-      }
-
-      code {
-        font-family: var(--font-mono);
-        font-size: 0.875em;
-        background: var(--surface-sunken);
-        border: 1px solid var(--border);
-        border-radius: 4px;
-        padding: 1px 5px;
-      }
-
-      pre code {
-        background: none;
-        border: 0;
-        padding: 0;
-      }
-
-      .licence {
-        border: 1px solid var(--border);
-        border-left: 3px solid var(--accent);
-        border-radius: var(--radius);
-        background: var(--surface);
-        padding: 20px 22px;
-        margin-top: 24px;
-      }
-
-      table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 20px;
-        font-size: 0.9375rem;
-      }
-
-      th,
-      td {
-        text-align: left;
-        padding: 10px 12px;
-        border-bottom: 1px solid var(--border);
-        color: var(--text-soft);
-      }
-
-      th {
-        font-size: 0.75rem;
-        text-transform: uppercase;
-        letter-spacing: 0.07em;
-        color: var(--text-faint);
-        font-weight: 600;
-      }
-
-      td strong {
-        color: var(--text);
-      }
-
-      .docs-list {
-        margin: 20px 0 0;
-        padding: 0;
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .docs-list a {
-        font-weight: 500;
-        text-decoration: none;
-      }
-
-      .docs-list a:hover {
-        text-decoration: underline;
-      }
-
-      .docs-list span {
-        color: var(--text-soft);
-      }
-
-      footer {
-        border-top: 1px solid var(--border);
-        padding: 28px 0 48px;
-        color: var(--text-faint);
-        font-size: 0.875rem;
-      }
-
-      footer p {
-        color: var(--text-faint);
-        font-size: 0.875rem;
-      }
-
-      @media (max-width: 700px) {
-        .cards {
-          grid-template-columns: 1fr;
-        }
-        .facts {
-          grid-template-columns: repeat(2, 1fr);
-        }
-      }
-    </style>
-  </head>
-
-  <body>
-    <header class="top">
-      <div class="top__in">
-        <span class="top__name">Mind Archive</span>
-        <nav class="top__links">
-          <a href="#what">What it does</a>
-          <a href="#start">Get started</a>
-          <a href="#licence">Licence</a>
-          <a href="PRODUCT.html">Docs</a>
-        </nav>
-      </div>
-    </header>
-
-    <div class="wrap">
-      <div class="hero">
-        <h1>Own your AI memory.</h1>
-        <p class="lede">
-          Mind Archive keeps your AI conversations, notes and files as ordinary
-          readable documents on your own computer — whichever AI you use next.
-        </p>
-        <div class="cta">
-          <a class="button button--primary" href="#start">Get started</a>
-          <a class="button" href="DEVELOPMENT.html">Read the docs</a>
-        </div>
-
-        <div class="facts">
-          <div><b>0</b><span>accounts to create</span></div>
-          <div><b>0</b><span>bytes sent anywhere</span></div>
-          <div><b>1</b><span>folder you can open</span></div>
-          <div><b>.md</b><span>files you can read</span></div>
-        </div>
-      </div>
-
-      <section id="what">
-        <h2>Import it, search it, keep it.</h2>
+    <div class="cards">
+      <div class="card">
+        <h3>Import</h3>
         <p>
-          Three things, done properly. Everything else is deliberately absent.
+          Drop an export into the inbox folder and it imports itself. ChatGPT
+          and Claude are supported today, as <code>.zip</code> or raw
+          <code>.json</code>. Each provider sits behind its own adapter, so
+          adding one never touches the rest.
         </p>
-
-        <div class="cards">
-          <div class="card">
-            <h3>Import</h3>
-            <p>
-              Drop an export into the inbox folder and it imports itself.
-              ChatGPT and Claude are supported today, as <code>.zip</code> or
-              raw <code>.json</code>. Each provider sits behind its own adapter,
-              so adding one never touches the rest.
-            </p>
-          </div>
-          <div class="card">
-            <h3>Search</h3>
-            <p>
-              Full-text search across everything you have imported, with the
-              matching line shown in place. Tags narrow it further. The index is
-              SQLite and can be rebuilt from the files at any time.
-            </p>
-          </div>
-          <div class="card">
-            <h3>Keep</h3>
-            <p>
-              Your archive is Markdown and JSON in a normal folder. Delete Mind
-              Archive tomorrow and every conversation still opens in any editor.
-              Export the whole thing as a zip whenever you like.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <section id="start">
-        <h2>Get started</h2>
+      </div>
+      <div class="card">
+        <h3>Search</h3>
         <p>
-          Docker is the supported path, because it avoids every "which Python do
-          I have" problem. Native setup is in the development guide.
+          Full-text search across everything you have imported, with the
+          matching line shown in place. Tags narrow it further. The index is
+          SQLite and can be rebuilt from the files at any time.
         </p>
+      </div>
+      <div class="card">
+        <h3>Keep</h3>
+        <p>
+          Your archive is Markdown and JSON in a normal folder. Delete Mind
+          Archive tomorrow and every conversation still opens in any editor.
+          Export the whole thing as a zip whenever you like.
+        </p>
+      </div>
+    </div>
+  </section>
 
-        <pre><code>git clone https://github.com/YOUR-USERNAME/mind-archive.git
+  <section id="start">
+    <h2>Get started</h2>
+    <p>
+      Docker is the supported path, because it avoids every "which Python do I
+      have" problem. Native setup is in the development guide.
+    </p>
+
+    <pre><code>git clone https://github.com/YOUR-USERNAME/mind-archive.git
 cd mind-archive
 cp .env.example .env
 
 python scripts/dev.py up --build</code></pre>
 
-        <ol class="steps">
-          <li>
-            <strong>Export from your AI.</strong> In ChatGPT: Settings → Data
-            controls → Export data. ChatGPT emails you when it is ready, and
-            says this can take a few days — the download link then expires 24
-            hours after that email arrives.
-          </li>
-          <li>
-            <strong>Drop it in the inbox.</strong> Save the file into
-            <code>data/inbox/</code> and Mind Archive picks it up, or choose it
-            in the interface.
-          </li>
-          <li>
-            <strong>Read it as documents.</strong> Each conversation becomes one
-            Markdown file, dated and titled.
-          </li>
-        </ol>
+    <ol class="steps">
+      <li>
+        <strong>Export from your AI.</strong> In ChatGPT: Settings → Data
+        controls → Export data. ChatGPT emails you when it is ready, and says
+        this can take a few days — the download link then expires 24 hours
+        after that email arrives.
+      </li>
+      <li>
+        <strong>Drop it in the inbox.</strong> Save the file into
+        <code>data/inbox/</code> and Mind Archive picks it up, or choose it in
+        the interface.
+      </li>
+      <li>
+        <strong>Read it as documents.</strong> Each conversation becomes one
+        Markdown file, dated and titled.
+      </li>
+    </ol>
 
-        <pre>data/
+    <pre>data/
 ├── archive/
 │   ├── 2026/
 │   │   ├── chatgpt/
@@ -527,111 +345,99 @@ python scripts/dev.py up --build</code></pre>
 │   └── index.sqlite            metadata only — rebuildable
 └── inbox/                      drop exports here</pre>
 
-        <p>
-          The interface runs at <code>http://localhost:5173</code> and the API
-          at <code>http://localhost:8000</code>. Both stay on your machine.
-        </p>
-      </section>
+    <p>
+      The interface runs at <code>http://localhost:5173</code> and the API at
+      <code>http://localhost:8000</code>. Both stay on your machine.
+    </p>
+  </section>
 
-      <section id="privacy">
-        <h2>What "local-first" actually means here</h2>
-        <p>
-          Not a marketing word. There is no account, no sync and no telemetry.
-          The API binds to localhost and has no authentication, because it is a
-          single-user application that never leaves your computer. Cloud backup
-          is optional, off by default, and cannot be enabled silently.
-        </p>
-        <p>
-          Your archive lives in a folder you chose, as a bind mount rather than
-          a Docker volume — so no cleanup command in this project can delete it.
-          Read <a href="SECURITY.html">the security notes</a> before you trust
-          it with anything, and read the source while you are there.
-        </p>
-      </section>
+  <section id="privacy">
+    <h2>What "local-first" actually means here</h2>
+    <p>
+      Not a marketing word. There is no account, no sync and no telemetry. The
+      API binds to localhost and has no authentication, because it is a
+      single-user application that never leaves your computer. Cloud backup is
+      optional, off by default, and cannot be enabled silently.
+    </p>
+    <p>
+      Your archive lives in a folder you chose, as a bind mount rather than a
+      Docker volume — so no cleanup command in this project can delete it. Read
+      <a href="{{ '/SECURITY.html' | relative_url }}">the security notes</a>
+      before you trust it with anything, and read the source while you are
+      there.
+    </p>
+  </section>
 
-      <section id="licence">
-        <h2>Source-available, not open source</h2>
+  <section id="licence">
+    <h2>Source-available, not open source</h2>
 
-        <div class="licence">
-          <p>
-            Mind Archive is licensed under
-            <strong>PolyForm Noncommercial 1.0.0</strong>. The code is readable
-            and inspectable. It is not open source, and describing it that way
-            would be wrong.
-          </p>
-        </div>
-
-        <table>
-          <thead>
-            <tr>
-              <th>You are</th>
-              <th>You pay</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><strong>A person archiving your own conversations</strong></td>
-              <td>Nothing, forever</td>
-            </tr>
-            <tr>
-              <td>
-                <strong>A school, charity, public research body or government</strong>
-              </td>
-              <td>Nothing, forever</td>
-            </tr>
-            <tr>
-              <td><strong>A company, or anyone using it commercially</strong></td>
-              <td>A commercial licence — get in touch</td>
-            </tr>
-          </tbody>
-        </table>
-
-        <p style="margin-top: 20px">
-          Unsure which applies to you? Ask. Answering a question is easier for
-          everyone than quietly getting it wrong.
-        </p>
-      </section>
-
-      <section id="docs">
-        <h2>Documentation</h2>
-        <ul class="docs-list">
-          <li>
-            <a href="PRODUCT.html">Product</a> —
-            <span>what Mind Archive is, and who it is for</span>
-          </li>
-          <li>
-            <a href="ARCHITECTURE.html">Architecture</a> —
-            <span>how it is put together, and why</span>
-          </li>
-          <li>
-            <a href="DEVELOPMENT.html">Development</a> —
-            <span>running it, testing it, contributing to it</span>
-          </li>
-          <li>
-            <a href="SECURITY.html">Security</a> —
-            <span>the threat model, stated plainly</span>
-          </li>
-          <li>
-            <a href="DECISIONS.html">Decisions</a> —
-            <span>every architectural decision and its reasoning</span>
-          </li>
-          <li>
-            <a href="ROADMAP.html">Roadmap</a> —
-            <span>what is built and what is next</span>
-          </li>
-        </ul>
-      </section>
+    <div class="licence">
+      <p>
+        Mind Archive is licensed under
+        <strong>PolyForm Noncommercial 1.0.0</strong>. The code is readable and
+        inspectable. It is not open source, and describing it that way would be
+        wrong.
+      </p>
     </div>
 
-    <footer>
-      <div class="wrap">
-        <p>Local first. Privacy first. Yours.</p>
-        <p>
-          © 2026 Mind Archive. Source-available under PolyForm Noncommercial
-          1.0.0. Free for personal and noncommercial use; company use needs a
-          commercial licence.
-        </p>
-      </div>
-    </footer>
-  </body>
-</html>
+    <table>
+      <thead>
+        <tr>
+          <th>You are</th>
+          <th>You pay</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>A person archiving your own conversations</strong></td>
+          <td>Nothing, forever</td>
+        </tr>
+        <tr>
+          <td>
+            <strong>A school, charity, public research body or government</strong>
+          </td>
+          <td>Nothing, forever</td>
+        </tr>
+        <tr>
+          <td><strong>A company, or anyone using it commercially</strong></td>
+          <td>A commercial licence — get in touch</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="margin-top: 20px">
+      Unsure which applies to you? Ask. Answering a question is easier for
+      everyone than quietly getting it wrong.
+    </p>
+  </section>
+
+  <section id="docs">
+    <h2>Documentation</h2>
+    <ul class="docs-list">
+      <li>
+        <a href="{{ '/PRODUCT.html' | relative_url }}">Product</a> —
+        <span>what Mind Archive is, and who it is for</span>
+      </li>
+      <li>
+        <a href="{{ '/ARCHITECTURE.html' | relative_url }}">Architecture</a> —
+        <span>how it is put together, and why</span>
+      </li>
+      <li>
+        <a href="{{ '/DEVELOPMENT.html' | relative_url }}">Development</a> —
+        <span>running it, testing it, contributing to it</span>
+      </li>
+      <li>
+        <a href="{{ '/SECURITY.html' | relative_url }}">Security</a> —
+        <span>the threat model, stated plainly</span>
+      </li>
+      <li>
+        <a href="{{ '/DECISIONS.html' | relative_url }}">Decisions</a> —
+        <span>every architectural decision and its reasoning</span>
+      </li>
+      <li>
+        <a href="{{ '/ROADMAP.html' | relative_url }}">Roadmap</a> —
+        <span>what is built and what is next</span>
+      </li>
+    </ul>
+  </section>
+</main>

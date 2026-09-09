@@ -1,0 +1,239 @@
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>{% if page.title and page.title != site.title %}{{ page.title }} — {{ site.title }}{% else %}{{ site.title }} — Own your AI memory{% endif %}</title>
+    <meta
+      name="description"
+      content="{{ page.description | default: site.description }}"
+    />
+
+    <link rel="stylesheet" href="{{ '/assets/site.css' | relative_url }}" />
+
+    <script>
+      // Set the palette and theme before the first paint, so nobody sees a
+      // flash of the wrong colours. Kept tiny and inline on purpose, and kept
+      // in step with apps/web/src/theme.ts and apps/web/index.html.
+      (function () {
+        var root = document.documentElement;
+        root.className = root.className.replace("no-js", "");
+
+        var palette = "minimal";
+        var theme = "system";
+
+        try {
+          var storedPalette = localStorage.getItem("mind-archive-palette");
+          if (
+            storedPalette === "minimal" ||
+            storedPalette === "warm" ||
+            storedPalette === "violet"
+          ) {
+            palette = storedPalette;
+          }
+
+          var storedTheme = localStorage.getItem("mind-archive-theme");
+          if (
+            storedTheme === "light" ||
+            storedTheme === "dark" ||
+            storedTheme === "system"
+          ) {
+            theme = storedTheme;
+          }
+        } catch (error) {
+          // Storage unavailable; the defaults above stand.
+        }
+
+        root.setAttribute("data-palette", palette);
+        root.setAttribute("data-theme", resolve(theme));
+        root.setAttribute("data-theme-choice", theme);
+
+        function resolve(choice) {
+          if (choice !== "system") return choice;
+          try {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          } catch (error) {
+            return "light";
+          }
+        }
+      })();
+    </script>
+  </head>
+
+  <body>
+    <header class="site-header">
+      <div class="site-header__in">
+        <a class="site-header__brand" href="{{ '/' | relative_url }}">
+          <h1 class="site-header__title">{{ site.title }}</h1>
+          <p class="site-header__tagline">Own your AI memory.</p>
+        </a>
+
+        <div class="appearance">
+          <fieldset class="segmented">
+            <legend class="segmented__legend">Palette</legend>
+            <div class="segmented__options">
+              <label class="segmented__option">
+                <input type="radio" name="palette" value="minimal" />
+                <span>Light minimal</span>
+              </label>
+              <label class="segmented__option">
+                <input type="radio" name="palette" value="warm" />
+                <span>Warm paper</span>
+              </label>
+              <label class="segmented__option">
+                <input type="radio" name="palette" value="violet" />
+                <span>Ink &amp; violet</span>
+              </label>
+            </div>
+          </fieldset>
+
+          <fieldset class="segmented">
+            <legend class="segmented__legend">Theme</legend>
+            <div class="segmented__options">
+              <label class="segmented__option">
+                <input type="radio" name="theme" value="light" />
+                <span>Light</span>
+              </label>
+              <label class="segmented__option">
+                <input type="radio" name="theme" value="dark" />
+                <span>Dark</span>
+              </label>
+              <label class="segmented__option">
+                <input type="radio" name="theme" value="system" />
+                <span>System</span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <nav class="site-nav" aria-label="Documentation">
+        <div class="site-nav__in">
+          <a href="{{ '/' | relative_url }}">Home</a>
+          <a href="{{ '/PRODUCT.html' | relative_url }}">Product</a>
+          <a href="{{ '/ARCHITECTURE.html' | relative_url }}">Architecture</a>
+          <a href="{{ '/DEVELOPMENT.html' | relative_url }}">Development</a>
+          <a href="{{ '/SECURITY.html' | relative_url }}">Security</a>
+          <a href="{{ '/ROADMAP.html' | relative_url }}">Roadmap</a>
+          <a href="{{ '/DECISIONS.html' | relative_url }}">Decisions</a>
+        </div>
+      </nav>
+    </header>
+
+    {% if page.layout_bare %}
+      {{ content }}
+    {% else %}
+      <main class="wrap doc">{{ content }}</main>
+    {% endif %}
+
+    <footer class="site-footer">
+      <div class="site-footer__in">
+        <div>
+          <p class="site-footer__slogan">Local first. Privacy first. Yours.</p>
+          <p>
+            © 2026 Mind Archive. Source-available under PolyForm Noncommercial
+            1.0.0. Free for personal and noncommercial use; company use needs a
+            commercial licence.
+          </p>
+        </div>
+        <div class="site-footer__links">
+          <a href="{{ '/DEPLOYMENT.html' | relative_url }}">Deployment</a>
+          <a href="{{ '/BACKLOG.html' | relative_url }}">Backlog</a>
+          <a href="mailto:kishor3947@gmail.com?subject=Mind%20Archive">Contact</a>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      // The appearance controls. Same model as the application: the palette
+      // and the theme choice are stored; "system" is resolved to light or dark
+      // before it reaches the stylesheet, and keeps following the machine for
+      // as long as it is selected.
+      (function () {
+        var root = document.documentElement;
+
+        function resolve(choice) {
+          if (choice !== "system") return choice;
+          try {
+            return window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+          } catch (error) {
+            return "light";
+          }
+        }
+
+        function store(key, value) {
+          try {
+            localStorage.setItem(key, value);
+          } catch (error) {
+            // Applied for this visit; simply not remembered.
+          }
+        }
+
+        // Reflect what the pre-paint script already decided.
+        var palette = root.getAttribute("data-palette") || "minimal";
+        var themeChoice = root.getAttribute("data-theme-choice") || "system";
+
+        function check(name, value) {
+          var input = document.querySelector(
+            'input[name="' + name + '"][value="' + value + '"]',
+          );
+          if (input) input.checked = true;
+        }
+
+        check("palette", palette);
+        check("theme", themeChoice);
+
+        document
+          .querySelectorAll('input[name="palette"]')
+          .forEach(function (input) {
+            input.addEventListener("change", function () {
+              palette = input.value;
+              root.setAttribute("data-palette", palette);
+              store("mind-archive-palette", palette);
+            });
+          });
+
+        document
+          .querySelectorAll('input[name="theme"]')
+          .forEach(function (input) {
+            input.addEventListener("change", function () {
+              themeChoice = input.value;
+              root.setAttribute("data-theme", resolve(themeChoice));
+              root.setAttribute("data-theme-choice", themeChoice);
+              store("mind-archive-theme", themeChoice);
+            });
+          });
+
+        // Keep following the machine while "system" is selected.
+        try {
+          var query = window.matchMedia("(prefers-color-scheme: dark)");
+          var onChange = function () {
+            if (themeChoice === "system") {
+              root.setAttribute("data-theme", resolve("system"));
+            }
+          };
+          if (query.addEventListener) {
+            query.addEventListener("change", onChange);
+          } else if (query.addListener) {
+            query.addListener(onChange);
+          }
+        } catch (error) {
+          // No matchMedia; the explicit choices still work.
+        }
+
+        // Mark the current page in the navigation.
+        var here = window.location.pathname.replace(/\/$/, "");
+        document.querySelectorAll(".site-nav a").forEach(function (link) {
+          if (link.pathname.replace(/\/$/, "") === here) {
+            link.setAttribute("aria-current", "page");
+          }
+        });
+      })();
+    </script>
+  </body>
+</html>

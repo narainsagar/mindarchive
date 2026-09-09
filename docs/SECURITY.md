@@ -1,3 +1,7 @@
+---
+title: Security and Privacy
+---
+
 # Security and Privacy
 
 Mind Archive exists to keep personal material private. Security is a product

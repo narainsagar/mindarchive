@@ -1,3 +1,7 @@
+---
+title: Deployment
+---
+
 # Deployment
 
 How Mind Archive gets published, and what deliberately is not published.
@@ -175,11 +179,20 @@ deployment once it succeeds.
 
 ### Checking it worked
 
-- The landing page loads and looks right in **both** light and dark — the site
-  follows the visitor's system theme.
-- The documentation links resolve. Jekyll renders `PRODUCT.md` as `PRODUCT.html`.
+- The landing page loads, and the palette and theme controls in the header work
+  — the same three palettes as the application, and Light / Dark / System.
+- **The documentation links resolve.** Jekyll renders `PRODUCT.md` as
+  `PRODUCT.html`, but only because every `.md` in `docs/` has YAML front matter.
+  If you add a page without it, its link will 404. See
+  [GITHUB_PAGES.md](GITHUB_PAGES.html).
+- A documentation page has the same header and footer as the landing page.
 - `docs/project-memory/` is **not** reachable on the site. It is excluded in
   `docs/_config.yml`.
+
+> **Do not check any of this with `python -m http.server`.** It runs no Jekyll,
+> so no `.md` becomes `.html` and every documentation link 404s whether the site
+> is correct or not. `GITHUB_PAGES.md` has a Docker one-liner that builds the
+> real thing.
 
 ---
 

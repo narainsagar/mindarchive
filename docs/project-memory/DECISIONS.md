@@ -508,6 +508,57 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-033 — The website shares the application's palettes, through one Jekyll layout
+**Date:** 2026-09-09 · **Status:** Accepted
+
+The documentation site carries the same appearance controls as the application:
+the three palettes (Light minimal, Warm paper, Ink & violet) and a Light / Dark
+/ System theme choice, in the same header position, storing the same
+`localStorage` keys.
+
+Delivered through `docs/_layouts/default.html` and `docs/assets/site.css`, which
+use **the same token names** as `apps/web/src/styles.css`. The gem theme
+(`jekyll-theme-primer`) is gone — it could not carry the controls, and a second
+visual system would have guaranteed drift.
+
+**Why a layout rather than styling the landing page alone.** The site is one
+HTML page plus eleven Markdown documents rendered by Jekyll. Theming only
+`index.html` would have given a themed front door opening onto unstyled pages.
+The layout applies to everything, and `_config.yml` supplies it through
+`defaults` so a new page needs only a title.
+
+**The bug this fixed, which had already shipped.** The rebuilt landing page
+linked to `PRODUCT.html`, `SECURITY.html` and so on. **Jekyll only converts
+Markdown that has YAML front matter**; a file without it is copied verbatim. No
+document in `docs/` had any, so none of those `.html` files would have existed
+and every documentation link on the published site would have 404ed. It was
+caught because the maintainer previewed the site and reported the 404s.
+
+Two lessons, both written into `docs/GITHUB_PAGES.md`:
+
+- Every Markdown file in `docs/` needs front matter. It is now the first thing
+  that section says.
+- **`python -m http.server` cannot validate this site.** It serves files as they
+  are and runs no Jekyll, so `.md` never becomes `.html` — a correct site looks
+  broken and a broken one cannot be told apart. The guide now gives a Docker
+  one-liner that builds the real thing.
+
+**Consequences:**
+
+- Verified by building with `jekyll/jekyll:4` and checking the output: all nine
+  linked pages present, no unrendered Liquid, every internal link resolving,
+  `project-memory/` absent, and the controls present on a documentation page.
+- The pre-paint script is duplicated in three places now — `apps/web/index.html`,
+  `apps/web/src/theme.ts` and `docs/_layouts/default.html`. Deliberate: each has
+  to run before its own first paint, and sharing code across two independent
+  deployables would cost more than it saves. They must be kept in step.
+- Without JavaScript the controls cannot work, so `.no-js` hides them rather
+  than showing dead radios. The site still renders in Light minimal.
+- Token values are duplicated between `styles.css` and `site.css`. The names are
+  identical so a mismatch is obvious, but a change must be made in both.
+
+---
+
 ## D-032 — Published publicly on GitHub; Pages for docs; no hosted application
 **Date:** 2026-09-09 · **Status:** Accepted
 

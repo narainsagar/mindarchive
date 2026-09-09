@@ -1,3 +1,7 @@
+---
+title: Try it yourself
+---
+
 # Try it yourself
 
 A clean run from nothing, and how to check each part works. Fifteen minutes.

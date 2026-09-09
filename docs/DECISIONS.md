@@ -1,3 +1,7 @@
+---
+title: Decisions
+---
+
 # Decisions
 
 **The decision log lives in
@@ -45,3 +49,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-030 | Import is a dialog; the header navigates within the one page |
 | D-031 | The page carries Support, Contribute and a real footer |
 | D-032 | Published publicly on GitHub; Pages for docs; no hosted application |
+| D-033 | The website shares the application's palettes, through one Jekyll layout |

@@ -1,3 +1,7 @@
+---
+title: Getting your conversations sooner
+---
+
 # Getting your conversations sooner
 
 Requesting an export from ChatGPT is the right way to get your data, and it is

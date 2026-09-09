@@ -1,3 +1,7 @@
+---
+title: Architecture
+---
+
 # Architecture
 
 How Mind Archive is put together, and why.

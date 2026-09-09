@@ -1,3 +1,7 @@
+---
+title: Development
+---
+
 # Development
 
 How to set up, run and work on Mind Archive.

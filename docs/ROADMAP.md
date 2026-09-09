@@ -1,3 +1,7 @@
+---
+title: Roadmap
+---
+
 # Roadmap
 
 Where Mind Archive is going. The detailed, authoritative version — including

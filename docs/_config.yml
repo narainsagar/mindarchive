@@ -4,7 +4,19 @@
 title: Mind Archive
 description: Own your AI memory. Simple, private, and yours.
 
-theme: jekyll-theme-primer
+# No gem-based theme. The site uses _layouts/default.html and
+# assets/site.css, which carry the same colour tokens as the application
+# (apps/web/src/styles.css) so the two cannot drift apart. See D-029, D-033.
+
+# Every page gets the layout without having to say so. Files still need front
+# matter of their own — Jekyll only processes Markdown that has it, and a file
+# without it is copied verbatim, which is what broke the documentation links
+# the first time.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
 
 # Working memory, useful in the repository but noise on a public site.
 exclude:

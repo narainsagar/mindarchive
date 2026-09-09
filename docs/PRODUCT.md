@@ -1,3 +1,7 @@
+---
+title: Product
+---
+
 # Product
 
 **Mind Archive — Your Personal AI Mind Archive.**

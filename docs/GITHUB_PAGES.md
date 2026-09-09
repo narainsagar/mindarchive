@@ -1,3 +1,7 @@
+---
+title: GitHub Pages
+---
+
 # GitHub Pages
 
 The project documentation is published as a small static site from the `docs/`
@@ -9,15 +13,35 @@ entirely on your own machine.
 
 ## How it works
 
-`.github/workflows/docs-pages.yml` builds and deploys the site whenever `docs/`
-changes on `main`. There is no static site generator and no build step — it
-publishes plain HTML and Markdown, which keeps the documentation readable both
-on the site and directly in the repository.
+`.github/workflows/docs-pages.yml` builds and deploys the site with Jekyll
+whenever `docs/` changes on `main`. The Markdown files stay readable both on the
+site and directly in the repository.
+
+**Every Markdown file needs YAML front matter.** Jekyll only converts files that
+have it; a file without front matter is copied through verbatim, so
+`PRODUCT.md` would stay `PRODUCT.md` and every link to `PRODUCT.html` would
+404. That is exactly what happened the first time this site was built, and it is
+the one thing to remember when adding a page:
+
+```markdown
+---
+title: Product
+---
+
+# Product
+```
+
+`_config.yml` supplies `layout: default` to every page through `defaults`, so
+the front matter only needs the title.
 
 ```
 docs/
 ├── index.html          The landing page
-├── _config.yml         Jekyll settings (theme, exclusions)
+├── _layouts/
+│   └── default.html    Header, appearance controls, footer — every page
+├── assets/
+│   └── site.css        The same colour tokens the application uses
+├── _config.yml         Jekyll settings (layout defaults, exclusions)
 ├── PRODUCT.md          These render on the site and in GitHub alike
 ├── ARCHITECTURE.md
 ├── DEVELOPMENT.md
@@ -48,23 +72,38 @@ already declared in `docs-pages.yml`.
 
 ## Working on the site locally
 
-The plain HTML page opens directly in a browser:
+**`python -m http.server` is not enough, and will mislead you.** It serves files
+as they are on disk. It does not run Jekyll, so no `.md` becomes `.html` and
+every documentation link 404s — which looks exactly like a broken site when the
+site is fine. Use it only to check the landing page's own layout.
+
+To see what GitHub will actually publish, build it with Jekyll. Docker needs
+nothing installed:
 
 ```bash
-# any static server will do
-python -m http.server 8080 --directory docs
+docker run --rm -v "$PWD/docs:/srv/jekyll" -v /tmp/ma_site:/out \
+  jekyll/jekyll:4 jekyll build --destination /out
+
+python -m http.server 8080 --directory /tmp/ma_site
 ```
 
-To preview exactly what GitHub renders, including the Markdown pages, run
-Jekyll:
+Or serve it directly, with live reload:
 
 ```bash
-cd docs
-bundle exec jekyll serve
+docker run --rm -p 4000:4000 -v "$PWD/docs:/srv/jekyll" \
+  jekyll/jekyll:4 jekyll serve --host 0.0.0.0
 ```
 
-Jekyll is not required to contribute. If you are only editing Markdown, the
-GitHub preview is close enough.
+If you have Ruby and the gems locally, `cd docs && bundle exec jekyll serve`
+does the same thing.
+
+**What to check in the built output**, not the source folder:
+
+- `PRODUCT.html`, `ARCHITECTURE.html` and the rest exist. If one is missing, its
+  `.md` is missing front matter.
+- `project-memory/` is absent.
+- The header, the palette and theme controls and the footer appear on a
+  documentation page, not just on the landing page.
 
 ## Writing for the documentation site
 
