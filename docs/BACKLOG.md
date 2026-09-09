@@ -25,18 +25,44 @@ here is a commitment.
 
 ## Deployment
 
-The stated intent is to release to GitHub with Pages for documentation, or to a
-private VPS. Both are viable; neither is decided. Record a decision when it is.
+**Decided (D-032):** public GitHub repository, Pages for the documentation site,
+no hosted application, no public demo. Steps are in
+[DEPLOYMENT.md](DEPLOYMENT.md).
 
-- **GitHub + Pages.** Workflows are already written and committed but have never
-  run — there is no remote yet (D-017). Flipping this on is mostly a matter of
-  adding a remote and filling in `project.json`.
-- **Private VPS.** Would need a production frontend image (the current one runs
-  the Vite dev server), a reverse proxy with TLS, and a decision about whether
-  anything is exposed beyond localhost. Note that the API has **no
-  authentication** by design — exposing it to a network without putting auth in
-  front of it would be a serious mistake.
-- Release process, versioning and packaging are Milestone 7.
+Still open:
+
+- **The first push has not happened.** `project.json` needs the real GitHub
+  username; the workflows have still never run against a live repository.
+- **Production frontend image.** The current web image runs the Vite dev server.
+  Anything hosted needs a static build behind nginx or similar. Milestone 7.
+- **Release process, versioning and packaging.** Milestone 7. `DEPLOYMENT.md`
+  has the manual steps in the meantime.
+- **Custom domain `mindarchive.app`.** DNS and `docs/CNAME` documented, not set
+  up.
+
+### A public demo — what it would actually take
+
+Requested and deliberately deferred (D-032). Hosting the application as it
+stands would mean one shared archive with no authentication: whatever any
+visitor imports, every other visitor can read and export. That is the failure
+this product exists to prevent, and it would put strangers' private
+conversations on the maintainer's server.
+
+Not a deployment step. The work:
+
+- **`MIND_ARCHIVE_DEMO` read-only mode.** Seeds a synthetic archive at startup
+  and refuses every write — import, tag, delete, inbox scan — at the API layer,
+  not by hiding buttons. The interface should say plainly that it is a demo and
+  that uploads are disabled, rather than failing silently.
+- **Synthetic seed data** that shows search and tags working without being
+  anyone's real conversations.
+- **Authentication and TLS at a reverse proxy**, so the API is never directly
+  reachable even read-only.
+- **A decision record**, because this changes the security model the product is
+  built on.
+
+Until all four exist, the honest answer to "can I see it live" is a screenshot
+and `docker compose up`.
 
 ## Commercial and licensing
 
@@ -80,6 +106,41 @@ Still open:
   covers every case so far. `watchdog` only if that stops being true.
 - **Verify the browser script's output shape** against a real official export.
   Believed identical; unconfirmed.
+- **Import several exports at once, in the background.** Choose multiple `.zip`
+  or `.json` files and start them all with one action. The work must survive the
+  import dialog being closed — closing the dialog cancels nothing. While it
+  runs, the interface reports progress outside the dialog ("2 files waiting",
+  "importing 3 of 5", "syncing"), as a notice that dismisses itself after a few
+  seconds, with the option to dismiss it sooner or cancel the run outright.
+  Needs: a job with an id and a status the frontend can poll, per-file results
+  rather than one combined summary, and a decision on what "cancel" means for a
+  file already half-written. The backend already imports on a background thread,
+  so the groundwork is there; what is missing is a way to ask how it is going.
+  Related: **Progress reporting during a long import**, above — the same
+  mechanism serves both.
+
+## Importing from more providers
+
+**Already supported:** ChatGPT and Claude, both as `.zip` and as raw `.json`.
+Detection is by the *shape* of the file, not its name (D-027), which is what
+makes a bare `conversations.json` from either service work — they share that
+filename. `apps/api/src/mind_archive/importers/` holds one adapter per provider
+and the core imports none of them.
+
+Still open:
+
+- **Gemini, Cursor, Copilot, Perplexity, local runners, and whatever comes
+  next.** Each is one adapter plus one test. The constraint is not the code, it
+  is getting a real export of each format to write the adapter against.
+- **A fixture per provider.** ChatGPT and Claude are covered by
+  `test_chatgpt_importer.py` and `test_claude_importer.py`. New providers need
+  the same. **Fixtures must be hand-written or heavily redacted, never a real
+  personal export** — test files are committed, and a real export is a copy of
+  someone's private conversations. Keep working copies of real exports in
+  `tmp/` (git-ignored) while writing an adapter, and commit only a small
+  synthetic sample that exercises the shape.
+- **Say plainly which providers are supported**, in the import dialog and on the
+  public page, so nobody exports from a service that will not import.
 
 ## Storage
 

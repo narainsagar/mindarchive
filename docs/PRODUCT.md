@@ -79,7 +79,10 @@ licence. No private credentials are needed to build or run it. See
 
 ## Interface direction
 
-Light mode is the default, with a dark mode toggle. Both must look good.
+Two appearance choices sit in the header, and both are remembered. A palette —
+Light minimal (the default), Warm paper, or Ink & violet — and a theme: Light,
+Dark, or System, which follows the computer. All six combinations must look
+good. See DECISIONS.md D-029.
 
 The interface should read as something a thoughtful person designed: calm,
 clean, obvious, lightweight, professional. It should specifically *not* look

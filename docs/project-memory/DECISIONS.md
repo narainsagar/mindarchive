@@ -508,8 +508,206 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-032 — Published publicly on GitHub; Pages for docs; no hosted application
+**Date:** 2026-09-09 · **Status:** Accepted
+
+Mind Archive is published as a **public** GitHub repository named
+`mind-archive`. GitHub Pages serves `docs/` as the project website. **The
+application itself is not hosted anywhere**, and there is **no public demo**.
+
+**Why public.** The licence is PolyForm Noncommercial 1.0.0 — source-available.
+A privacy-first product asking people to trust it with their conversations has
+to let them read what they are running. A private repository would contradict
+the claim.
+
+**Why `docs/` only on Pages.** Pages serves static files. The application needs
+the FastAPI backend, and hosting a copy would contradict local-first: people run
+it themselves, on their own machine, over their own files. The site exists to
+explain and to hand over the code.
+
+**Everything is published, including `docs/project-memory/`.** A separate branch
+for a "clean" public version was considered and rejected: branches share
+history, so it does not hide anything the moment the full history is pushed, and
+maintaining two divergent branches means cherry-picking every change forever.
+The real mechanism would have been two repositories, which was judged not worth
+the standing risk of pushing to the wrong one. project-memory is already
+excluded from the published *site* by `docs/_config.yml`, so only people reading
+the repository see it — and for a source-available project the decision record
+is arguably the most useful thing in it.
+
+**Why there is no demo — the important part.** A public instance was requested
+and refused, because `docs/SECURITY.md` is unambiguous: there is no
+authentication, by design, because this is a single-user local application. A
+publicly reachable instance today means one shared archive that anyone can read,
+write to, and export. Whatever one visitor imports, every other visitor can
+download. For a product whose premise is that your conversations stay yours,
+that is precisely the failure it exists to prevent — and it would put strangers'
+personal data on the maintainer's server.
+
+A demo therefore needs a `MIND_ARCHIVE_DEMO` read-only mode that seeds synthetic
+data and refuses every write, authentication at the proxy, TLS, and a production
+frontend image. That is a milestone, not a deployment step. Recorded in
+`docs/BACKLOG.md`.
+
+**Consequences:**
+
+- `docs/index.html` was rebuilt on the same token names as
+  `apps/web/src/styles.css`, so the site and the application cannot drift apart
+  unnoticed.
+- The maintainer's email address becomes public. It was already committed in
+  `project.json` and is the contact for commercial licences, so this is
+  intended rather than incidental.
+- `project.json` must carry the real GitHub username before the first push;
+  `scripts/set_identity.py` propagates it. Until then, `YOUR-USERNAME` appears
+  in the clone URL on the landing page.
+- The current web Docker image runs the Vite dev server and is unsuitable for
+  any public host. Milestone 7.
+- Full instructions live in [`docs/DEPLOYMENT.md`](../DEPLOYMENT.md).
+
+---
+
+## D-031 — The page carries Support, Contribute and a real footer
+**Date:** 2026-09-09 · **Status:** Accepted
+
+Five sections now, each reachable from the header nav: Archive, Coming next,
+Status, Support, Contribute — plus a footer carrying the copyright line, the
+licence, contact and Back to top.
+
+**"Coming next" is its own section again**, reversing point 4 of D-030 on the
+same day. Folding it into Status was tidier on the page but wrong once it needed
+a nav entry: a thing worth navigating to is a section, not a footnote inside
+another one.
+
+**Why Support and Contribute live in the application** rather than only on the
+public site: someone deciding whether to fund a tool is using it at that moment,
+and the licensing question — is my use commercial? — occurs to people while
+working, not while browsing a marketing page.
+
+**Nothing asks twice.** No modal, no banner, no dismissible nag, no counter. The
+sections sit at the bottom of the page and are reached deliberately. Mind
+Archive is free for noncommercial use and that is not a trial (D-016).
+
+**Consequences:**
+
+- `apps/web/src/support.ts` is the single place donation links, wallet addresses
+  and the contact address are configured. **Every donation URL ships blank**,
+  and `configuredDonations()` filters out anything unset, so the interface shows
+  no dead links and no invented handles. Until they are filled in, the panel
+  says so rather than pretending.
+- `contactEmail` is taken from the `author` block already committed in
+  `project.json`. It is public by design; if licensing mail should go elsewhere,
+  change both.
+- `mailto()` percent-encodes the subject. Without it, mail clients truncate at
+  the first space — caught by a test, not by reading.
+- The Contribute panel explicitly asks people **not** to send their export
+  files when reporting an importer bug. A broken export is a copy of someone's
+  private conversations, and inviting people to attach one would be a
+  privacy-first product teaching the opposite habit.
+- Five nav entries is the ceiling. AGENTS.md rules out heavy navigation, and a
+  sixth would need something else to leave.
+
+---
+
+## D-030 — Import is a dialog; the header navigates within the one page
+**Date:** 2026-09-09 · **Status:** Accepted
+
+The workspace had grown long enough that importing meant scrolling past the
+whole archive to reach it. Four changes, together:
+
+1. **Import opens in a dialog**, from a button in the archive panel's header and
+   a second one in the header nav. It closes on Escape, on a click outside it,
+   and on its close button, and returns focus to whatever opened it.
+2. **The export instructions sit behind a disclosure** inside that dialog. They
+   matter enormously the first time and never again.
+3. **The header carries in-page anchor links** to Your archive and Status, with
+   the current section highlighted as you scroll. The header is sticky, and the
+   footer has a Back to top link.
+4. ~~**"What is coming next" moved inside the Status panel.**~~ **Reversed the
+   same day by [D-031](#d-031--the-page-carries-support-contribute-and-a-real-footer)**,
+   which gives it its own section and its own place in the nav. The other three
+   parts of this decision stand.
+
+**Why:** Importing is rare and searching is constant, so the archive earns the
+top of the page and import earns a button rather than a permanent block. A
+dialog was chosen over expanding the panel in place because it does not move the
+archive underneath the reader.
+
+**On D-008.** That decision says one page, no router, no sidebar — "there is one
+view, so there is nothing to navigate between". That still holds. These are
+in-page anchors, not routes: no route table, no history entries beyond the
+fragment, no router dependency, and one view. D-008 is extended here, not
+reversed. Had this needed real routes, it would have needed a separate decision
+and an argument for the dependency.
+
+**Consequences:**
+
+- Inbox state moved out of `ImportPanel` into `useInbox`, because two places now
+  need the waiting count: the panel, and the Import button that shows it while
+  the panel is closed. One fetch, one answer.
+- `Modal` is the project's first dialog primitive. Hand-written rather than the
+  native `<dialog>` element, whose `showModal()` is not implemented everywhere
+  the tests run — and rather than a dependency.
+- `ArchivePanel` gained `id` and `action` props so App can put the Import button
+  in its header without the two components knowing about each other. The header
+  action row now renders even on an empty archive, which is exactly when Import
+  matters most.
+- `StatusPanel`'s heading changed from "Your archive" to "Status", which also
+  ends a genuine duplication — `ArchivePanel` uses the same words.
+- Smooth scrolling is CSS, and turns itself off under `prefers-reduced-motion`.
+  The anchors are plain `<a href="#...">`, so they work without JavaScript.
+
+---
+
+## D-029 — Appearance is two choices: a palette, and light / dark / system
+**Date:** 2026-09-09 · **Status:** Accepted
+
+Mind Archive ships three palettes — **Light minimal** (the default), **Warm
+paper** (the original) and **Ink & violet** — each drawn in light and dark. The
+theme is a three-way choice: Light, Dark, or System. Both live in the header and
+both persist:
+
+```
+mind-archive-palette   minimal | warm | violet     default: minimal
+mind-archive-theme     light   | dark | system     default: system
+```
+
+**Why:** Two separate questions were being answered by one control. Which
+colours the product uses is a matter of taste and should be the reader's to set;
+whether the screen is light or dark usually belongs to the operating system.
+Collapsing them into one toggle forced a choice on both.
+
+The old two-way toggle also had a real defect: `getInitialTheme` resolved the
+system preference into a concrete `light` or `dark` and `applyTheme` immediately
+wrote it to storage, so a first visit permanently pinned the reader to whatever
+their computer happened to say at that moment. There was no way to say "follow
+the system". `system` is now a stored choice in its own right, and
+`watchSystemTheme` keeps following it for as long as it is selected.
+
+**Consequences:**
+
+- The stylesheet never sees `system`. `resolveTheme` turns the choice into
+  `light` or `dark` and `applyTheme` stamps that on `<html>`, so colours are
+  selected by `[data-palette][data-theme]` alone. This removed the duplicated
+  dark token block — the same values previously appeared in both
+  `@media (prefers-color-scheme: dark)` and `:root[data-theme="dark"]`.
+- The inline pre-paint script in `apps/web/index.html` now stamps both
+  attributes and must stay in step with `apps/web/src/theme.ts`. It is the one
+  deliberate duplication, and it exists so no one sees a flash of the wrong
+  colours.
+- Controls are real radio inputs in a `fieldset` (`SegmentedControl`), so
+  keyboard and screen-reader behaviour is the browser's, not ours.
+- `ThemeToggle.tsx` is removed; `AppearanceControls.tsx` replaces it.
+
+**This supersedes the default stated in D-014, and keeps its principle.** Light
+is still what a reader gets when nothing else is known: `system` falls back to
+light whenever the browser cannot answer, and the default palette is a light
+one. What changed is that a reader who wants to follow their computer can now
+say so.
+
+---
+
 ## D-017 — The repository stays local until there is something worth showing
-**Date:** 2026-09-08 · **Status:** Accepted
+**Date:** 2026-09-08 · **Status:** Superseded by [D-032](#d-032--published-publicly-on-github-pages-for-docs-no-hosted-application)
 
 No git remote is configured. The project is developed locally, with CI and Pages
 workflows in place but dormant until a remote exists.
@@ -522,6 +720,10 @@ only step required later.
 **Consequences:** `.github/workflows/` and the Pages setup are untested against
 a live GitHub repository. The `YOUR-USERNAME` placeholders in URLs are resolved
 by `project.json` and `scripts/set_identity.py` when a remote is chosen.
+
+**Superseded 2026-09-09.** The condition it set has been met — five milestones,
+a working product, a green gate. It did its job: the workflows were ready and
+publishing needed no new infrastructure.
 
 ---
 
@@ -543,13 +745,18 @@ stay short.
 ---
 
 ## D-014 — Light mode is the default; dark mode is a simple toggle
-**Date:** 2026-09-08 · **Status:** Accepted
+**Date:** 2026-09-08 · **Status:** Superseded by [D-029](#d-029--appearance-is-two-choices-a-palette-and-light--dark--system)
 
 **Why:** Stated product requirement. The application should feel like a calm
 document archive, and light is the appropriate default for a reading surface.
 
 **Consequences:** The theme choice persists in `localStorage`. With no stored
 choice, the system preference is honoured, falling back to light.
+
+**Superseded 2026-09-09.** The principle stands — light is still what a reader
+gets when nothing else is known. D-020 replaces the two-way toggle with a
+palette choice and a three-way Light / Dark / System theme choice. D-029
+supersedes only the shape of the control, not the principle.
 
 ---
 

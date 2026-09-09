@@ -36,9 +36,22 @@ What it cannot do yet: edit or delete conversations from the interface, import
 attachments, or store anything anywhere but your own disk. Cloud is Milestone 6
 and is off by default when it arrives.
 
-Underneath: a FastAPI backend, a React + TypeScript + Vite frontend with light
-and dark modes, SQLite with FTS5 as a rebuildable index, Docker Compose, CI, and
-complete project memory.
+Underneath: a FastAPI backend, a React + TypeScript + Vite frontend, SQLite with
+FTS5 as a rebuildable index, Docker Compose, CI, and complete project memory.
+
+Appearance is two remembered choices in the header (D-029): a palette — Light
+minimal by default, Warm paper, or Ink & violet — and a theme of Light, Dark or
+System, which keeps following the computer for as long as it is selected.
+
+The workspace is still one page and one view. Import opens in a dialog rather
+than sitting below the archive, and the sticky header links to five sections —
+Archive, Coming next, Status, Support, Contribute — with a Back to top link in
+the footer. In-page anchors, not routes (D-030, D-031).
+
+Support and Contribute explain donations and commercial licensing. **Donation
+links are not configured yet**: every URL in `apps/web/src/support.ts` ships
+blank on purpose and unset ones are not rendered, so nothing shows a dead link.
+Fill that file in to turn them on.
 
 ## What runs
 
@@ -51,8 +64,10 @@ docker compose up --build
 - API — http://localhost:8000, docs at `/docs`
 - Archive folder — `./data/archive`, git-ignored
 
-Verified working on 2026-09-08: both containers start, the API reports healthy,
-the interface loads and displays live backend status.
+Verified working on 2026-09-09: both containers start, the API reports healthy,
+the interface loads and displays live backend status. The Compose project name
+is pinned to `mindarchive`, so renaming the checkout directory no longer breaks
+`up` with a container name conflict.
 
 ## What is implemented
 

@@ -5,6 +5,131 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-09 — Support, Contribute, and a footer
+
+**Session:** [2026-09-09-03-support-contribute-footer-and-navigation-sections](sessions/2026-09-09-03-support-contribute-footer-and-navigation-sections/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**Two of the three requested backlog items were already built**, and checking
+first is what stopped them being filed twice. `importers/claude.py` has existed
+since Milestone 5 with its own tests, and `.json` exports already import —
+D-027's shape-based detection is precisely what makes a bare
+`conversations.json` work when ChatGPT and Claude share that filename. The real
+gap is the *other* providers, and that is what the backlog now says.
+
+**The privacy worry was checked, not assumed.** A real Claude export in `tmp/`
+cannot be committed: `.gitignore` already covers `tmp/`, `conversations.json`
+and `*.zip`. Confirmed with `git check-ignore`.
+
+**Five nav sections now (D-031)**: Archive, Coming next, Status, Support,
+Contribute, plus a footer with copyright, licence, contact and Back to top.
+"Coming next" became its own section again, **reversing point 4 of D-030 on the
+same day** — folding it into Status was tidier until it needed a nav entry.
+D-030 is struck at that point rather than quietly rewritten.
+
+**No handle, address or URL was invented.** Every donation link in the new
+`support.ts` ships blank; unset ones are filtered out, and the panel says so
+rather than showing a placeholder. Filling that one file in turns them on.
+
+**Contribute tells people not to send their export files** when reporting an
+importer bug — a broken export is a copy of someone's private conversations,
+and a privacy-first product should not teach the opposite habit. Tested.
+
+**One real bug caught by a test:** the `mailto:` subject was not
+percent-encoded, so mail clients would truncate it at the first space. Fixed at
+the source.
+
+**Verified**: 98 frontend tests (was 94), full gate green.
+
+**Not done:** still no visual check across any of the day's three sessions.
+
+---
+
+## 2026-09-09 — Import becomes a dialog, and the page gets navigation
+
+**Session:** [2026-09-09-02-import-dialog-and-in-page-navigation](sessions/2026-09-09-02-import-dialog-and-in-page-navigation/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**The literal request would have made it worse, and reading the code first is
+what caught that.** Import was to move above the archive. But `ImportPanel`
+carries the export instructions, the timing warning and the inbox status — a
+screenful — so lifting it would have pushed the conversations down on every
+visit to fix something done a handful of times. Two alternatives were drawn on
+the shipped design and published for a decision before any code changed.
+
+**Import is now a dialog (D-030)** opened from the archive header and the nav,
+both showing the inbox waiting count. It closes on Escape, on a click outside,
+and on its close button, and gives focus back to whatever opened it. `Modal` is
+the project's first dialog primitive — hand-written, because the native
+`<dialog>`'s `showModal()` is not implemented everywhere the tests run, and
+because this did not warrant a dependency.
+
+**The page now navigates within itself.** Sticky header with anchor links to
+Your archive and Status, the current section highlighted while scrolling, and a
+Back to top link. These are anchors, not routes — D-008 is extended, not
+reversed, and the extension is written down rather than slipped in.
+
+**"What is coming next" moved into the Status panel**, and that panel stopped
+calling itself "Your archive", which `ArchivePanel` already does.
+
+**Inbox state moved into `useInbox`**, because the panel and the button both
+need the waiting count and the backend should be asked once.
+
+**Verified**: 94 frontend tests (was 82), full gate green. Two failures were hit
+and fixed on the way — a props change that broke the panel's tests, and one
+assertion on wording the compact row had changed.
+
+**Not done:** no visual check. Everything is verified by tests and the build.
+
+---
+
+## 2026-09-09 — Appearance controls, and two repairs
+
+**Session:** [2026-09-09-01-appearance-controls-palette-and-light-dark-system](sessions/2026-09-09-01-appearance-controls-palette-and-light-dark-system/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**A file move had quietly disarmed the project's own instructions.**
+`CLAUDE.md`, `GEMINI.md` and `QWEN.md` had been moved into `prompts/` to shorten
+the root. Each of those tools auto-loads its file from the repository root and
+says nothing when it is missing, so every future agent session would have run
+with no project rules and no error. The three were restored; `MASTER.md`, which
+is referenced by path and has no such constraint, stayed at `prompts/MASTER.md`.
+Live documents were repointed; history was deliberately left as written.
+
+**The docker failure was a stale container, not a naming problem.** A container
+from before the directory was renamed was still running under the old Compose
+project name, colliding with the pinned `container_name`. Removed, and
+`name: mindarchive` pinned in `docker-compose.yml` so a directory rename cannot
+repeat it.
+
+**Appearance became two questions instead of one (D-029).** A palette — Light
+minimal (default), Warm paper, Ink & violet — and a theme: Light, Dark or
+System. Three palettes were drawn from the user's own references and published
+as a full-page preview with a live switcher before any code changed.
+
+**The old toggle had a real defect.** It resolved the system preference into a
+concrete light/dark and immediately stored it, so a first visit permanently
+pinned the reader to whatever their computer said at that moment; "follow the
+system" was unreachable. `system` is now a stored choice, watched for changes.
+Because the resolved theme is what gets stamped on `<html>`, the stylesheet
+selects on `[data-palette][data-theme]` alone — which removed the pre-existing
+duplication of every dark token across two selectors.
+
+**A decision-number collision was caught before it landed** — D-020 was already
+taken. Renumbered to D-029 and added to the `docs/DECISIONS.md` index, the step
+missed for D-025 and D-026 in Milestone 4.
+
+**Verified**: 82 frontend tests, full `dev.py verify` gate green.
+
+**Not done:** the preview's layout and typography. Only the colour system and the
+controls shipped; `docs/index.html` is untouched, and the Google-Fonts typography
+in the preview cannot ship as-is in a privacy-first app.
+
+---
+
 ## 2026-09-08 — Milestone 5: a second provider, and archive export
 
 **Session:** [2026-09-08-07-milestone-5-second-importer-and-archive-export](sessions/2026-09-08-07-milestone-5-second-importer-and-archive-export/SESSION.md)
