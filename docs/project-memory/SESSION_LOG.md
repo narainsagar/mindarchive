@@ -48,6 +48,16 @@ compile.
 **Not done:** nothing is pushed. `gh` is not installed and the GitHub username
 is unknown, so the first push is the maintainer's step.
 
+**Follow-up, same day — the visual check caught a shipped bug.** Every
+documentation link on the rebuilt landing page would have 404ed on GitHub Pages.
+Jekyll only converts Markdown with YAML front matter, and no document in `docs/`
+had any, so `PRODUCT.html` and the rest would never have existed. Fixed with
+front matter on all eleven documents and a `layout` default, and the site given
+the application's palettes and Light / Dark / System through one Jekyll layout
+(**D-033**). The lesson written into the guides: `python -m http.server` runs no
+Jekyll, so under it a correct site and a broken one look identical — verify by
+building the real output.
+
 ---
 
 ## 2026-09-09 — Support, Contribute, and a footer

@@ -112,6 +112,30 @@ Commits:
 - The web Docker image runs the Vite dev server and is unsuitable for any
   public host. Milestone 7.
 
+## Follow-up, same day — the visual check found a shipped bug
+
+The maintainer previewed the site before pushing and reported that every
+documentation link 404ed. It was not a preview artefact: **Jekyll only converts
+Markdown that has YAML front matter**, a file without it is copied verbatim, and
+no document in `docs/` had any. `PRODUCT.html` and the rest would not have
+existed on GitHub Pages either. The links written into the rebuilt landing page
+were broken from the moment they were written, and the commit had already been
+made.
+
+Fixed in `a9b0518`: front matter on all eleven documents, `layout: default`
+supplied through `_config.yml` defaults, and the site given the same appearance
+controls as the application through `_layouts/default.html` and
+`assets/site.css` (**D-033**) — same three palettes, same Light / Dark / System,
+same token names, so the two cannot drift.
+
+**Why it was not caught here.** `python -m http.server`, which this session
+recommended, runs no Jekyll — a correct site and a broken one are
+indistinguishable under it. Verification is now a Docker one-liner that builds
+the real Jekyll output, and `GITHUB_PAGES.md` and `DEPLOYMENT.md` both say so.
+Verified: all nine linked pages present, no unrendered Liquid, every internal
+link resolving, `project-memory/` absent, controls present on a documentation
+page.
+
 ## Exact next step
 
 Put the real GitHub username in `project.json`, run
