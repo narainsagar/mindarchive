@@ -5,6 +5,51 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-09 — Ready to publish, and two things refused
+
+**Session:** [2026-09-09-04-prepare-for-publication-on-github-and-pages](sessions/2026-09-09-04-prepare-for-publication-on-github-and-pages/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**D-017 is reversed.** The condition it set — a product worth showing — has been
+met. Publishing needed no new infrastructure, which is exactly what writing the
+workflows at Milestone 1 and leaving them dormant was for.
+
+**A separate "clean" public branch was asked for and argued against.**
+project-memory is already excluded from the published *site*; only repository
+browsers see it. And branches share history, so a second branch hides nothing
+once history is pushed, while costing a cherry-pick forever. The real mechanism
+would be two repositories. Once put that way the choice became one public
+repository with everything in it (**D-032**).
+
+**A public VPS demo was asked for and refused.** `docs/SECURITY.md` says there
+is no authentication because this is a single-user local application. A public
+instance means one shared archive that any visitor can read, write and export —
+whatever one person imports, everyone downloads. That is the failure this
+product exists to prevent, and it would put strangers' conversations on the
+maintainer's server. Deferred with the four prerequisites scoped in the backlog.
+
+**Prepared:** `docs/index.html` rebuilt on the same token names as
+`apps/web/src/styles.css` so the site and application cannot drift;
+`docs/DEPLOYMENT.md` written end to end, including a VPS section that says what
+would have to exist first.
+
+**Checked before committing, not after:** no secrets tracked, `data/`, `tmp/`
+and `.env` all ignored. Git identity turned out to be unset despite existing
+commits having an author — fixed per-repository before committing rather than
+mid-commit.
+
+**Three commits, not five.** `App.tsx` and `styles.css` are touched by all three
+feature sessions, so a finer split would have produced commits that do not
+compile.
+
+**Verified**: 98 tests, full gate green, working tree clean.
+
+**Not done:** nothing is pushed. `gh` is not installed and the GitHub username
+is unknown, so the first push is the maintainer's step.
+
+---
+
 ## 2026-09-09 — Support, Contribute, and a footer
 
 **Session:** [2026-09-09-03-support-contribute-footer-and-navigation-sections](sessions/2026-09-09-03-support-contribute-footer-and-navigation-sections/SESSION.md)

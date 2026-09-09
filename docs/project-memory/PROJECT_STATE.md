@@ -53,6 +53,22 @@ links are not configured yet**: every URL in `apps/web/src/support.ts` ships
 blank on purpose and unset ones are not rendered, so nothing shows a dead link.
 Fill that file in to turn them on.
 
+## Publication
+
+Decided but **not yet done** (D-032): a public GitHub repository named
+`mind-archive`, with Pages serving `docs/`. The application is not hosted
+anywhere and there is no public demo — the API has no authentication by design,
+so a public instance would expose one shared archive to every visitor.
+
+Everything is prepared and committed. Still outstanding:
+
+- **No git remote, nothing pushed.** `gh` is not installed here.
+- **`project.json` holds `github.username: "YOUR-USERNAME"`.** Fill it in and
+  run `python scripts/set_identity.py`.
+- The CI and Pages workflows have still never run against a live repository.
+
+Steps are in [`docs/DEPLOYMENT.md`](../DEPLOYMENT.md).
+
 ## What runs
 
 ```bash
