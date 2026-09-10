@@ -366,11 +366,12 @@ describe("support, contributing and the footer", () => {
        provider, no amounts, no checkout inside the app (D-038). */
     await renderApp();
 
+    /* The path, not the host: the host comes from VITE_SITE_URL and defaults
+       to the local Jekyll server so the link is usable while developing.
+       Pinning the production URL here would make the test fail locally for a
+       reason that has nothing to do with the behaviour being checked. */
     const link = screen.getByRole("link", { name: /ways to support this/i });
-    expect(link).toHaveAttribute(
-      "href",
-      "https://rootedglobal.github.io/mindarchive/support/",
-    );
+    expect(link.getAttribute("href")).toMatch(/\/support\/$/);
   });
 
   it("contains no payment provider anywhere in the interface", async () => {

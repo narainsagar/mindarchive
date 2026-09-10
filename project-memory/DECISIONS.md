@@ -508,6 +508,46 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-040 — Full-width bands, a centred footer, and a site URL that works locally
+**Date:** 2026-09-10 · **Status:** Accepted
+
+Three corrections after looking at the running pages.
+
+**`--content-max` is now `none`.** The bands use the full screen on both
+surfaces. `--gutter` still holds content off the edges and `--measure` still
+caps running text, so nothing that should be readable sprawls — the cap was
+solving a problem the measure already solves, at the cost of a layout that did
+not match the rest of the interface.
+
+**The footer is one line of text and one centred row of links.** It was two
+stacked paragraphs on the left and a link row pushed right by
+`justify-content: space-between`, which left a visible hole across the middle
+of a full-width footer. The slogan and the licence are the same sentence's
+worth of information, so they are now one paragraph, and everything is centred.
+Identical on both surfaces.
+
+**`VITE_SITE_URL` makes the Support link usable while developing.** This is the
+one that mattered: the application's Support panel had the production URL
+hardcoded, so clicking it on a developer's machine jumped to the published
+site — which meant **the application could not be checked locally at all**.
+
+It now follows the `VITE_API_BASE_URL` pattern that was already there, and
+defaults to `http://localhost:4000`, the local Jekyll server. `dev.py up` plus
+the Jekyll one-liner gives a working link with no configuration.
+
+**Consequences:**
+
+- Documented in `.env.example` and set in `docker-compose.yml`.
+- The test asserts the **path** (`/support/`), not the host. Pinning the
+  production URL would fail locally for a reason unrelated to the behaviour.
+- Verified rather than assumed: `VITE_SITE_URL` reaches the container, the
+  served module carries `localhost:4000` rather than the published host, and
+  `localhost:4000/support/` answers 200.
+- The token comments describing `--content-max` as "an outer bound" were
+  corrected. A comment that contradicts its value is worse than no comment.
+
+---
+
 ## D-039 — Project memory lives at the repository root, not under `docs/`
 **Date:** 2026-09-10 · **Status:** Accepted
 

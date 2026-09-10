@@ -22,8 +22,8 @@
      Three numbers decide the whole page rhythm.
 
      --gutter       the side inset. Every band uses it, so everything aligns.
-     --content-max  an outer bound. Without one, a paragraph on an ultra-wide
-                    display runs the full 3440px and becomes unreadable.
+     --content-max  one\ — the bands use the full screen. Readability is
+                    handled by --measure below, not by capping the layout.
      --measure      the width of *running text* only. Tables, code blocks and
                     diagrams are deliberately allowed the full band — which is
                     the whole reason to have a wide layout. Prose is not:
@@ -31,7 +31,10 @@
                     is the number that keeps it there.
      -------------------------------------------------------------------- */
   --gutter: 60px;
-  --content-max: 1280px;
+  /* No outer cap: the bands use the full screen, which is what the rest of the
+     interface does. The gutter holds content off the edges and --measure keeps
+     running text readable, so nothing sprawls that should not. */
+  --content-max: none;
   --measure: 72ch;
   /* Ledes, summaries and small print sit deliberately narrower than body
      text. The difference is hierarchy, not an accident — a standfirst that
@@ -893,29 +896,35 @@ a {
   padding: 28px 0 48px;
 }
 
+/* Centred and stacked: one line of text, one row of links. The previous
+   space-between layout left a hole across the middle of a full-width footer,
+   and the two paragraphs read as one sentence anyway. */
 .site-footer__in {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 16px 32px;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
 }
 
-.site-footer p {
+.site-footer__legal {
+  margin: 0;
   color: var(--text-faint);
   font-size: 0.8125rem;
-  margin: 0 0 6px;
-  max-width: var(--measure-narrow);
+  /* Wider than body text because it is one continuous line, but still capped
+     so it does not run the whole width of a large display. */
+  max-width: 96ch;
 }
 
 .site-footer__slogan {
-  color: var(--text-soft) !important;
-  font-size: 0.875rem !important;
+  color: var(--text-soft);
+  font-weight: 500;
 }
 
 .site-footer__links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px 18px;
 }
 

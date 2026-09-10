@@ -57,3 +57,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-037 | One header row; appearance is two menus; navigation folds |
 | D-038 | Money is taken by a merchant of record, through plain links |
 | D-039 | Project memory lives at the repository root, not under `docs/` |
+| D-040 | Full-width bands, a centred footer, and a site URL that works locally |

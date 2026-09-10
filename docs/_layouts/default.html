@@ -132,14 +132,15 @@
 
     <footer class="site-footer">
       <div class="site-footer__in">
-        <div>
-          <p class="site-footer__slogan">Local first. Privacy first. Yours.</p>
-          <p>
-            © 2026 Mind Archive. Source-available under PolyForm Noncommercial
-            1.0.0. Free for personal and noncommercial use; company use needs a
-            commercial licence.
-          </p>
-        </div>
+        <!-- One flowing line rather than two stacked blocks: the slogan and
+             the licence are the same sentence's worth of information, and
+             stacking them left a hole in a full-width footer. -->
+        <p class="site-footer__legal">
+          <strong class="site-footer__slogan">Local first. Privacy first. Yours.</strong>
+          © 2026 Mind Archive. Source-available under PolyForm Noncommercial
+          1.0.0. Free for personal and noncommercial use; company use needs a
+          commercial licence.
+        </p>
         <div class="site-footer__links">
           <a href="{{ '/docs/' | relative_url }}">Docs</a>
           <a href="{{ '/blog/' | relative_url }}">Blog</a>

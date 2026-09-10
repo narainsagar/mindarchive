@@ -14,14 +14,17 @@ export function SiteFooter() {
   return (
     <footer className="footer">
       <div className="workspace footer__inner">
-        <div className="footer__block">
-          <p className="footer__slogan">Local first. Privacy first. Yours.</p>
-          <p className="footer__legal">
-            © {COPYRIGHT_YEAR} {COPYRIGHT_HOLDER}. Source-available under
-            PolyForm Noncommercial 1.0.0. Free for personal and noncommercial
-            use; company use needs a commercial licence.
-          </p>
-        </div>
+        {/* One flowing line rather than two stacked blocks. The slogan and the
+            licence are the same sentence's worth of information, and stacking
+            them left a hole in a full-width footer. */}
+        <p className="footer__legal">
+          <strong className="footer__slogan">
+            Local first. Privacy first. Yours.
+          </strong>{" "}
+          © {COPYRIGHT_YEAR} {COPYRIGHT_HOLDER}. Source-available under PolyForm
+          Noncommercial 1.0.0. Free for personal and noncommercial use; company
+          use needs a commercial licence.
+        </p>
 
         <nav className="footer__links" aria-label="Footer">
           <a href="#support">Support</a>

@@ -35,14 +35,17 @@
      two surfaces keep the same rhythm.
 
      --gutter       the side inset. Every band uses it, so everything aligns.
-     --content-max  an outer bound, so content does not sprawl on a wide
-                    display.
+     --content-max  one\ — the bands use the full screen. Readability is
+                    handled by --measure below, not by capping the layout.
      --measure      the width of running text only. Result lists, tables and
                     code keep the full band; prose does not, because a line
                     much past 80 characters is hard to track back from.
      -------------------------------------------------------------------- */
   --gutter: 60px;
-  --content-max: 1280px;
+  /* No outer cap: the bands use the full screen, which is what the rest of the
+     interface does. The gutter holds content off the edges and --measure keeps
+     running text readable, so nothing sprawls that should not. */
+  --content-max: none;
   --measure: 72ch;
   /* Panel copy, notes and small print sit narrower than long-form text. The
      difference is hierarchy, not an accident. */
@@ -914,37 +917,36 @@ html {
 /* -----------------------------------------------------------------------
    Footer
    ----------------------------------------------------------------------- */
+/* Centred and stacked: one line of text, one row of links. The previous
+   space-between layout left a hole across the middle of a full-width footer,
+   and the two paragraphs read as one sentence anyway. Matches the website. */
 .footer__inner {
   display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 18px 32px;
-  padding-block: 4px;
-}
-
-.footer__block {
-  flex: 1 1 340px;
-  display: flex;
   flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  padding-block: 4px;
 }
 
 .footer__slogan {
   color: var(--text-soft);
-  font-size: 0.875rem;
+  font-weight: 500;
 }
 
 .footer__legal {
   color: var(--text-faint);
   font-size: 0.8125rem;
-  max-width: var(--measure-narrow);
+  /* Wider than body text because it is one continuous line, but still capped
+     so it does not run the whole width of a large display. */
+  max-width: 96ch;
 }
 
 .footer__links {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 8px 18px;
 }
 

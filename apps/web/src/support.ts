@@ -16,6 +16,20 @@
  * you would rather licensing mail went somewhere else.
  */
 
+/**
+ * Where the project website lives.
+ *
+ * Configurable for the same reason `VITE_API_BASE_URL` is: the address differs
+ * between a developer's machine and the published site. It defaults to the
+ * local Jekyll server, so `dev.py up` plus the Jekyll one-liner gives a
+ * working Support link with no configuration — the previous hardcoded
+ * production URL made the app impossible to check locally.
+ *
+ * Set VITE_SITE_URL for a production build.
+ */
+const SITE_URL =
+  import.meta.env.VITE_SITE_URL ?? "http://localhost:4000";
+
 export interface SupportLink {
   /** Shown on the button. */
   label: string;
@@ -50,7 +64,7 @@ export const SUPPORT: SupportConfig = {
   donate: [
     {
       label: "Ways to support this",
-      url: "https://rootedglobal.github.io/mindarchive/support/",
+      url: `${SITE_URL}/support/`,
       note: "Opens the website",
     },
   ],
