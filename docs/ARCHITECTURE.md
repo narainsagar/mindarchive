@@ -1,5 +1,6 @@
 ---
 title: Architecture
+permalink: /architecture/
 ---
 
 # Architecture
@@ -7,7 +8,7 @@ title: Architecture
 How Mind Archive is put together, and why.
 
 The decisions behind this document are recorded in
-[project-memory/DECISIONS.md](project-memory/DECISIONS.md).
+[project-memory/DECISIONS.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/DECISIONS.md).
 
 ## Shape of the system
 
@@ -37,7 +38,7 @@ the other is implemented.
 Storage adapters are the one piece still to come: local storage is currently
 direct filesystem access, and the interface is introduced in Milestone 5 against
 a real second implementation rather than guessed at now. See
-[project-memory/MILESTONES.md](project-memory/MILESTONES.md).
+[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/MILESTONES.md).
 
 ## Backend — `apps/api`
 
@@ -200,7 +201,7 @@ hostile. `zip_safety.py` refuses path traversal, zip bombs and oversized
 archives; every JSON field is checked before use; conversation titles become
 folder names only through `paths.py`. One unreadable conversation is skipped
 and reported rather than failing the whole import. See
-[SECURITY.md](SECURITY.md).
+[SECURITY.md]({{ '/security/' | relative_url }}).
 
 ## Search
 
@@ -250,7 +251,7 @@ docker compose up --build
     data → ./data          (bind mount, git-ignored)
 ```
 
-Native development is supported and documented in [DEVELOPMENT.md](DEVELOPMENT.md),
+Native development is supported and documented in [DEVELOPMENT.md]({{ '/development/' | relative_url }}),
 and requires Python 3.11+ and Node 20+.
 
 ## What is deliberately absent

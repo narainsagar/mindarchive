@@ -1,11 +1,12 @@
 ---
 title: Decisions
+permalink: /decisions/
 ---
 
 # Decisions
 
 **The decision log lives in
-[project-memory/DECISIONS.md](project-memory/DECISIONS.md).**
+[project-memory/DECISIONS.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/DECISIONS.md).**
 
 This file is a pointer, deliberately. Keeping two decision logs guarantees they
 will disagree, and a decision log that cannot be trusted is worse than none.
@@ -52,3 +53,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-033 | The website shares the application's palettes, through one Jekyll layout |
 | D-034 | The appearance controls carry no visible group labels |
 | D-035 | The blog is part of the Jekyll site, and nothing publishes itself |
+| D-036 | Clean lowercase routes for every page, set per page |

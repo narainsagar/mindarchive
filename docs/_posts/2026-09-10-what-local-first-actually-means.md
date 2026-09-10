@@ -30,7 +30,7 @@ decided who you are. Adding a login to a program that only you can reach would
 be theatre.
 
 The consequence is written into
-[the security notes]({{ '/SECURITY.html' | relative_url }}): do not expose it to
+[the security notes]({{ '/security/' | relative_url }}): do not expose it to
 a network you do not control. We hold ourselves to that too — there is no public
 demo of Mind Archive, because a public instance would be one shared archive that
 any visitor could read and download. For a product built on your conversations
@@ -45,7 +45,7 @@ data/
 │   │   ├── chatgpt/
 │   │   │   └── 2026-03-11-postgres-index-strategy.md
 │   │   └── claude/
-│   │       └── 2026-04-02-mind-archive-naming.md
+│   │       └── 2026-04-02-mindarchive-naming.md
 │   └── index.sqlite
 └── inbox/
 ```
@@ -83,7 +83,7 @@ You do not have to take any of it on trust.
    browser's network tab, or point `tcpdump` at it. Nothing leaves.
 2. **Read the config.** [`.env.example`](https://github.com/RootedGlobal/mindarchive/blob/main/.env.example)
    documents every setting and its default, in one file.
-3. **Read the security notes.** [SECURITY.html]({{ '/SECURITY.html' | relative_url }})
+3. **Read the security notes.** [The threat model]({{ '/security/' | relative_url }})
    states the threat model plainly, including what Mind Archive does *not*
    protect you from.
 4. **Delete the index.** Remove `index.sqlite`, restart, watch it rebuild. Your

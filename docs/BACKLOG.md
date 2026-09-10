@@ -1,5 +1,6 @@
 ---
 title: Backlog
+permalink: /backlog/
 ---
 
 # Backlog
@@ -31,7 +32,7 @@ here is a commitment.
 
 **Decided (D-032):** public GitHub repository, Pages for the documentation site,
 no hosted application, no public demo. Steps are in
-[DEPLOYMENT.md](DEPLOYMENT.md).
+[DEPLOYMENT.md]({{ '/deployment/' | relative_url }}).
 
 Still open:
 
@@ -72,7 +73,7 @@ and `docker compose up`.
 
 None of this is application work — it belongs on the project website, not in
 this repository. Recorded here so the plan is not lost. See
-[LICENSING.md](../LICENSING.md) and decision D-016.
+[LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md) and decision D-016.
 
 - **Contributor Licence Agreement.** Required before any outside contribution
   can be merged, because contributed code must be includable in commercially
@@ -99,7 +100,7 @@ this repository. Recorded here so the plan is not lost. See
 
 Done in Milestone 3.5: watched inbox folder, re-import reporting, correct
 guidance, and an optional browser script. See decisions D-023 and D-024, and
-[RESEARCH.md](project-memory/RESEARCH.md) R-004 for the export's real timings.
+[RESEARCH.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/RESEARCH.md) R-004 for the export's real timings.
 
 Still open:
 

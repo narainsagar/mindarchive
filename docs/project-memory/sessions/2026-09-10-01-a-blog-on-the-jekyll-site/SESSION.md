@@ -78,9 +78,9 @@ Added:
   docs/feed.xml
   docs/_layouts/post.html
   docs/_drafts/TEMPLATE.md
-  docs/_posts/2026-09-10-introducing-mind-archive.md
+  docs/_posts/2026-09-10-introducing-mindarchive.md
   docs/_posts/2026-09-10-what-local-first-actually-means.md
-  docs/_posts/2026-09-10-how-mind-archive-is-built.md
+  docs/_posts/2026-09-10-how-mindarchive-is-built.md
   docs/_posts/2026-09-10-decisions-worth-stealing.md
 
 Modified:

@@ -1,5 +1,6 @@
 ---
 title: Getting your conversations sooner
+permalink: /faster-import/
 ---
 
 # Getting your conversations sooner
@@ -118,4 +119,4 @@ saying why. An empty inbox means everything is in.
 ## Other providers
 
 Only ChatGPT is supported today. Claude, Gemini and others are Milestone 5 —
-see [ROADMAP.md](ROADMAP.md).
+see [ROADMAP.md]({{ '/roadmap/' | relative_url }}).

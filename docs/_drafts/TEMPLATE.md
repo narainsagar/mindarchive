@@ -60,7 +60,7 @@ product that oversells is a privacy-first product nobody trusts.
   PolyForm Noncommercial 1.0.0 and the distinction is deliberate.
 - Link related posts and docs with `relative_url`, so they work at
   `/mindarchive/` as well as at a custom domain:
-  `[the decision log]({{ '/DECISIONS.html' | relative_url }})`
+  `[the decision log]({{ '/decisions/' | relative_url }})`
 
 ## Close with somewhere to go
 

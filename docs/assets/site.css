@@ -171,8 +171,8 @@ a {
 }
 
 .wrap {
-  max-width: 820px;
-  margin: 0 auto;
+  /* max-width: 820px; */
+  margin: auto 60px;
   padding: 0 24px;
 }
 
@@ -198,9 +198,9 @@ a {
 }
 
 .site-header__in {
-  max-width: 820px;
-  margin: 0 auto;
-  padding: 12px 24px;
+  /* max-width: 820px; */
+  margin: auto 60px;
+  padding: 12px 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -233,8 +233,8 @@ a {
 }
 
 .site-nav__in {
-  max-width: 820px;
-  margin: 0 auto;
+  /* max-width: 820px; */
+  margin: auto 60px;
   padding: 0 24px;
   display: flex;
   align-items: center;
@@ -414,7 +414,7 @@ a {
 .doc p,
 .doc li {
   color: var(--text-soft);
-  max-width: 68ch;
+  /* max-width: 68ch; */
 }
 
 .doc p {
@@ -428,7 +428,7 @@ a {
 
 .doc ul,
 .doc ol {
-  padding-left: 22px;
+  /* padding-left: 22px; */
   margin: 0 0 16px;
 }
 
@@ -638,6 +638,49 @@ a {
 }
 
 /* -----------------------------------------------------------------------
+   Documentation index
+   ----------------------------------------------------------------------- */
+.doc-index {
+  list-style: none;
+  margin: 0 0 8px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.doc-index li {
+  margin: 0;
+  padding-left: 16px;
+  border-left: 2px solid var(--border);
+  /* max-width: 68ch; */
+}
+
+.doc-index a {
+  display: block;
+  font-weight: 600;
+  text-decoration: none;
+  margin-bottom: 2px;
+}
+
+.doc-index a:hover {
+  text-decoration: underline;
+}
+
+.doc-index span {
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+}
+
+.doc-index__note {
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+  color: var(--text-faint);
+  font-size: 0.9375rem;
+}
+
+/* -----------------------------------------------------------------------
    Footer
    ----------------------------------------------------------------------- */
 .site-footer {
@@ -646,8 +689,8 @@ a {
 }
 
 .site-footer__in {
-  max-width: 820px;
-  margin: 0 auto;
+  /* max-width: 820px; */
+  margin: auto 60px;
   padding: 0 24px;
   display: flex;
   flex-wrap: wrap;

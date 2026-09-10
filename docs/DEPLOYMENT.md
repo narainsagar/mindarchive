@@ -1,5 +1,6 @@
 ---
 title: Deployment
+permalink: /deployment/
 ---
 
 # Deployment
@@ -190,10 +191,10 @@ deployment once it succeeds.
 
 - The landing page loads, and the palette and theme controls in the header work
   — the same three palettes as the application, and Light / Dark / System.
-- **The documentation links resolve.** Jekyll renders `PRODUCT.md` as
-  `PRODUCT.html`, but only because every `.md` in `docs/` has YAML front matter.
-  If you add a page without it, its link will 404. See
-  [GITHUB_PAGES.md](GITHUB_PAGES.html).
+- **The documentation links resolve.** Jekyll renders `PRODUCT.md` at
+  `/product/`, but only because it has YAML front matter *and* an explicit
+  `permalink`. A page missing either will 404. See
+  [the documentation-site notes]({{ '/github-pages/' | relative_url }}).
 - A documentation page has the same header and footer as the landing page.
 - `docs/project-memory/` is **not** reachable on the site. It is excluded in
   `docs/_config.yml`.
@@ -265,7 +266,7 @@ is the exact failure it exists to prevent.
 ### What would have to exist first
 
 A public demo is real work, not a deployment step. It is in
-[BACKLOG.md](BACKLOG.md):
+[BACKLOG.md]({{ '/backlog/' | relative_url }}):
 
 1. **A read-only demo mode** — `MIND_ARCHIVE_DEMO=true` seeds a synthetic
    archive and refuses every write. Visitors search and read; nobody uploads.

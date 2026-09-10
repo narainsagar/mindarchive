@@ -1,5 +1,6 @@
 ---
 title: GitHub Pages
+permalink: /github-pages/
 ---
 
 # GitHub Pages
@@ -19,20 +20,30 @@ site and directly in the repository.
 
 **Every Markdown file needs YAML front matter.** Jekyll only converts files that
 have it; a file without front matter is copied through verbatim, so
-`PRODUCT.md` would stay `PRODUCT.md` and every link to `PRODUCT.html` would
-404. That is exactly what happened the first time this site was built, and it is
-the one thing to remember when adding a page:
+`PRODUCT.md` would stay `PRODUCT.md` and every link to it would 404. That is
+exactly what happened the first time this site was built.
+
+**Every page also needs an explicit `permalink`.** Pages live at clean lowercase
+routes — `/product/`, not `/PRODUCT.html` — and Jekyll will not invent one for
+you:
 
 ```markdown
 ---
 title: Product
+permalink: /product/
 ---
 
 # Product
 ```
 
 `_config.yml` supplies `layout: default` to every page through `defaults`, so
-the front matter only needs the title.
+the front matter needs only the title and the route.
+
+> **Do not add a top-level `permalink:` key to `_config.yml`.** A global
+> permalink applies to pages as well as posts. Setting `/blog/:title/` at the
+> top level once rewrote every documentation page from `PRODUCT.html` to
+> `PRODUCT/index.html` and broke the whole nav. The blog's permalink is scoped
+> to `type: posts` inside `defaults` for exactly that reason. See D-036.
 
 ```
 docs/
@@ -105,8 +116,12 @@ does the same thing.
 
 **What to check in the built output**, not the source folder:
 
-- `PRODUCT.html`, `ARCHITECTURE.html` and the rest exist. If one is missing, its
-  `.md` is missing front matter.
+- `product/index.html`, `architecture/index.html` and the rest exist. If one is
+  missing, its `.md` is missing front matter or a `permalink`.
+- **Every internal link resolves.** A permalink change can silently 404 a whole
+  section, so check the links rather than a handful of files — walk the built
+  output and confirm every `href` that is not an external URL points at a file
+  that exists.
 - `blog/index.html` exists and every post has its own `blog/<slug>/index.html`.
 - `_drafts/TEMPLATE.md` did **not** get published.
 - `feed.xml` is present and parses.
@@ -127,7 +142,7 @@ no date in it, so a post does not look stale a year later. `_drafts` is ignored
 unless you build with `--drafts`, so work in progress never ships.
 
 Nothing publishes itself — see decision D-035 and the *Writing a blog post*
-section of [CONTRIBUTING.md](../CONTRIBUTING.md).
+section of [CONTRIBUTING.md]({{ '/contribute/' | relative_url }}).
 
 ## Writing for the documentation site
 
@@ -144,4 +159,4 @@ pull request.
 `site.domain` in `project.json`, with `useCustomDomain` still `false`. To turn
 it on, add a `CNAME` file containing the domain to `docs/`, and point a `CNAME`
 DNS record at `rootedglobal.github.io`. Full steps, including the apex-versus-
-subdomain distinction, are in [DEPLOYMENT.md](DEPLOYMENT.md).
+subdomain distinction, are in [DEPLOYMENT.md]({{ '/deployment/' | relative_url }}).

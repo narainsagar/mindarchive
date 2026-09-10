@@ -508,6 +508,59 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-036 — Clean lowercase routes for every page, set per page
+**Date:** 2026-09-10 · **Status:** Accepted
+
+Every page on the site has an explicit lowercase `permalink` in its front
+matter: `/product/`, `/architecture/`, `/decisions/`, and so on. No `.html` URLs
+remain. The site also gained `/docs/` (a documentation index), `/contribute/`
+and `/coming-next/`.
+
+**The bug that forced this.** D-035 added `permalink: /blog/:title/` as a
+top-level key in `_config.yml`. **A global permalink applies to pages as well as
+posts.** Every documentation page moved from `PRODUCT.html` to
+`PRODUCT/index.html`, so every link in the navigation 404ed — the whole site
+except Home and Blog. The blog's permalink is now scoped to `type: posts` inside
+`defaults`, where it belongs.
+
+**Why it was not caught.** The verification script written for D-035 checked
+blog output only: the index, the four posts, the draft template, the feed. It
+confirmed everything it was asked about and missed that it had broken
+everything it was not. A check that only looks where you just worked cannot find
+what you broke elsewhere.
+
+The replacement walks the built output and resolves **every** `href` that is not
+an external URL — 371 links across 21 pages. That is now the documented standard
+in `GITHUB_PAGES.md`.
+
+**Cross-document links were also broken, and always had been.** Kramdown does
+not rewrite `.md` links, so `[BACKLOG.md](BACKLOG.md)` inside a published page
+pointed at a file that is not in the output. Those now use
+`{{ '/backlog/' | relative_url }}`.
+
+**The trade-off, stated plainly:** Liquid is required rather than a bare
+`/backlog/`, because this is a project site served from `/mindarchive/` and only
+`relative_url` supplies the base. The cost is that these links render as literal
+Liquid when the same file is read in GitHub's file browser. The published site
+is the primary artefact, so site correctness wins — but it is a real cost, not a
+free choice.
+
+Links to `docs/project-memory/` now point at GitHub, since that directory is
+deliberately excluded from the site.
+
+**Consequences:**
+
+- A new page needs front matter **and** a `permalink`. Jekyll invents neither.
+- Never add a top-level `permalink:` to `_config.yml` again. The comment there
+  says so.
+- `/docs/` is a hand-written index rather than a generated one — the ordering
+  and the one-line descriptions are editorial and worth writing by hand.
+- `/contribute/` summarises `CONTRIBUTING.md` for a site visitor and links to
+  the canonical file rather than restating its rules, so the two cannot drift
+  into conflict.
+
+---
+
 ## D-035 — The blog is part of the Jekyll site, and nothing publishes itself
 **Date:** 2026-09-10 · **Status:** Accepted
 

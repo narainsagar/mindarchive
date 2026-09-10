@@ -75,7 +75,7 @@ Still outstanding:
   password authentication was removed in 2021; a personal access token is
   required.
 - The CI and Pages workflows have still never run against a live repository.
-- `scripts/set_identity.py` rewrites `mind-archive` to `mindarchive` repository-
+- `scripts/set_identity.py` rewrites `mindarchive` to `mindarchive` repository-
   wide, which reaches beyond URLs — it renamed the inbox ledger file, the export
   filename prefix, temp-directory prefixes and both `container_name` values.
   Read its diff rather than committing it unseen. It does not manage `homepage`

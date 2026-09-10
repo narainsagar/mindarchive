@@ -18,15 +18,18 @@ defaults:
     values:
       layout: default
   # Posts get their own layout on top of that one — it adds the date and tags.
+  #
+  # The permalink is set HERE, scoped to posts, and deliberately not as a
+  # top-level `permalink:` key. A global permalink applies to pages as well as
+  # posts: setting `/blog/:title/` at the top level rewrote every documentation
+  # page from PRODUCT.html to PRODUCT/index.html and broke every link in the
+  # nav. See D-036.
   - scope:
       path: ""
       type: posts
     values:
       layout: post
-
-# Posts live at /blog/<slug>/ rather than Jekyll's dated default. A URL with a
-# date in it makes every post look stale the year after it is written.
-permalink: /blog/:title/
+      permalink: /blog/:title/
 
 # `url` and `baseurl` are deliberately NOT set here.
 #

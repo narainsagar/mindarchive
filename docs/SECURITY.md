@@ -1,5 +1,6 @@
 ---
 title: Security and Privacy
+permalink: /security/
 ---
 
 # Security and Privacy

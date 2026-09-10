@@ -1,5 +1,6 @@
 ---
 title: Development
+permalink: /development/
 ---
 
 # Development
@@ -205,7 +206,7 @@ mindarchive/
 
 ## Working on the project
 
-Read [AGENTS.md](../AGENTS.md) before your first change. It applies to humans
+Read [AGENTS.md](https://github.com/RootedGlobal/mindarchive/blob/main/AGENTS.md) before your first change. It applies to humans
 and AI agents alike, and describes the read order, working method and the
 definition of done.
 
@@ -222,7 +223,7 @@ The short version:
    it finds.
 
 Work on the current milestone only. Found something else worth doing? Put it in
-[BACKLOG.md](BACKLOG.md).
+[BACKLOG.md]({{ '/backlog/' | relative_url }}).
 
 ## Session memory
 
@@ -237,7 +238,7 @@ python scripts/session.py check      # validates project memory
 ```
 
 The mechanism is described in
-[project-memory/SESSION_PROTOCOL.md](project-memory/SESSION_PROTOCOL.md).
+[project-memory/SESSION_PROTOCOL.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/SESSION_PROTOCOL.md).
 `scripts/session.py check` also runs in CI.
 
 ## Tests and when to run them

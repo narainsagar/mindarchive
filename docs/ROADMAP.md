@@ -1,12 +1,13 @@
 ---
 title: Roadmap
+permalink: /roadmap/
 ---
 
 # Roadmap
 
 Where Mind Archive is going. The detailed, authoritative version — including
 what is finished — is
-[project-memory/MILESTONES.md](project-memory/MILESTONES.md).
+[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/MILESTONES.md).
 
 The repository must remain runnable after every milestone.
 
@@ -49,7 +50,7 @@ Getting an export out of ChatGPT takes days, so importing one should take no
 effort at all. A watched inbox folder imports anything you drop into it.
 Re-importing reports what is genuinely new rather than counting everything
 again, and rewrites nothing that has not changed. Correct guidance about the
-export's real timings. An optional [faster route](FASTER_IMPORT.md) you run
+export's real timings. An optional [faster route]({{ '/faster-import/' | relative_url }}) you run
 yourself in your own browser.
 
 ---
@@ -94,4 +95,4 @@ site.
 A hosted service. An account system. A chat interface. Telemetry. Anything that
 requires a network connection for the core product to work.
 
-Ideas that are not yet milestones live in [BACKLOG.md](BACKLOG.md).
+Ideas that are not yet milestones live in [BACKLOG.md]({{ '/backlog/' | relative_url }}).

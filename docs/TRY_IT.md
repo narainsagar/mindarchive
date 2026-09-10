@@ -1,5 +1,6 @@
 ---
 title: Try it yourself
+permalink: /try-it/
 ---
 
 # Try it yourself
@@ -97,7 +98,7 @@ theirs `conversations.json`, so the filename proves nothing.
 
 ### C. Your real conversations, today
 
-[docs/FASTER_IMPORT.md](FASTER_IMPORT.md) — a script you paste into your own
+[docs/FASTER_IMPORT.md]({{ '/faster-import/' | relative_url }}) — a script you paste into your own
 browser console. Takes minutes. Mind Archive never sees your session and never
 contacts OpenAI; it only reads the file the script downloads.
 
@@ -301,7 +302,7 @@ original is kept as `config.json.bak`.
 
 **Not there yet:** projects, editing or deleting from the interface, attachments
 (recorded as placeholders in the Markdown), providers beyond ChatGPT and Claude,
-and anything cloud. See [ROADMAP.md](ROADMAP.md).
+and anything cloud. See [ROADMAP.md]({{ '/roadmap/' | relative_url }}).
 
 **Worth knowing before you judge it:** neither importer has ever seen a real
 export. Both were written from documented formats and third-party parsers. If

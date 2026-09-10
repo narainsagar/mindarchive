@@ -1,5 +1,6 @@
 ---
 title: Product
+permalink: /product/
 ---
 
 # Product
@@ -72,7 +73,7 @@ modern document archive.
 are trusting it with private conversations, so you should be able to check what
 it does with them. Free for any noncommercial use; commercial use needs a
 licence. No private credentials are needed to build or run it. See
-[../LICENSING.md](../LICENSING.md).
+[../LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md).
 
 ## What Mind Archive is not
 
@@ -103,5 +104,5 @@ importer — the first point at which Mind Archive becomes useful. Later
 milestones add browsing and search, organisation, more importers, and finally
 optional cloud synchronisation.
 
-The full plan is in [ROADMAP.md](ROADMAP.md) and
-[project-memory/MILESTONES.md](project-memory/MILESTONES.md).
+The full plan is in [ROADMAP.md]({{ '/roadmap/' | relative_url }}) and
+[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/MILESTONES.md).
