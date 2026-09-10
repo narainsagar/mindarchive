@@ -8,7 +8,11 @@
  */
 
 interface Props<T extends string> {
-  /** Shown above the row, and read out as the group's name. */
+  /**
+   * The group's name. Read out by screen readers, hidden from the screen —
+   * see `.segmented__legend` in styles.css and D-034. Still required: without
+   * it the radios are announced as one undifferentiated pile.
+   */
   legend: string;
   /** Unique across the page — it groups the radios. */
   name: string;

@@ -101,5 +101,12 @@ desktop.ini
 # Local scratch space
 # ---------------------------------------------------------------
 /tmp/
+
+# Jekyll build output from previewing the documentation site locally.
+# GitHub Pages builds its own copy; this one is scratch.
+docs/_site/
+docs/.jekyll-cache/
+docs/.jekyll-metadata
+docs/Gemfile.lock
 /scratch/
 *.local

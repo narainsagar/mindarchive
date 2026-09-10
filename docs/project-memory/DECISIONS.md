@@ -508,6 +508,39 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-034 — The appearance controls carry no visible group labels
+**Date:** 2026-09-10 · **Status:** Accepted
+
+The words "Palette" and "Theme" no longer appear above the segmented controls,
+in the application or on the website. The `<legend>` elements remain in the
+markup and are hidden with the standard visually-hidden pattern.
+
+**Why:** Six option labels already say plainly what they are — "Light minimal /
+Warm paper / Ink & violet" and "Light / Dark / System". Two uppercase headings
+restating that in a header this small is clutter, and the project's UX rule is
+to avoid exactly that.
+
+**Why they are hidden rather than deleted.** A `<fieldset>` without a `<legend>`
+gives a screen reader six loose radio buttons and no way to tell which three
+belong together — "Light" would be announced with no indication it means the
+theme rather than the palette. Accessibility is required here, not optional, so
+the accessible name stays and only the pixels go.
+
+**Consequences:**
+
+- `.segmented__legend` is the visually-hidden rule in both
+  `apps/web/src/styles.css` and `docs/assets/site.css`. Deleting a legend from
+  the markup because it "does nothing" would be a regression; the comment above
+  each rule says so.
+- The column gap in `.appearance` widened from 20px to 24px. With no headings,
+  that gap is the only thing stopping two controls reading as one row of six.
+- A test asserts both groups still have accessible names. **It deliberately does
+  not assert they are invisible** — jsdom does not load the stylesheet, so every
+  element reports as visible there and such a test would be theatre. The visual
+  half is verified by looking at the page.
+
+---
+
 ## D-033 — The website shares the application's palettes, through one Jekyll layout
 **Date:** 2026-09-09 · **Status:** Accepted
 

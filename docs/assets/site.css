@@ -270,7 +270,11 @@ a {
 .appearance {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px 20px;
+  align-items: center;
+  /* Wider than it looks like it needs to be. With the group names hidden, this
+     gap is the only thing separating two controls that would otherwise read as
+     one long row of six. */
+  gap: 10px 24px;
 }
 
 .segmented {
@@ -280,14 +284,21 @@ a {
   min-width: 0;
 }
 
+/* The group's name — "Palette", "Theme" — is hidden from the screen but not
+   from assistive technology. Without it a screen reader announces six loose
+   radio buttons with no idea which three belong together. Kept in step with
+   apps/web/src/styles.css. See D-034. */
 .segmented__legend {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
   padding: 0;
-  margin-bottom: 5px;
-  color: var(--text-faint);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
 }
 
 .segmented__options {

@@ -50,3 +50,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-031 | The page carries Support, Contribute and a real footer |
 | D-032 | Published publicly on GitHub; Pages for docs; no hosted application |
 | D-033 | The website shares the application's palettes, through one Jekyll layout |
+| D-034 | The appearance controls carry no visible group labels |

@@ -308,6 +308,23 @@ describe("appearance", () => {
     window.localStorage.clear();
   });
 
+  it("names both groups for screen readers, though the words are not shown", async () => {
+    /* "Palette" and "Theme" were removed from the header (D-034), but only
+       visually — `.segmented__legend` in styles.css hides them. The legends
+       stay in the accessibility tree, because without them a screen reader
+       announces six unrelated radio buttons with no idea which three belong
+       together.
+
+       That they are invisible is not asserted here and cannot be: jsdom does
+       not load the stylesheet, so every element reports as visible. The CSS is
+       the mechanism; this test guards the half that would otherwise be
+       "tidied away" by someone deleting a legend they could not see. */
+    await renderApp();
+
+    expect(screen.getByRole("group", { name: "Palette" })).toBeInTheDocument();
+    expect(screen.getByRole("group", { name: "Theme" })).toBeInTheDocument();
+  });
+
   it("starts on light minimal, following the system", async () => {
     await renderApp();
 
