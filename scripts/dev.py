@@ -5,7 +5,7 @@ One entry point for running the stack and running checks.
 
 **Nothing here runs automatically.** There is no pre-commit hook, no watcher,
 and no check wired into saving a file. You decide when to verify, which is the
-point — see docs/project-memory/DECISIONS.md D-018.
+point — see project-memory/DECISIONS.md D-018.
 
 Running the stack::
 

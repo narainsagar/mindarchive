@@ -7,7 +7,7 @@ permalink: /roadmap/
 
 Where Mind Archive is going. The detailed, authoritative version — including
 what is finished — is
-[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/MILESTONES.md).
+[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/MILESTONES.md).
 
 The repository must remain runnable after every milestone.
 

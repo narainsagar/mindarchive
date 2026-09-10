@@ -58,21 +58,23 @@ docs/
 │   └── post.html       Date, tags and summary on top of that
 ├── assets/
 │   └── site.css        The same colour tokens the application uses
-├── _config.yml         Jekyll settings (layout defaults, permalinks, exclusions)
+├── _config.yml         Jekyll settings (layout defaults, permalinks)
+├── _data/
+│   └── support.yml     Donation and licence URLs (D-038)
 ├── PRODUCT.md          These render on the site and in GitHub alike
 ├── ARCHITECTURE.md
 ├── DEVELOPMENT.md
 ├── SECURITY.md
 ├── ROADMAP.md
 ├── BACKLOG.md
-├── DECISIONS.md
-├── project-memory/     Excluded from the published site
-└── archive/            Excluded from the published site
+└── DECISIONS.md
 ```
 
-`project-memory/` and `archive/` are excluded in `_config.yml`. They are
-internal working memory, useful to contributors reading the repository but noise
-on a public documentation site.
+**The working memory is not in here.** `project-memory/` sits at the repository
+root, one level up and outside this folder entirely, so Jekyll never sees it and
+no exclusion rule is needed — the site cannot publish what it cannot reach
+(D-039). It is useful to anyone reading the repository and noise on a public
+documentation site, which is exactly the split.
 
 ## Enabling it
 

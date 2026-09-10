@@ -115,7 +115,7 @@ something.
 
 ### Removed
 
-- `docs/archive/`. The durable content was merged into `docs/project-memory/`
+- `docs/archive/`. The durable content was merged into `project-memory/`
   and the transcripts removed; they remain in git history at commit `fcf1f5c`.
 
 Next up: the ChatGPT importer (Milestone 2).
@@ -165,7 +165,7 @@ cannot import or browse conversations. That is deliberate.
 
 - `README.md`, and `docs/` covering product, architecture, development,
   security, roadmap, backlog, decisions and GitHub Pages
-- `docs/project-memory/` — the permanent project memory: state, milestones,
+- `project-memory/` — the permanent project memory: state, milestones,
   numbered decisions, research, discussion summary, agent protocol, session log
 - Session memory: every working session is recorded in the repository, with the
   prompts and reports that produced it (`scripts/session.py`)

@@ -42,7 +42,7 @@ const SECTIONS = [
  * The Mind Archive workspace.
  *
  * One page, no router, no sidebar. There is one view; the header nav moves
- * within it rather than between views. See docs/project-memory/DECISIONS.md
+ * within it rather than between views. See project-memory/DECISIONS.md
  * D-008 and D-030.
  */
 export default function App() {

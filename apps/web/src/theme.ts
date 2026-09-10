@@ -10,7 +10,7 @@
  * why the choice is stored separately from the theme actually showing. The
  * stylesheet never sees "system": resolveTheme turns it into light or dark and
  * applyTheme stamps that answer on <html>, so every colour is selected by one
- * rule. See docs/project-memory/DECISIONS.md D-014 and D-029.
+ * rule. See project-memory/DECISIONS.md D-014 and D-029.
  *
  * Every storage access is wrapped: `localStorage` throws outright in some
  * contexts (a browser set to block site data, a private window, a preview

@@ -5,9 +5,9 @@ every agent working on this project, and it is not repeated here.
 
 Then read, in order:
 
-1. `docs/project-memory/PROJECT_STATE.md`
-2. `docs/project-memory/MILESTONES.md`
-3. `docs/project-memory/DECISIONS.md`
+1. `project-memory/PROJECT_STATE.md`
+2. `project-memory/MILESTONES.md`
+3. `project-memory/DECISIONS.md`
 
 ## Notes specific to this tool
 

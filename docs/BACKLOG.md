@@ -110,7 +110,7 @@ Still open:
 
 Done in Milestone 3.5: watched inbox folder, re-import reporting, correct
 guidance, and an optional browser script. See decisions D-023 and D-024, and
-[RESEARCH.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/RESEARCH.md) R-004 for the export's real timings.
+[RESEARCH.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/RESEARCH.md) R-004 for the export's real timings.
 
 Still open:
 

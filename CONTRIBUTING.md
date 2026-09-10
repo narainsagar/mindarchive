@@ -84,7 +84,7 @@ These are not negotiable, because they are the product:
 6. Update the documentation your change affects. Documentation is part of the
    implementation, not a follow-up.
 7. If you changed architecture, add a numbered entry to
-   [docs/project-memory/DECISIONS.md](docs/project-memory/DECISIONS.md).
+   [project-memory/DECISIONS.md](project-memory/DECISIONS.md).
 8. **Before you push, run the full gate and fix what it finds:**
 
    ```bash
@@ -161,7 +161,7 @@ is worse than a blog that stays quiet.
 ### On drafting posts with AI
 
 Draft a post however you like, including with an AI assistant, and including
-from the session records in `docs/project-memory/sessions/`, which already
+from the session records in `project-memory/sessions/`, which already
 capture what changed and why.
 
 **Nothing is published without a person approving it.** No automation posts to

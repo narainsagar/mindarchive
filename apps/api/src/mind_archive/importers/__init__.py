@@ -5,7 +5,7 @@ adapter can handle a file, or `get_importer` for one by name.
 
 Adding a provider means writing an adapter that satisfies the `Importer`
 protocol and adding it to `IMPORTERS`. Nothing else in the application changes.
-That is the whole point — see docs/project-memory/DECISIONS.md D-002.
+That is the whole point — see project-memory/DECISIONS.md D-002.
 """
 
 from __future__ import annotations

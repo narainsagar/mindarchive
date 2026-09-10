@@ -87,7 +87,12 @@ export function ArchivePanel({ id, onTotalChange }: Props) {
         if (request === latest.current) setLoading(false);
       }
     },
-    [],
+    // App passes a plain setState function here, which React guarantees is
+    // stable — so this dependency never actually changes identity. It is
+    // listed because it is genuinely used, and a future caller passing an
+    // inline arrow should re-create the callback rather than silently read a
+    // stale one.
+    [onTotalChange],
   );
 
   // Search as you type, but wait for a pause first.

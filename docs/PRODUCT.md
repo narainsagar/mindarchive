@@ -111,4 +111,4 @@ milestones add browsing and search, organisation, more importers, and finally
 optional cloud synchronisation.
 
 The full plan is in [ROADMAP.md]({{ '/roadmap/' | relative_url }}) and
-[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/MILESTONES.md).
+[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/MILESTONES.md).

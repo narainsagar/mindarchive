@@ -33,9 +33,9 @@ write it into the repository before the session ends.
 Do not read the whole repository. Read in this order:
 
 1. This file
-2. `docs/project-memory/PROJECT_STATE.md` — what actually exists right now
-3. `docs/project-memory/MILESTONES.md` — what is in scope
-4. `docs/project-memory/DECISIONS.md` — what is already decided
+2. `project-memory/PROJECT_STATE.md` — what actually exists right now
+3. `project-memory/MILESTONES.md` — what is in scope
+4. `project-memory/DECISIONS.md` — what is already decided
 5. `git status`, recent `git log`
 
 Then locate only the files your task touches.
@@ -48,7 +48,7 @@ Where it and `docs/` disagree, `docs/` is current — and the disagreement shoul
 be fixed.
 
 The full working method is in
-[`docs/project-memory/AI_AGENT_PROTOCOL.md`](docs/project-memory/AI_AGENT_PROTOCOL.md).
+[`project-memory/AI_AGENT_PROTOCOL.md`](project-memory/AI_AGENT_PROTOCOL.md).
 
 ## Principles
 
@@ -162,7 +162,7 @@ Details in `docs/SECURITY.md` and `.claude/rules/security.md`.
 ## Documentation is part of the implementation
 
 If behaviour changes, update the documentation. If architecture changes, update
-`docs/ARCHITECTURE.md` and `docs/project-memory/DECISIONS.md`. If development
+`docs/ARCHITECTURE.md` and `project-memory/DECISIONS.md`. If development
 commands change, update `docs/DEVELOPMENT.md` and `README.md`.
 
 Never let documentation and code drift apart. If two documents conflict, name

@@ -6,7 +6,7 @@ permalink: /decisions/
 # Decisions
 
 **The decision log lives in
-[project-memory/DECISIONS.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/DECISIONS.md).**
+[project-memory/DECISIONS.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/DECISIONS.md).**
 
 This file is a pointer, deliberately. Keeping two decision logs guarantees they
 will disagree, and a decision log that cannot be trusted is worse than none.
@@ -27,7 +27,7 @@ Record new architectural and product decisions there, numbered and dated.
 | D-007 | Python 3.11 minimum |
 | D-008 | Plain CSS with custom properties; no UI framework |
 | D-009 | In-process event bus in V1; no message broker |
-| D-010 | `docs/project-memory/` is the single project-memory system |
+| D-010 | `project-memory/` is the single project-memory system |
 | D-011 | Cloud disabled by default, never silently enabled |
 | D-012 | ~~MIT License~~ — superseded by D-016 |
 | D-013 | `AGENTS.md` is the canonical cross-agent instruction file |
@@ -56,3 +56,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-036 | Clean lowercase routes for every page, set per page |
 | D-037 | One header row; appearance is two menus; navigation folds |
 | D-038 | Money is taken by a merchant of record, through plain links |
+| D-039 | Project memory lives at the repository root, not under `docs/` |

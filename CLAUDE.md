@@ -11,9 +11,9 @@ Do not read the whole repository. Read in this order, then stop and open only
 the files your task touches:
 
 1. `AGENTS.md`
-2. `docs/project-memory/PROJECT_STATE.md` — what actually exists right now
-3. `docs/project-memory/MILESTONES.md` — what is in scope
-4. `docs/project-memory/DECISIONS.md` — what is already decided
+2. `project-memory/PROJECT_STATE.md` — what actually exists right now
+3. `project-memory/MILESTONES.md` — what is in scope
+4. `project-memory/DECISIONS.md` — what is already decided
 5. `git status` and recent `git log`
 
 Read as your task requires: `docs/ARCHITECTURE.md`, `docs/PRODUCT.md`,
@@ -39,7 +39,7 @@ The repository is the permanent source of truth. AI chat history is temporary.
 Whenever you make or discover an important product, architecture, feature, UX,
 technical, configuration, workflow, deployment, security or roadmap decision,
 write it into the appropriate file before the session ends. Decisions go in
-`docs/project-memory/DECISIONS.md`. State goes in `PROJECT_STATE.md`. Every
+`project-memory/DECISIONS.md`. State goes in `PROJECT_STATE.md`. Every
 session appends to `SESSION_LOG.md`.
 
 Do not create duplicate or conflicting project instructions. If two documents

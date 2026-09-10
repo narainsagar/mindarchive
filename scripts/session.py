@@ -9,7 +9,7 @@ never depends on an AI chat history that will be lost.
     python scripts/session.py check
     python scripts/session.py list
 
-See docs/project-memory/SESSION_PROTOCOL.md.
+See project-memory/SESSION_PROTOCOL.md.
 
 Standard library only, so it runs anywhere without installing anything.
 """
@@ -21,7 +21,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-MEMORY_DIR = REPO_ROOT / "docs" / "project-memory"
+MEMORY_DIR = REPO_ROOT / "project-memory"
 SESSIONS_DIR = MEMORY_DIR / "sessions"
 TEMPLATE_DIR = SESSIONS_DIR / "TEMPLATE"
 SESSION_LOG = MEMORY_DIR / "SESSION_LOG.md"
@@ -185,9 +185,9 @@ def cmd_check(args):
     for name in REQUIRED_MEMORY_FILES:
         path = MEMORY_DIR / name
         if not path.exists():
-            problems.append("missing: docs/project-memory/{}".format(name))
+            problems.append("missing: project-memory/{}".format(name))
         elif path.stat().st_size == 0:
-            problems.append("empty: docs/project-memory/{}".format(name))
+            problems.append("empty: project-memory/{}".format(name))
 
     # 2. Every session folder must carry its records.
     sessions = sorted(

@@ -43,10 +43,11 @@ defaults:
 # that feed.xml carries relative links in a local build and absolute ones in
 # the published build — check the published feed after the first deploy.
 
-# Working memory, useful in the repository but noise on a public site.
+# The working memory used to be excluded here. It now lives at project-memory/
+# in the repository root, outside this folder entirely, so Jekyll never sees it
+# and no exclusion is needed — the site cannot publish what it cannot reach.
+# See D-039.
 exclude:
-  - project-memory/
-  - archive/
   - _config.yml
 
 # Markdown files render as pages; index.html is the landing page.

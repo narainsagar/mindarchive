@@ -92,7 +92,7 @@ to you. A fully permissive licence would, and the project needs to be able to
 sustain itself.
 
 This is a deliberate trade-off, made with open eyes. See
-[docs/project-memory/DECISIONS.md](docs/project-memory/DECISIONS.md) D-012.
+[project-memory/DECISIONS.md](project-memory/DECISIONS.md) D-012.
 
 ## Might this become open source later?
 

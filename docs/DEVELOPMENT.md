@@ -217,7 +217,7 @@ The short version:
 3. Iterate freely — run whichever checks are useful to you, when they are useful.
 4. Review your diff.
 5. Update the documentation your change affects.
-6. Record any architectural decision in `docs/project-memory/DECISIONS.md`.
+6. Record any architectural decision in `project-memory/DECISIONS.md`.
 7. Log the session — see [Session memory](#session-memory) below.
 8. At the milestone boundary, run `python scripts/dev.py verify` and fix what
    it finds.
@@ -238,7 +238,7 @@ python scripts/session.py check      # validates project memory
 ```
 
 The mechanism is described in
-[project-memory/SESSION_PROTOCOL.md](https://github.com/RootedGlobal/mindarchive/blob/main/docs/project-memory/SESSION_PROTOCOL.md).
+[project-memory/SESSION_PROTOCOL.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/SESSION_PROTOCOL.md).
 `scripts/session.py check` also runs in CI.
 
 ## Tests and when to run them

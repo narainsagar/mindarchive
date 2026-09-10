@@ -22,4 +22,4 @@
 ## Project decisions
 
 <!-- Did this change an architectural or product decision? If so, it needs an
-     entry in docs/project-memory/DECISIONS.md. Write "None." if not. -->
+     entry in project-memory/DECISIONS.md. Write "None." if not. -->

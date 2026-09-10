@@ -42,7 +42,7 @@ TARGETS = [
     ".github/workflows/ci.yml",
     ".github/workflows/docs-pages.yml",
     ".github/ISSUE_TEMPLATE/config.yml",
-    "docs/project-memory/PROJECT_STATE.md",
+    "project-memory/PROJECT_STATE.md",
 ]
 
 PLACEHOLDER_USERNAME = "YOUR-USERNAME"

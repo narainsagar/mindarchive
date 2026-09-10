@@ -96,7 +96,7 @@ jobs:
 
       # The repository is this project's permanent memory. If the memory is
       # inconsistent, that is a real failure — see
-      # docs/project-memory/SESSION_PROTOCOL.md.
+      # project-memory/SESSION_PROTOCOL.md.
       - name: Check project memory
         run: python scripts/session.py check
 

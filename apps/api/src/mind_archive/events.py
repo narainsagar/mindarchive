@@ -9,7 +9,7 @@ If a genuine requirement ever appears for durability, ordering guarantees or
 cross-process delivery, replace the transport behind this interface and record
 the decision. Do not add infrastructure before the requirement.
 
-See docs/project-memory/DECISIONS.md D-009.
+See project-memory/DECISIONS.md D-009.
 
 Event names are ``noun.verb``:
 

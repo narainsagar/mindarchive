@@ -89,11 +89,11 @@ git status --short
 
 Two things worth knowing before you push:
 
-- **`docs/project-memory/` will be public.** Session records, decisions and the
-  prompts that produced them. It is excluded from the published *website* by
-  `docs/_config.yml`, but anyone browsing the repository can read it. This was a
-  deliberate choice — for a source-available project the reasoning is the
-  interesting part.
+- **`project-memory/` will be public.** Session records, decisions and the
+  prompts that produced them. It sits at the repository root, outside `docs/`,
+  so the website never publishes it — but anyone browsing the repository can
+  read it. This was a deliberate choice: for a source-available project the
+  reasoning is the interesting part.
 - **Your email address will be public.** It is in `project.json` and in
   `apps/web/src/support.ts`, where it is the contact for commercial licences.
 
@@ -196,8 +196,8 @@ deployment once it succeeds.
   `permalink`. A page missing either will 404. See
   [the documentation-site notes]({{ '/github-pages/' | relative_url }}).
 - A documentation page has the same header and footer as the landing page.
-- `docs/project-memory/` is **not** reachable on the site. It is excluded in
-  `docs/_config.yml`.
+- `project-memory/` is **not** reachable on the site. It lives outside `docs/`,
+  so Jekyll never sees it — the site cannot publish what it cannot reach.
 
 > **Do not check any of this with `python -m http.server`.** It runs no Jekyll,
 > so no `.md` becomes `.html` and every documentation link 404s whether the site

@@ -70,7 +70,7 @@ class Settings(BaseSettings):
     # Empty means `data/inbox`, a folder Mind Archive owns. You can point this
     # at a folder you already keep exports in — but then Mind Archive reads
     # that folder, so choose it deliberately. Only .zip and .json files are
-    # ever opened. See docs/project-memory/DECISIONS.md D-023.
+    # ever opened. See project-memory/DECISIONS.md D-023.
     inbox_dir_setting: str = Field(
         default="",
         alias="MIND_ARCHIVE_INBOX_DIR",
@@ -104,7 +104,7 @@ class Settings(BaseSettings):
     cors_origins: str = "http://localhost:5173,http://127.0.0.1:5173"
 
     # Cloud. Off, and it stays off unless the user changes this deliberately.
-    # See docs/project-memory/DECISIONS.md D-011.
+    # See project-memory/DECISIONS.md D-011.
     cloud_enabled: bool = False
     storage_mode: StorageMode = "local"
 
