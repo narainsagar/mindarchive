@@ -19,28 +19,37 @@ How Mind Archive gets published, and what deliberately is not published.
 
 ## Before the first push
 
-### 1. Fill in your identity
+### 1. Identity — already done
 
-`project.json` is the single source of truth for who owns this repository.
-It still holds a placeholder:
+`project.json` is the single source of truth for who owns this repository, and
+it now holds real values:
 
 ```json
-"github": { "username": "YOUR-USERNAME", "repository": "mindarchive" }
+"github":    { "username": "RootedGlobal", "repository": "mindarchive" },
+"site":      { "domain": "mindarchive.rootedglobal.co", "useCustomDomain": false }
 ```
 
-Replace `YOUR-USERNAME` with your GitHub username. Then see what would change,
-before changing it:
+`scripts/set_identity.py` propagated them into `LICENSE`, `README.md`,
+`CHANGELOG.md`, the docs and the workflows. Re-run it after any change here:
 
 ```bash
-python scripts/set_identity.py --check
-python scripts/set_identity.py
+python scripts/set_identity.py --check   # show what would change
+python scripts/set_identity.py           # apply it
 ```
 
-That propagates the values into `LICENSE`, `README.md`, `CHANGELOG.md`, the
-docs, the workflows and `apps/web/package.json`.
+**Check its work.** It rewrites `mind-archive` to `mindarchive` across the whole
+repository, which reaches further than URLs — the first run also renamed the
+inbox ledger file, the export filename prefix, temporary directory prefixes and
+both `container_name` values. All harmless here, but read the diff rather than
+committing it unseen.
 
-The clone URL in `docs/index.html` also contains `YOUR-USERNAME` — check it
-afterwards.
+It does **not** manage `homepage` in `apps/web/package.json` or `repositoryUrl`
+in `apps/web/src/support.ts`. Both are set by hand and are currently:
+
+```
+homepage       https://rootedglobal.github.io/mindarchive
+repositoryUrl  https://github.com/RootedGlobal/mindarchive
+```
 
 ### 2. Confirm your git identity is set
 

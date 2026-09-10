@@ -60,12 +60,27 @@ Decided but **not yet done** (D-032): a public GitHub repository named
 anywhere and there is no public demo — the API has no authentication by design,
 so a public instance would expose one shared archive to every visitor.
 
-Everything is prepared and committed. Still outstanding:
+Everything is prepared and committed. Identity is set — the project belongs to
+the **RootedGlobal** organisation as **`mindarchive`**, with
+`mindarchive.rootedglobal.co` reserved as a future custom domain
+(`useCustomDomain` is still `false`, so URLs use
+`rootedglobal.github.io/mindarchive`).
 
-- **No git remote, nothing pushed.** `gh` is not installed here.
-- **`project.json` holds `github.username: "YOUR-USERNAME"`.** Fill it in and
-  run `python scripts/set_identity.py`.
+Still outstanding:
+
+- **Nothing is pushed.** `origin` points at
+  `https://github.com/RootedGlobal/mindarchive.git`, but **the repository does
+  not exist on GitHub yet** — the API returns 404 — and `RootedGlobal` is an
+  organisation, so whoever pushes needs membership with write access. GitHub
+  password authentication was removed in 2021; a personal access token is
+  required.
 - The CI and Pages workflows have still never run against a live repository.
+- `scripts/set_identity.py` rewrites `mind-archive` to `mindarchive` repository-
+  wide, which reaches beyond URLs — it renamed the inbox ledger file, the export
+  filename prefix, temp-directory prefixes and both `container_name` values.
+  Read its diff rather than committing it unseen. It does not manage `homepage`
+  in `apps/web/package.json` or `repositoryUrl` in `apps/web/src/support.ts`;
+  both are maintained by hand.
 
 Steps are in [`docs/DEPLOYMENT.md`](../DEPLOYMENT.md).
 

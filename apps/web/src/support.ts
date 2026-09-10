@@ -55,8 +55,8 @@ export const SUPPORT: SupportConfig = {
    */
   wallets: [],
 
-  /** Where the code lives. Blank until there is a remote (D-017). */
-  repositoryUrl: "",
+  /** Where the code lives. Makes the "Read the source" button appear. */
+  repositoryUrl: "https://github.com/RootedGlobal/mindarchive",
 };
 
 /** Only the donation links that have actually been configured. */
