@@ -4,6 +4,7 @@ import { ApiError, fetchConfig, fetchHealth } from "./api";
 import type { Health, PublicConfig } from "./api";
 import { ArchivePanel } from "./components/ArchivePanel";
 import { ContributePanel } from "./components/ContributePanel";
+import { ExportPanel } from "./components/ExportPanel";
 import { Header } from "./components/Header";
 import { ImportButton } from "./components/ImportButton";
 import { ImportPanel } from "./components/ImportPanel";
@@ -29,6 +30,7 @@ import type { Palette, ThemeChoice } from "./theme";
  * by D-030.
  */
 const SECTIONS = [
+  { id: "top", label: "Home", href: "/" },
   { id: "archive", label: "Archive" },
   { id: "next", label: "Coming next" },
   { id: "status", label: "Status" },
@@ -47,6 +49,7 @@ export default function App() {
   const [theme, setTheme] = useState<ThemeChoice>(getInitialTheme);
   const [palette, setPalette] = useState<Palette>(getInitialPalette);
   const [importOpen, setImportOpen] = useState(false);
+  const [exportTotal, setExportTotal] = useState<number | null>(null);
   const [health, setHealth] = useState<Health | null>(null);
   const [config, setConfig] = useState<PublicConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -150,6 +153,7 @@ export default function App() {
             key={archiveVersion}
             id="archive"
             action={<ImportButton waiting={waiting} onClick={openImport} />}
+            onExport={setExportTotal}
           />
         )}
 
@@ -167,6 +171,14 @@ export default function App() {
           inbox={inbox}
           onImported={() => setArchiveVersion((version) => version + 1)}
         />
+      </Modal>
+
+      <Modal
+        open={exportTotal !== null}
+        title="Export everything"
+        onClose={() => setExportTotal(null)}
+      >
+        <ExportPanel total={exportTotal ?? 0} />
       </Modal>
 
       <SiteFooter />

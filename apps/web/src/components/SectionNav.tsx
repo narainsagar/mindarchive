@@ -3,6 +3,13 @@ import { useEffect, useState } from "react";
 export interface Section {
   id: string;
   label: string;
+  /**
+   * Overrides the `#id` anchor. "Home" uses "/" so that copying the link or
+   * opening it in a new tab does the right thing — but a plain click is
+   * intercepted and scrolled instead, because a real navigation would reload
+   * the page and throw away the current search and any open conversation.
+   */
+  href?: string;
 }
 
 interface Props {
@@ -62,9 +69,28 @@ export function SectionNav({ sections, action }: Props) {
         {sections.map((section) => (
           <li key={section.id}>
             <a
-              href={`#${section.id}`}
+              href={section.href ?? `#${section.id}`}
               className="sectionnav__link"
               aria-current={active === section.id ? "true" : undefined}
+              onClick={(event) => {
+                if (!section.href) return;
+                // Let the browser handle anything but a plain left click, so
+                // "open in new tab" and "copy link" still work.
+                if (
+                  event.defaultPrevented ||
+                  event.button !== 0 ||
+                  event.metaKey ||
+                  event.ctrlKey ||
+                  event.shiftKey ||
+                  event.altKey
+                ) {
+                  return;
+                }
+                event.preventDefault();
+                document
+                  .getElementById(section.id)
+                  ?.scrollIntoView({ block: "start" });
+              }}
             >
               {section.label}
             </a>

@@ -276,12 +276,28 @@ describe("exporting the archive", () => {
     vi.mocked(fetchConversation).mockResolvedValue(detail);
   });
 
-  it("offers a download of everything", async () => {
+  it("hands the export over to whoever opens the dialog", async () => {
+    /* The panel no longer downloads directly — it asks App to open the export
+       dialog, and passes the count so the dialog can say what is in the zip.
+       The download itself is a plain link inside that dialog. */
+    const onExport = vi.fn();
+    const user = userEvent.setup();
+    render(<ArchivePanel onExport={onExport} />);
+
+    await user.click(
+      await screen.findByRole("button", { name: /export everything/i }),
+    );
+
+    expect(onExport).toHaveBeenCalledWith(1);
+  });
+
+  it("offers no export when nobody is listening for it", async () => {
     render(<ArchivePanel />);
 
-    const link = await screen.findByRole("link", { name: /export everything/i });
-    expect(link).toHaveAttribute("href", expect.stringContaining("/api/export"));
-    expect(link).toHaveAttribute("download");
+    await screen.findByText(/making sourdough/i);
+    expect(
+      screen.queryByRole("button", { name: /export everything/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("does not offer an export of an empty archive", async () => {

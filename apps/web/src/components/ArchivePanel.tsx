@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { ApiError, exportUrl, fetchConversations } from "../api";
+import { ApiError, fetchConversations } from "../api";
 import type { ConversationSummary } from "../api";
 import { ConversationView } from "./ConversationView";
 import { Snippet } from "./Snippet";
@@ -27,6 +27,11 @@ interface Props {
    * importing never means scrolling past the archive to find it (D-030).
    */
   action?: React.ReactNode;
+  /**
+   * Opens the export dialog. Called with the conversation count so the dialog
+   * can say what is about to be downloaded.
+   */
+  onExport?: (total: number) => void;
 }
 
 /**
@@ -36,7 +41,7 @@ interface Props {
  * one page, still no router, because there is still nothing to navigate
  * between (D-008).
  */
-export function ArchivePanel({ id, action }: Props) {
+export function ArchivePanel({ id, action, onExport }: Props) {
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState("");
   const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
@@ -130,17 +135,17 @@ export function ArchivePanel({ id, action }: Props) {
             </p>
           )}
           {action}
-          {total > 0 && (
-            /* A plain link: the browser downloads it, and the file is just
-               the archive folder zipped up. */
-            <a
+          {total > 0 && onExport && (
+            /* Opens a dialog rather than downloading straight away: an export
+               can be large, and it is worth saying what is in it first. The
+               download itself is still a plain link inside that dialog. */
+            <button
+              type="button"
               className="button"
-              href={exportUrl()}
-              download
-              title="Download every conversation as a zip of ordinary files"
+              onClick={() => onExport(total)}
             >
               Export everything
-            </a>
+            </button>
           )}
         </div>
       </div>

@@ -2,7 +2,9 @@
 layout: default
 ---
 
-<article class="wrap doc post">
+<!-- No `wrap doc` here: the default layout's <main> already carries both, and
+     applying the band twice doubles the gutter. -->
+<article class="post">
   <header class="post__header">
     <p class="post__meta">
       <a href="{{ '/blog/' | relative_url }}">Blog</a>

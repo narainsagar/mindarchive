@@ -12,10 +12,34 @@ vi.mock("./api", async () => {
     ...actual,
     fetchHealth: vi.fn(),
     fetchConfig: vi.fn(),
+    fetchConversations: vi.fn(),
   };
 });
 
-const { fetchConfig, fetchHealth } = await import("./api");
+const { fetchConfig, fetchHealth, fetchConversations } = await import("./api");
+
+/** An archive with something in it, so the export control is reachable. */
+function archiveWithConversations() {
+  vi.mocked(fetchConversations).mockResolvedValue({
+    conversations: [
+      {
+        path: "2026/chatgpt/2026-03-11-postgres-index-strategy",
+        title: "Postgres index strategy",
+        source: "chatgpt",
+        created_at: "2026-03-11T10:00:00Z",
+        updated_at: "2026-03-11T11:30:00Z",
+        message_count: 12,
+        snippet: null,
+        tags: [],
+      },
+    ],
+    total: 1,
+    offset: 0,
+    limit: 25,
+    sources: { chatgpt: 1 },
+    tags: {},
+  });
+}
 
 const health: Health = {
   status: "ok",
@@ -198,6 +222,10 @@ describe("moving around the page", () => {
   });
 
   const NAV = [
+    // Home is first and points at "/" rather than "#top", so copying the link
+    // or opening it in a new tab behaves. A plain click is intercepted and
+    // scrolled, because a real navigation would reload and lose the search.
+    ["Home", "/"],
     ["Archive", "#archive"],
     ["Coming next", "#next"],
     ["Status", "#status"],
@@ -224,7 +252,10 @@ describe("moving around the page", () => {
     const { container } = await renderApp();
 
     for (const [, href] of NAV) {
-      expect(container.querySelector(href)).not.toBeNull();
+      // "/" is not an anchor; its scroll target is #top, checked below.
+      if (href.startsWith("#")) {
+        expect(container.querySelector(href)).not.toBeNull();
+      }
     }
     expect(container.querySelector("#top")).not.toBeNull();
   });
@@ -246,6 +277,62 @@ describe("moving around the page", () => {
 
     expect(
       screen.queryByRole("navigation", { name: /sections of this page/i }),
+    ).not.toBeInTheDocument();
+  });
+});
+
+describe("exporting", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    backendAvailable();
+    archiveWithConversations();
+  });
+
+  it("opens a dialog rather than downloading straight away", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+
+    /* An export can be large. Saying what is in it first is worth one click,
+       and the download inside the dialog is still a plain link. */
+    await user.click(
+      await screen.findByRole("button", { name: /export everything/i }),
+    );
+
+    const dialog = await screen.findByRole("dialog", {
+      name: /export everything/i,
+    });
+    expect(dialog).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("link", { name: /download the zip/i }),
+    ).toBeInTheDocument();
+  });
+
+  it("says the index is left out, because it rebuilds itself", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+
+    await user.click(
+      await screen.findByRole("button", { name: /export everything/i }),
+    );
+
+    expect(
+      await screen.findByText(/search index is deliberately left out/i),
+    ).toBeInTheDocument();
+  });
+
+  it("closes on Escape", async () => {
+    const user = userEvent.setup();
+    await renderApp();
+
+    await user.click(
+      await screen.findByRole("button", { name: /export everything/i }),
+    );
+    await screen.findByRole("dialog", { name: /export everything/i });
+
+    await user.keyboard("{Escape}");
+
+    expect(
+      screen.queryByRole("dialog", { name: /export everything/i }),
     ).not.toBeInTheDocument();
   });
 });

@@ -30,6 +30,24 @@
 :root {
   --radius: 8px;
 
+  /* --- Layout ---------------------------------------------------------
+     The same three numbers the website uses (docs/assets/site.css), so the
+     two surfaces keep the same rhythm.
+
+     --gutter       the side inset. Every band uses it, so everything aligns.
+     --content-max  an outer bound, so content does not sprawl on a wide
+                    display.
+     --measure      the width of running text only. Result lists, tables and
+                    code keep the full band; prose does not, because a line
+                    much past 80 characters is hard to track back from.
+     -------------------------------------------------------------------- */
+  --gutter: 60px;
+  --content-max: 1280px;
+  --measure: 72ch;
+  /* Panel copy, notes and small print sit narrower than long-form text. The
+     difference is hierarchy, not an accident. */
+  --measure-narrow: 62ch;
+
   --font: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
@@ -273,12 +291,16 @@ a {
   background: var(--surface);
 }
 
+/* The layout band — the only thing that sets horizontal rhythm. The header,
+   the section navigation and the workspace all use it, so their edges line up
+   by construction rather than by three numbers kept equal by hand. */
 .header__inner,
+.header__nav-inner,
 .workspace {
   width: 100%;
-  /* max-width: 820px; */
-  margin: 0 auto;
-  padding: 0 24px;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
 }
 
 .header__inner {
@@ -393,7 +415,20 @@ a {
   outline-offset: 2px;
 }
 
+/* The gutter steps down rather than being redeclared per band. Because every
+   band reads --gutter, changing it here moves the whole interface together
+   and nothing can fall out of alignment. Matches docs/assets/site.css. */
+@media (max-width: 1024px) {
+  :root {
+    --gutter: 32px;
+  }
+}
+
 @media (max-width: 640px) {
+  :root {
+    --gutter: 20px;
+  }
+
   .appearance {
     width: 100%;
   }
@@ -422,12 +457,6 @@ a {
   background: var(--surface);
 }
 
-.header__nav-inner {
-  width: 100%;
-  /* max-width: 820px; */
-  margin: auto 60px;
-  padding: 0 24px;
-}
 
 .sectionnav {
   display: flex;
@@ -646,6 +675,46 @@ html {
 }
 
 /* -----------------------------------------------------------------------
+   Export — the dialog that says what is in the zip before downloading it.
+   ----------------------------------------------------------------------- */
+.export__lede {
+  font-size: 1rem;
+  margin-bottom: 14px;
+  max-width: var(--measure-narrow);
+}
+
+.export__contents {
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.export__contents li {
+  position: relative;
+  padding-left: 22px;
+  color: var(--text-soft);
+  font-size: 0.9375rem;
+  max-width: var(--measure-narrow);
+}
+
+.export__contents li::before {
+  content: "•";
+  position: absolute;
+  left: 6px;
+  color: var(--accent);
+}
+
+.export__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0;
+}
+
+/* -----------------------------------------------------------------------
    Coming next
    ----------------------------------------------------------------------- */
 .next__list {
@@ -657,9 +726,11 @@ html {
   gap: 8px;
 }
 
+/* The arrow marker is absolutely positioned at left: 0, so the text needs
+   room or it sits on top of it. */
 .next__list li {
   position: relative;
-  /* padding-left: 22px; */
+  padding-left: 22px;
   color: var(--text-soft);
 }
 
@@ -675,7 +746,7 @@ html {
    ----------------------------------------------------------------------- */
 .support__lede {
   color: var(--text-soft);
-  max-width: 62ch;
+  max-width: var(--measure-narrow);
   margin-bottom: 18px;
 }
 
@@ -725,7 +796,7 @@ html {
 
 .support__commercial p {
   color: var(--text-soft);
-  max-width: 62ch;
+  max-width: var(--measure-narrow);
   margin-bottom: 8px;
 }
 
@@ -740,7 +811,7 @@ html {
 
 .contribute__list li {
   color: var(--text-soft);
-  max-width: 66ch;
+  max-width: var(--measure-narrow);
   padding-left: 16px;
   border-left: 2px solid var(--border);
 }
@@ -777,7 +848,7 @@ html {
 .footer__legal {
   color: var(--text-faint);
   font-size: 0.8125rem;
-  max-width: 62ch;
+  max-width: var(--measure-narrow);
 }
 
 .footer__links {
@@ -828,7 +899,7 @@ html {
 
 .intro p {
   color: var(--text-soft);
-  max-width: 62ch;
+  max-width: var(--measure-narrow);
 }
 
 .panel {
@@ -941,7 +1012,7 @@ html {
 .import__intro {
   color: var(--text-soft);
   font-size: 0.9375rem;
-  max-width: 62ch;
+  max-width: var(--measure-narrow);
   margin-bottom: 18px;
 }
 
@@ -1240,7 +1311,7 @@ html {
 
 /* Generous line length and spacing: this is for reading, not scanning. */
 .conversation__body {
-  max-width: 72ch;
+  max-width: var(--measure);
   line-height: 1.7;
 }
 
@@ -1341,7 +1412,7 @@ html {
 .import__steps {
   color: var(--text-soft);
   font-size: 0.9375rem;
-  max-width: 64ch;
+  max-width: var(--measure-narrow);
   margin-bottom: 16px;
 }
 
