@@ -37,11 +37,17 @@ the front matter only needs the title.
 ```
 docs/
 ├── index.html          The landing page
+├── blog.html           The blog index, at /blog/
+├── feed.xml            RSS, hand-written — no plugin (D-035)
+├── _posts/             Published posts. YYYY-MM-DD-slug.md
+├── _drafts/
+│   └── TEMPLATE.md     House style. Never published
 ├── _layouts/
-│   └── default.html    Header, appearance controls, footer — every page
+│   ├── default.html    Header, appearance controls, footer — every page
+│   └── post.html       Date, tags and summary on top of that
 ├── assets/
 │   └── site.css        The same colour tokens the application uses
-├── _config.yml         Jekyll settings (layout defaults, exclusions)
+├── _config.yml         Jekyll settings (layout defaults, permalinks, exclusions)
 ├── PRODUCT.md          These render on the site and in GitHub alike
 ├── ARCHITECTURE.md
 ├── DEVELOPMENT.md
@@ -101,9 +107,27 @@ does the same thing.
 
 - `PRODUCT.html`, `ARCHITECTURE.html` and the rest exist. If one is missing, its
   `.md` is missing front matter.
+- `blog/index.html` exists and every post has its own `blog/<slug>/index.html`.
+- `_drafts/TEMPLATE.md` did **not** get published.
+- `feed.xml` is present and parses.
 - `project-memory/` is absent.
 - The header, the palette and theme controls and the footer appear on a
-  documentation page, not just on the landing page.
+  documentation page and a blog post, not just on the landing page.
+
+## Writing a post
+
+`docs/_drafts/TEMPLATE.md` is the starting point and carries the house style:
+
+```bash
+cp docs/_drafts/TEMPLATE.md docs/_posts/2026-01-31-a-short-slug.md
+```
+
+The date in the filename orders the blog; the URL is `/blog/a-short-slug/` with
+no date in it, so a post does not look stale a year later. `_drafts` is ignored
+unless you build with `--drafts`, so work in progress never ships.
+
+Nothing publishes itself — see decision D-035 and the *Writing a blog post*
+section of [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Writing for the documentation site
 

@@ -17,6 +17,28 @@ defaults:
       path: ""
     values:
       layout: default
+  # Posts get their own layout on top of that one — it adds the date and tags.
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+
+# Posts live at /blog/<slug>/ rather than Jekyll's dated default. A URL with a
+# date in it makes every post look stale the year after it is written.
+permalink: /blog/:title/
+
+# `url` and `baseurl` are deliberately NOT set here.
+#
+# This is a GitHub Pages *project* site, served from /mindarchive/ rather than
+# the domain root. actions/configure-pages@v5 injects the correct values at
+# build time (.github/workflows/docs-pages.yml), so `relative_url` and
+# `absolute_url` resolve properly once published.
+#
+# Hardcoding them would break local preview: every link would gain a
+# /mindarchive/ prefix that localhost:4000 does not serve. The visible cost is
+# that feed.xml carries relative links in a local build and absolute ones in
+# the published build — check the published feed after the first deploy.
 
 # Working memory, useful in the repository but noise on a public site.
 exclude:

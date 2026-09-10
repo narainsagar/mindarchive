@@ -130,6 +130,49 @@ Confirm before opening it:
 
 CI runs the same checks on every pull request.
 
+## Writing a blog post
+
+The blog lives on the documentation site, in `docs/_posts/`. Jekyll builds it —
+there is no separate blog application, and nothing to install.
+
+Start by copying the template:
+
+```bash
+cp docs/_drafts/TEMPLATE.md docs/_posts/2026-01-31-a-short-slug.md
+```
+
+The template covers front matter, house style and the rules about checkable
+claims. Two things it is worth repeating here:
+
+- **Front matter is not optional.** Jekyll copies Markdown without it straight
+  through, and the post silently never appears. This has already broken this
+  site once (decision D-033).
+- **Preview by building the site**, not with `python -m http.server`, which runs
+  no Jekyll and cannot tell a correct site from a broken one. The command is in
+  [docs/GITHUB_PAGES.md](docs/GITHUB_PAGES.md).
+
+### A post is not required with a pull request
+
+Write one when a change is worth explaining to someone outside the project — a
+new importer, a decision that changed direction, something that will surprise
+people. Most changes do not need one, and a blog filling up with routine notes
+is worse than a blog that stays quiet.
+
+### On drafting posts with AI
+
+Draft a post however you like, including with an AI assistant, and including
+from the session records in `docs/project-memory/sessions/`, which already
+capture what changed and why.
+
+**Nothing is published without a person approving it.** No automation posts to
+this blog. Generated text produces volume rather than value, and a product whose
+whole argument is that it can be inspected and trusted cannot have its public
+writing appear unread. If an assistant drafted it, you are still the author, and
+the accuracy of every claim in it is yours.
+
+> As with the rest of this document, this applies today to anyone working on the
+> project directly, and to outside contributors once the CLA is in place.
+
 ## Adding a dependency
 
 Every dependency is a long-term maintenance cost and a security surface. Before

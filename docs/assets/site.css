@@ -517,6 +517,127 @@ a {
 }
 
 /* -----------------------------------------------------------------------
+   Blog — the index and a single post.
+
+   Every colour comes from the tokens above, so posts follow the reader's
+   palette and theme like everything else.
+   ----------------------------------------------------------------------- */
+.post-list__feed {
+  font-size: 0.875rem;
+  margin-bottom: 32px;
+}
+
+.post-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.post-list__item {
+  padding: 24px 0;
+  border-top: 1px solid var(--border);
+  max-width: none;
+}
+
+.post-list__item:last-child {
+  border-bottom: 1px solid var(--border);
+}
+
+.post-list__meta,
+.post__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: var(--text-faint);
+  font-size: 0.8125rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.post-list__title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  margin: 0 0 8px;
+  padding: 0;
+  border: 0;
+}
+
+.post-list__title a {
+  text-decoration: none;
+  color: var(--text);
+}
+
+.post-list__title a:hover {
+  color: var(--accent);
+}
+
+.post-list__summary {
+  margin: 0;
+  color: var(--text-soft);
+}
+
+/* --- a single post --- */
+.post__header {
+  margin-bottom: 32px;
+}
+
+.post__header h1 {
+  margin-bottom: 12px;
+}
+
+.post__summary {
+  font-size: 1.0625rem;
+  color: var(--text-soft);
+  max-width: 62ch;
+  margin: 0 0 14px;
+}
+
+.post__tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  padding: 0;
+}
+
+.post__tags li {
+  margin: 0;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-sunken);
+  color: var(--text-soft);
+  font-size: 0.75rem;
+  font-weight: 500;
+  max-width: none;
+}
+
+/* The first heading in a post body should not carry the rule that separates
+   sections further down — the header above it already does that job. */
+.post > h2:first-of-type {
+  border-top: 0;
+  padding-top: 0;
+  margin-top: 0;
+}
+
+.post__footer {
+  margin-top: 48px;
+  padding-top: 24px;
+  border-top: 1px solid var(--border);
+}
+
+.post__footer p {
+  color: var(--text-faint);
+  font-size: 0.9375rem;
+  margin-bottom: 10px;
+}
+
+/* -----------------------------------------------------------------------
    Footer
    ----------------------------------------------------------------------- */
 .site-footer {

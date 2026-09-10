@@ -1,0 +1,45 @@
+---
+layout: default
+---
+
+<article class="wrap doc post">
+  <header class="post__header">
+    <p class="post__meta">
+      <a href="{{ '/blog/' | relative_url }}">Blog</a>
+      <span aria-hidden="true">·</span>
+      <time datetime="{{ page.date | date_to_xmlschema }}">
+        {{ page.date | date: "%-d %B %Y" }}
+      </time>
+      {% if page.author %}
+        <span aria-hidden="true">·</span>
+        <span>{{ page.author }}</span>
+      {% endif %}
+    </p>
+
+    <h1>{{ page.title }}</h1>
+
+    {% if page.summary %}
+      <p class="post__summary">{{ page.summary }}</p>
+    {% endif %}
+
+    {% if page.tags and page.tags.size > 0 %}
+      <ul class="post__tags">
+        {% for tag in page.tags %}
+          <li>{{ tag }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </header>
+
+  {{ content }}
+
+  <footer class="post__footer">
+    <p>
+      Mind Archive keeps your AI conversations as ordinary readable files on
+      your own computer.
+      <a href="{{ '/' | relative_url }}">See what it does</a>, or
+      <a href="{{ '/DEVELOPMENT.html' | relative_url }}">run it yourself</a>.
+    </p>
+    <p><a href="{{ '/blog/' | relative_url }}">← All posts</a></p>
+  </footer>
+</article>

@@ -508,6 +508,61 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-035 — The blog is part of the Jekyll site, and nothing publishes itself
+**Date:** 2026-09-10 · **Status:** Accepted
+
+The blog lives in `docs/_posts/`, served at `/blog/` by the same Jekyll site as
+the documentation. It uses `_layouts/post.html` on top of the shared
+`_layouts/default.html`, so posts inherit the header, the three palettes, the
+theme switcher and the footer with no extra work.
+
+**Why not inside the application.** Serving `/blog` and `/docs` from
+`localhost:5173` was requested and rejected. Port 5173 is the Vite dev server:
+it exists only on a developer's machine during `dev.py up`, and the application
+is local-first — it runs on each user's own computer over their own files.
+Bundling the public marketing site into it would contradict D-008 (one page, no
+router) and D-032 (the application is not hosted; Pages serves docs only), and
+would need `react-router` plus a proxy to do worse what Jekyll does natively.
+The two things stay on two ports: **:5173 the application, :4000 the site**.
+
+**No plugins.** `jekyll-feed` is supported by GitHub Pages but is absent from
+the `jekyll/jekyll:4` image used for local preview, so the local build and the
+published build would differ — the exact drift D-033 exists to prevent.
+`docs/feed.xml` is a few lines of hand-written Liquid and behaves identically in
+both.
+
+**`url` and `baseurl` stay unset in `_config.yml`.** This is a project site
+served from `/mindarchive/`; `actions/configure-pages@v5` injects the right
+values at build time. Hardcoding them would break local preview, where
+`localhost:4000` serves from the root. The visible consequence is that
+`feed.xml` carries relative links locally and absolute ones once published —
+confirm the published feed after the first deploy.
+
+**Nothing auto-publishes.** A post may be *drafted* from anything, including an
+AI assistant and including the session records in
+`docs/project-memory/sessions/`, which already capture what changed and why. A
+person approves before merge. Generated text published unread produces volume
+rather than value, and a product whose whole argument is that it can be
+inspected and trusted cannot have its public writing appear without a human
+behind it.
+
+**Consequences:**
+
+- `docs/_drafts/TEMPLATE.md` holds the house style. Jekyll ignores `_drafts`
+  unless built with `--drafts`, so it is never published — verified.
+- `CONTRIBUTING.md` gained a *Writing a blog post* section, marked as applying
+  once the CLA exists, so it does not contradict that file's own opening
+  statement that outside code is not yet accepted.
+- Posts need YAML front matter like every other page, for the reason in D-033.
+- A post is not expected with every pull request. A blog filling with routine
+  notes is worse than one that stays quiet.
+- Verified by building with `jekyll/jekyll:4`: index and all four posts present,
+  all four linked, template absent, `feed.xml` valid XML with four items, a post
+  carrying the shared layout, `project-memory/` still excluded, no unrendered
+  Liquid.
+
+---
+
 ## D-034 — The appearance controls carry no visible group labels
 **Date:** 2026-09-10 · **Status:** Accepted
 

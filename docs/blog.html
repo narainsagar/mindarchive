@@ -1,0 +1,48 @@
+---
+title: Blog
+description: Notes on building Mind Archive — what it does, how it is put together, and the decisions behind it.
+permalink: /blog/
+---
+
+<div class="wrap doc">
+  <h1>Blog</h1>
+
+  <p>
+    Notes on building Mind Archive: what it does, how it is put together, and
+    the decisions behind it. Every technical claim here points at something you
+    can read in
+    <a href="{{ '/DECISIONS.html' | relative_url }}">the decision log</a>.
+  </p>
+
+  <p class="post-list__feed">
+    <a href="{{ '/feed.xml' | relative_url }}">RSS feed</a>
+  </p>
+
+  {% if site.posts.size == 0 %}
+    <p>No posts yet.</p>
+  {% else %}
+    <ol class="post-list">
+      {% for post in site.posts %}
+        <li class="post-list__item">
+          <p class="post-list__meta">
+            <time datetime="{{ post.date | date_to_xmlschema }}">
+              {{ post.date | date: "%-d %B %Y" }}
+            </time>
+            {% if post.tags and post.tags.size > 0 %}
+              <span aria-hidden="true">·</span>
+              <span>{{ post.tags | join: ", " }}</span>
+            {% endif %}
+          </p>
+
+          <h2 class="post-list__title">
+            <a href="{{ post.url | relative_url }}">{{ post.title }}</a>
+          </h2>
+
+          <p class="post-list__summary">
+            {{ post.summary | default: post.excerpt | strip_html | truncate: 220 }}
+          </p>
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+</div>

@@ -140,6 +140,52 @@ assertion on wording the compact row had changed.
 
 ---
 
+## 2026-09-10 — A blog, on the site rather than in the app
+
+**Session:** [2026-09-10-01-a-blog-on-the-jekyll-site](sessions/2026-09-10-01-a-blog-on-the-jekyll-site/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**The blog belongs to the Jekyll site (D-035).** Serving `/blog` and `/docs`
+from `localhost:5173` was requested and argued against: 5173 is the Vite dev
+server, present only on a developer's machine, and the application is
+local-first. Bundling the public site into it would contradict D-008 and D-032
+and would need `react-router` plus a proxy to do worse what Jekyll does
+natively. `:5173` is the application, `:4000` the site.
+
+Infrastructure is `_posts/`, `/blog/`, a post layout on top of the shared one, a
+hand-written `feed.xml` and blog styles built from the existing tokens — so
+posts follow the reader's palette and theme automatically. **No plugins:**
+`jekyll-feed` is absent from the local preview image, and using it would make
+the local and published builds differ, which is the drift D-033 exists to
+prevent.
+
+**Four posts** — an introduction, what local-first actually means, how it is
+built, and four decisions worth stealing. Marketing-forward as asked, but every
+technical claim points at something in the repository; no invented numbers and
+never "open source".
+
+**Verification found a subtlety worth recording.** The built feed carried
+relative item links, which RSS forbids. `url` and `baseurl` are unset in
+`_config.yml` on purpose — `configure-pages` injects them for a project site at
+build time, and hardcoding them would break local preview. Documented rather
+than wrongly "fixed"; the published feed still needs checking after deploy.
+
+**Nothing auto-publishes.** Posts may be drafted from anything, including an AI
+assistant or a session record, but a person approves before merge. The
+`CONTRIBUTING.md` section says so, marked as taking effect once the CLA exists
+so it does not contradict that file's own opening.
+
+**Verified**: Jekyll build — index and all four posts present and linked, the
+draft template not published, `feed.xml` valid with four items, shared layout on
+a post, `project-memory/` still excluded, no unrendered Liquid. `dev.py verify`
+green.
+
+**Not live:** the repository is private, and Pages does not publish from a
+private repository on a free plan.
+
+---
+
 ## 2026-09-09 — Appearance controls, and two repairs
 
 **Session:** [2026-09-09-01-appearance-controls-palette-and-light-dark-system](sessions/2026-09-09-01-appearance-controls-palette-and-light-dark-system/SESSION.md)
