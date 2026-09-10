@@ -46,6 +46,7 @@ Both services hot-reload on file changes. Your archive is bind-mounted at
 `scripts/dev.py` wraps Docker Compose so you do not have to remember the flags.
 
 ```bash
+python scripts/check_css_bands.py   # no band element loses its side gutter
 python scripts/dev.py status        # what is running
 python scripts/dev.py logs api -f   # follow the backend log
 python scripts/dev.py stop          # pause, keep containers

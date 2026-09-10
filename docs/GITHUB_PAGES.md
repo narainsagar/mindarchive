@@ -128,6 +128,20 @@ does the same thing.
 - `_drafts/TEMPLATE.md` did **not** get published.
 - `feed.xml` is present and parses.
 - `project-memory/` is absent.
+- **No band rule uses the `padding` shorthand.** The band gives every page its
+  side gutter with `padding-inline: var(--gutter)`. Any rule on the *same
+  element* that uses the `padding` shorthand silently resets that to zero and
+  the content goes flush to the window edge — which is precisely what
+  `.doc { padding: 48px 0 72px }` did to all twenty document pages (D-041).
+
+  Elements that carry a band: `<main class="wrap doc">`,
+  `<main class="wrap home">`, `.site-header__in`, `.site-header__panel-in`,
+  `.site-footer__in`. On any of those, and on any class sharing the element,
+  write `padding-block`. Never `padding`.
+
+  Worth knowing why it went unnoticed: **no other check reads CSS.** The link
+  checker, the band checker and the privacy checker all passed the entire time
+  the padding was broken.
 - **No third-party script or frame anywhere.** This is a promise, not a
   preference — a privacy-first product cannot load a script that fingerprints
   every visitor, and the donate page is exactly where that temptation appears

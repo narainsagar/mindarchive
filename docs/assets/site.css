@@ -493,8 +493,11 @@ a {
 /* -----------------------------------------------------------------------
    Document pages — the Markdown docs Jekyll renders
    ----------------------------------------------------------------------- */
+/* `padding-block`, never the `padding` shorthand. <main> carries `wrap doc`,
+   and the shorthand would reset the band's `padding-inline` to zero — which it
+   did, on all twenty document pages, until D-041. */
 .doc {
-  padding: 48px 0 72px;
+  padding-block: 48px 72px;
 }
 
 .doc h1 {

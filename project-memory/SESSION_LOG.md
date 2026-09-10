@@ -140,6 +140,40 @@ assertion on wording the compact row had changed.
 
 ---
 
+## 2026-09-10 — The missing gutter, and the first check that reads CSS
+
+**Session:** [2026-09-10-04-restore-the-side-gutter-on-document-pages](sessions/2026-09-10-04-restore-the-side-gutter-on-document-pages/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**One declaration, twenty pages (D-041).** `.doc` used the `padding` shorthand,
+which reset the band's `padding-inline` to zero, so every document page rendered
+with its text flush against the window edge. `padding-block` fixes all of them.
+
+**The scope was wrong at first and the maintainer caught it.** I checked one
+page and generalised. Counting instead: 20 pages carry `wrap doc` and were all
+broken; only home escaped, because no `.home` rule exists to override the band
+— exactly what had been reported.
+
+**It shipped when the site layout was built.** `--content-max: 1280px` with
+`margin-inline: auto` created side space above that width and hid it. D-040
+removed the cap and exposed it. The later change revealed the defect rather than
+causing it. The comment three sections above the broken rule already stated the
+rule in prose — prose is not a check.
+
+**Every existing check passed the whole time, because none of them reads CSS.**
+`scripts/check_css_bands.py` now fails if any class landing on a layout band
+uses the `padding` shorthand, and it runs inside `dev.py verify`. It was
+**proven by reintroducing the bug** — a guard that cannot fail is worth nothing.
+
+A preview was published and approved before anything in the repository changed.
+
+**Verified**: gate green at 107 tests, guard included; 618/618 links; bands
+correct on all 21 pages. **Not verified by me:** how it looks — that needs a
+browser, and is the maintainer's check.
+
+---
+
 ## 2026-09-10 — Taking money, without putting payment in the product
 
 **Session:** [2026-09-10-03-support-page-and-project-memory-move](sessions/2026-09-10-03-support-page-and-project-memory-move/SESSION.md)

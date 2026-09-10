@@ -508,6 +508,55 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-041 — Band elements use `padding-block`, never the `padding` shorthand
+**Date:** 2026-09-10 · **Status:** Accepted
+
+`.doc` used the `padding` shorthand:
+
+```css
+.doc { padding: 48px 0 72px; }        /* resets padding-inline to 0 */
+```
+
+`<main>` carries `wrap doc`. The band rule sets
+`padding-inline: var(--gutter)`; `.doc` has the same specificity and comes
+later, so it won, and **all twenty document pages rendered with their content
+flush against the window edge**. Only the home page escaped, because `.home`
+has no rule at all.
+
+Fixed by one declaration: `padding-block: 48px 72px`.
+
+**How it hid for so long.** `--content-max` was `1280px` with
+`margin-inline: auto`, so above that width the auto margins produced side space
+that looked like the gutter. D-040 set `--content-max: none`, which removed the
+centring and exposed a defect that had shipped when the site layout was first
+built. The later change revealed it; it did not cause it.
+
+**The rule, stated so it is checkable:** on any element that carries a layout
+band — `<main class="wrap doc">`, `<main class="wrap home">`,
+`.site-header__in`, `.site-header__panel-in`, `.site-footer__in`, and the
+application's `.header__inner`, `.header__panel-inner`, `.workspace` — vertical
+spacing is written with `padding-block`. The `padding` shorthand is forbidden
+there, including on any other class sharing the element.
+
+**Consequences:**
+
+- `scripts/check_css_bands.py` enforces exactly this and **runs inside
+  `dev.py verify`**, so it is part of the gate rather than a script nobody
+  invokes. Documented in `docs/GITHUB_PAGES.md`.
+- **It was proven by reintroducing the bug**: it passes on the fix and fails on
+  `padding: 48px 0 72px`, reporting the file, line and selector. A guard that
+  cannot fail is worth nothing.
+- It avoids `list[str]` annotations, because these scripts run on the
+  developer's own Python and this machine's is 3.8 — the reason Docker is the
+  supported path for the application (D-006, D-007).
+- **No other check reads CSS.** The link checker, band checker and privacy
+  checker all passed throughout — which is why this survived several rounds of
+  verification and needed a human to see it.
+- The comment above the band rule had already stated this rule in prose. Prose
+  is not a check.
+
+---
+
 ## D-040 — Full-width bands, a centred footer, and a site URL that works locally
 **Date:** 2026-09-10 · **Status:** Accepted
 

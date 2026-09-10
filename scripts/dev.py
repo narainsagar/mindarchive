@@ -306,6 +306,10 @@ def cmd_verify(args) -> int:
         ("Frontend tests", frontend("npm", "test")),
         ("Frontend build", frontend("npm", "run", "build")),
         ("Project memory", [sys.executable, "scripts/session.py", "check"]),
+        # Reads the stylesheets, which nothing else here does. A band element
+        # using the `padding` shorthand loses its side gutter silently, and
+        # every other check passes while it is broken (D-041).
+        ("CSS layout bands", [sys.executable, "scripts/check_css_bands.py"]),
     ]
 
     for name, command in steps:
