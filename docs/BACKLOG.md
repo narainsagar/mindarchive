@@ -75,26 +75,36 @@ None of this is application work — it belongs on the project website, not in
 this repository. Recorded here so the plan is not lost. See
 [LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md) and decision D-016.
 
+**Decided (D-038):** a **merchant of record** — Polar, Paddle or Lemon Squeezy —
+sells both the licence and the donations. They are the legal seller and remit
+VAT and sales tax everywhere, which raw Stripe or PayPal would leave with the
+maintainer from the very first EU sale. Checkout is **hosted, reached by plain
+links**: no payment script on the site, no embedded frame, nothing tracking a
+visitor who has not chosen to pay.
+
+The page is built: `/support/`, driven entirely by `docs/_data/support.yml`.
+
+Still open:
+
+- **The URLs are blank.** An account has to exist before anything can be sold.
+  Blank entries render nothing, so the page is honest in the meantime and
+  points at the contact address instead.
 - **Contributor Licence Agreement.** Required before any outside contribution
   can be merged, because contributed code must be includable in commercially
   licensed releases. Blocking for accepting pull requests.
-- **Merchant of record, not raw Stripe.** Selling internationally means EU VAT,
-  UK VAT and US sales tax liability. Lemon Squeezy, Paddle and Polar act as
-  merchant of record and handle all of it for a few percent. Raw Stripe or
-  PayPal leaves the tax compliance burden on the seller. Evaluate before taking
-  the first payment.
-- **Commercial licence pricing.** $49 per seat perpetual with one year of
-  updates; $39 per seat at 10+; enterprise on request. Anchor here and discount
-  if needed — raising prices later punishes early buyers.
-- **Donations.** Coffee $5, beer $10, lunch $20, or a custom amount. Optional,
-  unlocks nothing, funds ongoing importer maintenance as provider export formats
-  change.
+- **Volume pricing.** $39 per seat at 10+, enterprise on request. Configured at
+  the provider, not in this repository. Anchor at $49 and discount if needed —
+  raising prices later punishes early buyers.
 - **Licence key or activation.** Probably unnecessary and contrary to the
   product's spirit — commercial licensing can be honour-based, as Obsidian's is.
   Decide deliberately rather than by default. Any phone-home mechanism would
-  contradict the privacy model.
-- **Website.** Downloads, pricing, donations and documentation. The application
-  must never contain payment code or contact a server.
+  contradict the privacy model **and break the promise in LICENSING.md**.
+- **What the buyer actually receives.** With a merchant of record this is a file
+  attached to the receipt. It does not exist yet.
+- **A real test purchase**, on both paths, before announcing either anywhere.
+  Nothing about payment can be verified from this repository.
+- **Crypto** is donations only, as a published address — never for licences,
+  which need a buyer you can identify and a receipt you can produce.
 
 ## Faster and easier import
 

@@ -751,6 +751,98 @@ a {
 }
 
 /* -----------------------------------------------------------------------
+   Support — donation tiers and the crypto address (D-038).
+
+   Every tier is a plain link to hosted checkout. There is no form here and no
+   third-party script; a build check enforces that.
+   ----------------------------------------------------------------------- */
+.tiers {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin: 0 0 24px;
+}
+
+.tier {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 16px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  text-decoration: none;
+  color: var(--text);
+}
+
+.tier:hover {
+  border-color: var(--accent);
+  background: var(--accent-quiet);
+}
+
+.tier__emoji {
+  font-size: 1.25rem;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+
+.tier__amount {
+  font-size: 1.125rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  font-variant-numeric: tabular-nums;
+}
+
+.tier__label {
+  font-size: 0.8125rem;
+  color: var(--text-soft);
+}
+
+.tier--custom .tier__amount {
+  font-size: 1rem;
+}
+
+.wallet {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  margin: 0 0 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-sunken);
+}
+
+.wallet__label {
+  width: 100%;
+  margin: 0;
+  color: var(--text-faint);
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.wallet__address {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.8125rem;
+}
+
+.wallet__copy {
+  flex: none;
+  padding: 6px 12px;
+  font-size: 0.8125rem;
+}
+
+.cta-row {
+  margin: 20px 0;
+}
+
+/* -----------------------------------------------------------------------
    Documentation index
    ----------------------------------------------------------------------- */
 .doc-index {

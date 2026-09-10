@@ -1,0 +1,69 @@
+# Where donations and licence purchases go.
+#
+# ─────────────────────────────────────────────────────────────────────────
+#  FILL THE URLs IN. Every one is blank on purpose — nothing here has been
+#  guessed. A blank entry is simply not rendered, so the site never shows a
+#  dead payment link. Mirrors apps/web/src/support.ts, which works the same
+#  way.
+# ─────────────────────────────────────────────────────────────────────────
+#
+# Everything here is public by design: a price and a donation link are meant
+# to be seen. Nothing secret belongs in this file — no API keys, no webhook
+# secrets. GitHub Pages is a static host and has nowhere to keep them anyway.
+#
+# WHY THESE ARE LINKS, NOT AN EMBEDDED FORM (D-038)
+#
+# Each URL points at the provider's own hosted checkout. No Stripe.js, no
+# PayPal SDK, no iframe. A privacy-first product cannot load a third-party
+# script that fingerprints every visitor to its donate page. A build check in
+# docs/GITHUB_PAGES.md enforces this.
+#
+# WHY A MERCHANT OF RECORD
+#
+# Use Polar, Paddle or Lemon Squeezy — not raw Stripe or PayPal. Selling a
+# licence to a consumer in the EU creates a VAT obligation on the first sale;
+# there is no threshold for digital goods. A merchant of record is the legal
+# seller and remits tax everywhere. Raw Stripe leaves registration, quarterly
+# filing and ten years of records with you.
+#
+# Switching provider means editing this file. Nothing else knows who
+# processes the money.
+
+contact_email: kishor3947@gmail.com
+
+# The commercial licence. Price is published in LICENSING.md — keep them equal.
+licence:
+  price: 49
+  currency: USD
+  # Hosted checkout for a single seat. Volume pricing is configured at the
+  # provider, not here.
+  url: ""
+
+# Suggested donation amounts, in order. Blank url = not shown.
+donations:
+  - label: Buy a coffee
+    emoji: "☕"
+    amount: 5
+    url: ""
+  - label: Buy a beer
+    emoji: "🍺"
+    amount: 10
+    url: ""
+  - label: Buy lunch
+    emoji: "🍕"
+    amount: 20
+    url: ""
+  - label: Buy dinner
+    emoji: "🍽️"
+    amount: 25
+    url: ""
+
+# "Any amount you choose" — the provider's own amount field does the work.
+custom_amount_url: ""
+
+# Gifts only, never licences: a licence needs a buyer you can identify and a
+# receipt you can produce. Put the address in `address`; it is shown as text
+# to copy, not as a link.
+crypto:
+  - label: Bitcoin
+    address: ""

@@ -63,6 +63,7 @@ there will be a simple way to say so:
 | ☕ **Buy a coffee** | $5 |
 | 🍺 **Buy a beer** | $10 |
 | 🍕 **Buy lunch** | $20 |
+| 🍽️ **Buy dinner** | $25 |
 | 💛 **Something else** | Any amount you choose |
 
 Why it matters: AI tools change constantly, and provider export formats change
@@ -72,6 +73,13 @@ comes next is ongoing work, not a one-off. Donations fund that work directly.
 Donations will be handled on the project website, not inside the application.
 Mind Archive itself will never contain payment code, phone home, or ask you for
 money while you are using it.
+
+That promise is kept literally, and it is checked. The Support panel in the
+application holds one link to the website and nothing else — no provider, no
+amounts, no checkout — and a test fails if any payment provider's name ever
+appears in the interface. The website's donate page is only links to hosted
+checkout: no Stripe script, no PayPal SDK, no embedded frame, so nothing on it
+watches you before you choose to go and pay. See decision D-038.
 
 ## Why not MIT or Apache?
 

@@ -55,3 +55,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-035 | The blog is part of the Jekyll site, and nothing publishes itself |
 | D-036 | Clean lowercase routes for every page, set per page |
 | D-037 | One header row; appearance is two menus; navigation folds |
+| D-038 | Money is taken by a merchant of record, through plain links |

@@ -360,17 +360,35 @@ describe("support, contributing and the footer", () => {
     expect(link.getAttribute("href")).toContain("Commercial%20licence");
   });
 
-  it("shows no donation buttons until they are configured", async () => {
-    /* Better nothing than a dead link. `support.ts` ships with blank URLs and
-       `configuredDonations` filters them out. */
+  it("sends people to the website rather than to a payment provider", async () => {
+    /* LICENSING.md promises the application will never contain payment code.
+       The Support panel therefore links out to a page and stops there — no
+       provider, no amounts, no checkout inside the app (D-038). */
     await renderApp();
 
-    expect(
-      screen.getByText(/donation links are not set up yet/i),
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("link", { name: /buy me a coffee/i }),
-    ).not.toBeInTheDocument();
+    const link = screen.getByRole("link", { name: /ways to support this/i });
+    expect(link).toHaveAttribute(
+      "href",
+      "https://rootedglobal.github.io/mindarchive/support/",
+    );
+  });
+
+  it("contains no payment provider anywhere in the interface", async () => {
+    /* The guard for the promise above. If someone ever pastes a checkout URL
+       into the app, this fails — which is the point. */
+    const { container } = await renderApp();
+    const html = container.innerHTML.toLowerCase();
+
+    for (const provider of [
+      "stripe",
+      "paypal",
+      "paddle",
+      "lemonsqueezy",
+      "polar.sh",
+      "checkout",
+    ]) {
+      expect(html).not.toContain(provider);
+    }
   });
 
   it("asks people not to send their actual conversations", async () => {
@@ -463,7 +481,7 @@ describe("appearance", () => {
   it("changes palette and remembers it", async () => {
     await renderApp();
     const user = await openMenu(/^Palette:/);
-    await user.click(screen.getByRole("menuitemradio", { name: /Ink & violet/ }));
+    await user.click(screen.getByRole("menuitemradio", { name: /Ink & Violet/i }));
 
     expect(document.documentElement.getAttribute("data-palette")).toBe(
       "violet",

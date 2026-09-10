@@ -508,6 +508,56 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-038 — Money is taken by a merchant of record, through plain links
+**Date:** 2026-09-10 · **Status:** Accepted
+
+Donations (☕$5 · 🍺$10 · 🍕$20 · 🍽️$25 · any amount) and the $49-per-seat
+commercial licence are sold from `/support/` on the website. Every URL lives in
+`docs/_data/support.yml`; a blank entry renders nothing.
+
+**A merchant of record, not raw Stripe or PayPal.** Polar, Paddle and Lemon
+Squeezy become the *legal seller* and remit tax in every jurisdiction. Selling a
+digital licence to a consumer in the EU creates a VAT obligation on the **first
+sale** — there is no threshold — and raw Stripe would leave registration,
+collection, quarterly filing and ten years of record-keeping with the
+maintainer. The extra ~2% is the cheapest part of this decision. `BACKLOG.md`
+had flagged it as "evaluate before taking the first payment"; this is the
+evaluation.
+
+**Hosted checkout, reached by plain `<a href>`.** No Stripe.js, no PayPal SDK,
+no embedded frame. A product whose entire argument is that nothing tracks you
+cannot load a third-party script that fingerprints every visitor to its donate
+page. **This is enforced by a build check** in `GITHUB_PAGES.md`: no
+`<script src="http…">` or `<iframe src="http…">` may appear anywhere in the
+built site. Every script on the site is inline and first-party.
+
+It is also forced by the host. GitHub Pages is static — no server, no secrets,
+no webhooks — so nothing here could process, verify or fulfil a payment even if
+it wanted to.
+
+**The application stays clean, and it is tested.** `LICENSING.md` promises Mind
+Archive "will never contain payment code, phone home, or ask you for money while
+you are using it". The Support panel therefore holds **one link to the website**
+— no provider, no amounts, no checkout — and a test asserts that none of
+`stripe`, `paypal`, `paddle`, `lemonsqueezy`, `polar.sh` or `checkout` appears
+anywhere in the rendered interface. Changing payment provider never touches
+`apps/`.
+
+**Crypto is for gifts, never licences.** A published address costs nothing and
+is the most private option on the page. A licence needs a buyer you can
+identify and a receipt you can produce, so it goes through checkout.
+
+**Consequences:**
+
+- `LICENSING.md` gained the 🍽️$25 tier so the published tiers and the page
+  agree — they would otherwise have contradicted each other on day one.
+- Volume pricing ($39/seat at 10+) is provider configuration, not code.
+- **Nothing about payment can be verified from this repository.** No account
+  exists, every URL is blank, and a real end-to-end purchase on both paths —
+  plus the refund path — is required before either is announced anywhere.
+
+---
+
 ## D-037 — One header row; appearance is two menus; navigation folds
 **Date:** 2026-09-10 · **Status:** Accepted
 

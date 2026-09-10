@@ -37,21 +37,29 @@ export const SUPPORT: SupportConfig = {
   contactEmail: "kishor3947@gmail.com",
 
   /**
-   * One-off and recurring donations. Add a URL to make one appear.
+   * One link, and it goes to the website — never to a payment provider.
    *
-   * Examples of what goes here:
-   *   PayPal      https://paypal.me/yourhandle
-   *   Ko-fi       https://ko-fi.com/yourhandle
-   *   GitHub      https://github.com/sponsors/yourhandle
+   * LICENSING.md promises that Mind Archive "will never contain payment code,
+   * phone home, or ask you for money while you are using it". Linking out to a
+   * page keeps that literally true: no provider script, no checkout, no
+   * third-party request ever originates from the application (D-038).
+   *
+   * It also means changing payment provider never touches the application —
+   * the amounts and the checkout URLs live in docs/_data/support.yml.
    */
   donate: [
-    { label: "Buy me a coffee", url: "", note: "A one-off thank you" },
-    { label: "Sponsor monthly", url: "", note: "Ongoing support" },
+    {
+      label: "Ways to support this",
+      url: "https://rootedglobal.github.io/mindarchive/support/",
+      note: "Opens the website",
+    },
   ],
 
   /**
-   * Public wallet addresses, if you want them. `url` stays blank; put the
-   * address in `label` — it is shown as text to copy, not as a link.
+   * Deliberately empty, and staying that way.
+   *
+   * A wallet address in the application would be payment detail inside the
+   * product. It belongs on the website with everything else about money.
    */
   wallets: [],
 

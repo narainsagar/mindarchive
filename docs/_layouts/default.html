@@ -72,7 +72,11 @@
           </a>
         </h1>
 
-        {%- assign nav = "/,Home|/docs/,Docs|/blog/,Blog|/product/,Product|/development/,Development|/security/,Security|/coming-next/,Coming next|/contribute/,Contribute" | split: "|" -%}
+        {%- comment -%}
+          The navigation, written once and rendered twice — inline in the row
+          above 1024px, stacked in the menu panel below it. "path,Label" pairs.
+        {%- endcomment -%}
+        {%- assign nav = "/,Home|/docs/,Docs|/blog/,Blog|/product/,Product|/development/,Development|/security/,Security|/coming-next/,Coming next|/contribute/,Contribute|/support/,Support" | split: "|" -%}
 
         <nav class="site-nav site-nav--inline" aria-label="Sections">
           <ul>
@@ -142,6 +146,7 @@
           <a href="{{ '/architecture/' | relative_url }}">Architecture</a>
           <a href="{{ '/decisions/' | relative_url }}">Decisions</a>
           <a href="{{ '/contribute/' | relative_url }}">Contribute</a>
+          <a href="{{ '/support/' | relative_url }}">Support</a>
           <a href="https://github.com/RootedGlobal/mindarchive">Source</a>
           <a href="mailto:kishor3947@gmail.com?subject=Mind%20Archive">Contact</a>
         </div>
@@ -175,7 +180,7 @@
         var PALETTES = [
           { v: "minimal", label: "Light minimal", sw: ["#ffffff", "#f6f8fa", "#0b5fbf"] },
           { v: "warm", label: "Warm paper", sw: ["#fbfaf8", "#f4f2ef", "#6b5b45"] },
-          { v: "violet", label: "Ink & violet", sw: ["#ffffff", "#f7f6fa", "#6435cf"] }
+          { v: "violet", label: "Ink & Violet", sw: ["#ffffff", "#f7f6fa", "#6435cf"] }
         ];
         var THEMES = [
           { v: "light", label: "Light" },

@@ -33,7 +33,7 @@ export const PALETTES: Palette[] = ["minimal", "warm", "violet"];
 export const PALETTE_LABELS: Record<Palette, string> = {
   minimal: "Light minimal",
   warm: "Warm paper",
-  violet: "Ink & violet",
+  violet: "Ink & Violet",
 };
 
 /** What each theme choice is called in the interface. */

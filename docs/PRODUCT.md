@@ -85,7 +85,7 @@ licence. No private credentials are needed to build or run it. See
 ## Interface direction
 
 Two appearance choices sit in the header, and both are remembered. A palette —
-Light minimal (the default), Warm paper, or Ink & violet — and a theme: Light,
+Light minimal (the default), Warm paper, or Ink & Violet — and a theme: Light,
 Dark, or System, which follows the computer. All six combinations must look
 good. See DECISIONS.md D-029.
 

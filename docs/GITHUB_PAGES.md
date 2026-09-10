@@ -126,6 +126,19 @@ does the same thing.
 - `_drafts/TEMPLATE.md` did **not** get published.
 - `feed.xml` is present and parses.
 - `project-memory/` is absent.
+- **No third-party script or frame anywhere.** This is a promise, not a
+  preference — a privacy-first product cannot load a script that fingerprints
+  every visitor, and the donate page is exactly where that temptation appears
+  (D-038). The check:
+
+  ```bash
+  # Must return nothing.
+  grep -rEo '<(script|iframe)[^>]+src="https?://[^"]+"' /tmp/ma_site --include='*.html'
+  ```
+
+  Every script on this site is inline and first-party. If that command ever
+  prints something, someone has embedded a payment widget, an analytics tag or
+  a font host, and it needs removing rather than allowing.
 - The header, the palette and theme controls and the footer appear on a
   documentation page and a blog post, not just on the landing page.
 
