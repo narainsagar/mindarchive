@@ -51,6 +51,7 @@ Record new architectural and product decisions there, numbered and dated.
 | D-031 | The page carries Support, Contribute and a real footer |
 | D-032 | Published publicly on GitHub; Pages for docs; no hosted application |
 | D-033 | The website shares the application's palettes, through one Jekyll layout |
-| D-034 | The appearance controls carry no visible group labels |
+| D-034 | ~~The appearance controls carry no visible group labels~~ — superseded by D-037 |
 | D-035 | The blog is part of the Jekyll site, and nothing publishes itself |
 | D-036 | Clean lowercase routes for every page, set per page |
+| D-037 | One header row; appearance is two menus; navigation folds |

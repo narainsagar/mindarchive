@@ -23,15 +23,14 @@ interface Props {
   /** Anchor target for the header nav. */
   id?: string;
   /**
-   * Rendered in this panel's header row. The Import button lives here, so
-   * importing never means scrolling past the archive to find it (D-030).
+   * Reports how many conversations are in the archive.
+   *
+   * Import and Export moved to the header (D-037), where they are reachable
+   * from anywhere on the page — but Export needs to know the count so its
+   * dialog can say what is about to be downloaded, and this panel is what
+   * knows it.
    */
-  action?: React.ReactNode;
-  /**
-   * Opens the export dialog. Called with the conversation count so the dialog
-   * can say what is about to be downloaded.
-   */
-  onExport?: (total: number) => void;
+  onTotalChange?: (total: number) => void;
 }
 
 /**
@@ -41,7 +40,7 @@ interface Props {
  * one page, still no router, because there is still nothing to navigate
  * between (D-008).
  */
-export function ArchivePanel({ id, action, onExport }: Props) {
+export function ArchivePanel({ id, onTotalChange }: Props) {
   const [query, setQuery] = useState("");
   const [tag, setTag] = useState("");
   const [tagCounts, setTagCounts] = useState<Record<string, number>>({});
@@ -72,6 +71,7 @@ export function ArchivePanel({ id, action, onExport }: Props) {
 
         setConversations(result.conversations);
         setTotal(result.total);
+        onTotalChange?.(result.total);
         // Defensive: a response without tags must narrow the view, not
         // blank it. Object.entries(undefined) throws.
         setTagCounts(result.tags ?? {});
@@ -126,28 +126,14 @@ export function ArchivePanel({ id, action, onExport }: Props) {
         <h2 className="panel__title" id="archive-heading">
           Your archive
         </h2>
-        {/* Always rendered, even on an empty archive — that is exactly when
-            the Import button matters most. */}
-        <div className="archive__actions">
-          {total > 0 && (
-            <p className="archive__count">
-              {total} {total === 1 ? "conversation" : "conversations"}
-            </p>
-          )}
-          {action}
-          {total > 0 && onExport && (
-            /* Opens a dialog rather than downloading straight away: an export
-               can be large, and it is worth saying what is in it first. The
-               download itself is still a plain link inside that dialog. */
-            <button
-              type="button"
-              className="button"
-              onClick={() => onExport(total)}
-            >
-              Export everything
-            </button>
-          )}
-        </div>
+        {/* Import and Export used to sit here. They live in the header now
+            (D-037), so they are reachable from anywhere on the page rather
+            than only when the archive is in view. */}
+        {total > 0 && (
+          <p className="archive__count">
+            {total} {total === 1 ? "conversation" : "conversations"}
+          </p>
+        )}
       </div>
 
       <label className="archive__search">

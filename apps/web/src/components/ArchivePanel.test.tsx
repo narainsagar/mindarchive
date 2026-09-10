@@ -276,27 +276,22 @@ describe("exporting the archive", () => {
     vi.mocked(fetchConversation).mockResolvedValue(detail);
   });
 
-  it("hands the export over to whoever opens the dialog", async () => {
-    /* The panel no longer downloads directly — it asks App to open the export
-       dialog, and passes the count so the dialog can say what is in the zip.
-       The download itself is a plain link inside that dialog. */
-    const onExport = vi.fn();
-    const user = userEvent.setup();
-    render(<ArchivePanel onExport={onExport} />);
+  it("reports how many conversations it found", async () => {
+    /* Export moved to the header (D-037), which means the header needs the
+       count for its dialog — and this panel is what knows it. */
+    const onTotalChange = vi.fn();
+    render(<ArchivePanel onTotalChange={onTotalChange} />);
 
-    await user.click(
-      await screen.findByRole("button", { name: /export everything/i }),
-    );
-
-    expect(onExport).toHaveBeenCalledWith(1);
+    await screen.findByText(/making sourdough/i);
+    expect(onTotalChange).toHaveBeenCalledWith(1);
   });
 
-  it("offers no export when nobody is listening for it", async () => {
+  it("no longer carries its own export control", async () => {
     render(<ArchivePanel />);
 
     await screen.findByText(/making sourdough/i);
     expect(
-      screen.queryByRole("button", { name: /export everything/i }),
+      screen.queryByRole("button", { name: /export/i }),
     ).not.toBeInTheDocument();
   });
 

@@ -66,62 +66,58 @@
   <body>
     <header class="site-header">
       <div class="site-header__in">
-        <a class="site-header__brand" href="{{ '/' | relative_url }}">
-          <h1 class="site-header__title">{{ site.title }}</h1>
-          <p class="site-header__tagline">Own your AI memory.</p>
-        </a>
+        <h1 class="site-header__title">
+          <a class="site-header__brand" href="{{ '/' | relative_url }}">
+            {{ site.title }}
+          </a>
+        </h1>
 
-        <div class="appearance">
-          <fieldset class="segmented">
-            <legend class="segmented__legend">Palette</legend>
-            <div class="segmented__options">
-              <label class="segmented__option">
-                <input type="radio" name="palette" value="minimal" />
-                <span>Light minimal</span>
-              </label>
-              <label class="segmented__option">
-                <input type="radio" name="palette" value="warm" />
-                <span>Warm paper</span>
-              </label>
-              <label class="segmented__option">
-                <input type="radio" name="palette" value="violet" />
-                <span>Ink &amp; violet</span>
-              </label>
-            </div>
-          </fieldset>
+        {%- assign nav = "/,Home|/docs/,Docs|/blog/,Blog|/product/,Product|/development/,Development|/security/,Security|/coming-next/,Coming next|/contribute/,Contribute" | split: "|" -%}
 
-          <fieldset class="segmented">
-            <legend class="segmented__legend">Theme</legend>
-            <div class="segmented__options">
-              <label class="segmented__option">
-                <input type="radio" name="theme" value="light" />
-                <span>Light</span>
-              </label>
-              <label class="segmented__option">
-                <input type="radio" name="theme" value="dark" />
-                <span>Dark</span>
-              </label>
-              <label class="segmented__option">
-                <input type="radio" name="theme" value="system" />
-                <span>System</span>
-              </label>
-            </div>
-          </fieldset>
+        <nav class="site-nav site-nav--inline" aria-label="Sections">
+          <ul>
+            {%- for entry in nav -%}
+              {%- assign parts = entry | split: "," -%}
+              <li>
+                <a href="{{ parts[0] | relative_url }}">{{ parts[1] }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </nav>
+
+        <span class="site-header__spacer"></span>
+
+        <div class="site-header__actions">
+          <!-- The two appearance menus are built here by the script below.
+               They are not in the markup because without JavaScript they
+               cannot do anything, and a dead control is worse than none. -->
+          <button
+            type="button"
+            class="button site-header__burger"
+            data-burger
+            aria-expanded="false"
+            aria-controls="site-menu"
+            aria-label="Menu"
+          >
+            <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+          </button>
         </div>
       </div>
 
-      <nav class="site-nav" aria-label="Documentation">
-        <div class="site-nav__in">
-          <a href="{{ '/' | relative_url }}">Home</a>
-          <a href="{{ '/docs/' | relative_url }}">Docs</a>
-          <a href="{{ '/blog/' | relative_url }}">Blog</a>
-          <a href="{{ '/product/' | relative_url }}">Product</a>
-          <a href="{{ '/development/' | relative_url }}">Development</a>
-          <a href="{{ '/security/' | relative_url }}">Security</a>
-          <a href="{{ '/coming-next/' | relative_url }}">Coming next</a>
-          <a href="{{ '/contribute/' | relative_url }}">Contribute</a>
+      <div class="site-header__panel" id="site-menu" data-panel hidden>
+        <div class="site-header__panel-in">
+          <nav class="site-nav site-nav--stacked" aria-label="Sections">
+            <ul>
+              {%- for entry in nav -%}
+                {%- assign parts = entry | split: "," -%}
+                <li>
+                  <a href="{{ parts[0] | relative_url }}">{{ parts[1] }}</a>
+                </li>
+              {%- endfor -%}
+            </ul>
+          </nav>
         </div>
-      </nav>
+      </div>
     </header>
 
     {% if page.layout_bare %}
@@ -153,12 +149,39 @@
     </footer>
 
     <script>
-      // The appearance controls. Same model as the application: the palette
-      // and the theme choice are stored; "system" is resolved to light or dark
-      // before it reaches the stylesheet, and keeps following the machine for
-      // as long as it is selected.
+      // The appearance menus and the navigation panel.
+      //
+      // Same model as the application (apps/web/src/components/Menu.tsx):
+      // the palette and the theme choice are stored, "system" is resolved to
+      // light or dark before it reaches the stylesheet, and the resolved
+      // answer keeps following the machine for as long as "system" is chosen.
+      //
+      // The menus are built here rather than written into the markup: without
+      // JavaScript they cannot do anything, and a control that does nothing is
+      // worse than one that is absent.
       (function () {
         var root = document.documentElement;
+
+        var ICON = {
+          palette: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9"/><circle cx="9" cy="9.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="15" cy="9.5" r="1.4" fill="currentColor" stroke="none"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg>',
+          light: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+          dark: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>',
+          system: '<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/></svg>',
+          caret: '<svg class="icon icon--caret" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6"/></svg>',
+          tick: '<svg class="icon icon--tick" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6L9 17l-5-5"/></svg>'
+        };
+
+        // The light variant of each palette, matching theme.ts.
+        var PALETTES = [
+          { v: "minimal", label: "Light minimal", sw: ["#ffffff", "#f6f8fa", "#0b5fbf"] },
+          { v: "warm", label: "Warm paper", sw: ["#fbfaf8", "#f4f2ef", "#6b5b45"] },
+          { v: "violet", label: "Ink & violet", sw: ["#ffffff", "#f7f6fa", "#6435cf"] }
+        ];
+        var THEMES = [
+          { v: "light", label: "Light" },
+          { v: "dark", label: "Dark" },
+          { v: "system", label: "System" }
+        ];
 
         function resolve(choice) {
           if (choice !== "system") return choice;
@@ -179,59 +202,212 @@
           }
         }
 
-        // Reflect what the pre-paint script already decided.
-        var palette = root.getAttribute("data-palette") || "minimal";
-        var themeChoice = root.getAttribute("data-theme-choice") || "system";
-
-        function check(name, value) {
-          var input = document.querySelector(
-            'input[name="' + name + '"][value="' + value + '"]',
-          );
-          if (input) input.checked = true;
+        var open = null;
+        function closeOpen(returnFocus) {
+          if (!open) return;
+          open.panel.remove();
+          open.trigger.setAttribute("aria-expanded", "false");
+          if (returnFocus) open.trigger.focus();
+          open = null;
         }
 
-        check("palette", palette);
-        check("theme", themeChoice);
+        function buildMenu(kind) {
+          var items = kind === "palette" ? PALETTES : THEMES;
+          var storageKey = "mindarchive-" + kind;
+          var name = kind === "palette" ? "Palette" : "Theme";
 
-        document
-          .querySelectorAll('input[name="palette"]')
-          .forEach(function (input) {
-            input.addEventListener("change", function () {
-              palette = input.value;
-              root.setAttribute("data-palette", palette);
-              store("mindarchive-palette", palette);
+          var wrap = document.createElement("div");
+          wrap.className = "menu";
+
+          var trigger = document.createElement("button");
+          trigger.type = "button";
+          trigger.className = "button menu__trigger";
+          trigger.setAttribute("aria-haspopup", "true");
+          trigger.setAttribute("aria-expanded", "false");
+          trigger.title = name;
+
+          function value() {
+            return kind === "palette"
+              ? root.getAttribute("data-palette") || "minimal"
+              : root.getAttribute("data-theme-choice") || "system";
+          }
+
+          function currentItem() {
+            var v = value();
+            for (var i = 0; i < items.length; i++) {
+              if (items[i].v === v) return items[i];
+            }
+            return items[0];
+          }
+
+          function paint() {
+            var item = currentItem();
+            var icon = kind === "palette" ? ICON.palette : ICON[item.v];
+            trigger.innerHTML =
+              icon + '<span class="menu__value">' + item.label + "</span>" + ICON.caret;
+            trigger.setAttribute("aria-label", name + ": " + item.label);
+          }
+
+          function options() {
+            var panel = document.createElement("div");
+            panel.className = "menu__panel";
+            panel.setAttribute("role", "menu");
+            panel.setAttribute("aria-label", name);
+
+            items.forEach(function (item) {
+              var b = document.createElement("button");
+              b.type = "button";
+              b.className = "menu__option";
+              b.setAttribute("role", "menuitemradio");
+              b.setAttribute("aria-checked", String(item.v === value()));
+
+              var lead =
+                kind === "palette"
+                  ? '<span class="swatch" aria-hidden="true">' +
+                    item.sw
+                      .map(function (c) {
+                        return '<i style="background:' + c + '"></i>';
+                      })
+                      .join("") +
+                    "</span>"
+                  : ICON[item.v];
+
+              b.innerHTML =
+                lead + '<span class="menu__label">' + item.label + "</span>" + ICON.tick;
+
+              b.addEventListener("click", function () {
+                if (kind === "palette") {
+                  root.setAttribute("data-palette", item.v);
+                } else {
+                  root.setAttribute("data-theme-choice", item.v);
+                  root.setAttribute("data-theme", resolve(item.v));
+                }
+                store(storageKey, item.v);
+                closeOpen(true);
+                paint();
+              });
+
+              panel.appendChild(b);
             });
+
+            panel.addEventListener("keydown", function (event) {
+              var opts = Array.prototype.slice.call(
+                panel.querySelectorAll(".menu__option")
+              );
+              var i = opts.indexOf(document.activeElement);
+              if (event.key === "Escape") {
+                event.preventDefault();
+                closeOpen(true);
+              } else if (event.key === "ArrowDown") {
+                event.preventDefault();
+                opts[Math.min(i + 1, opts.length - 1)].focus();
+              } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                opts[Math.max(i - 1, 0)].focus();
+              } else if (event.key === "Home") {
+                event.preventDefault();
+                opts[0].focus();
+              } else if (event.key === "End") {
+                event.preventDefault();
+                opts[opts.length - 1].focus();
+              } else if (event.key === "Tab") {
+                closeOpen(false);
+              }
+            });
+
+            return panel;
+          }
+
+          function show() {
+            closeOpen(false);
+            var panel = options();
+            wrap.appendChild(panel);
+            trigger.setAttribute("aria-expanded", "true");
+            open = { panel: panel, trigger: trigger };
+            var selected =
+              panel.querySelector('[aria-checked="true"]') ||
+              panel.querySelector(".menu__option");
+            if (selected) selected.focus();
+          }
+
+          trigger.addEventListener("click", function (event) {
+            event.stopPropagation();
+            if (open && open.trigger === trigger) closeOpen(true);
+            else show();
           });
 
-        document
-          .querySelectorAll('input[name="theme"]')
-          .forEach(function (input) {
-            input.addEventListener("change", function () {
-              themeChoice = input.value;
-              root.setAttribute("data-theme", resolve(themeChoice));
-              root.setAttribute("data-theme-choice", themeChoice);
-              store("mindarchive-theme", themeChoice);
-            });
+          trigger.addEventListener("keydown", function (event) {
+            if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+              event.preventDefault();
+              show();
+            }
           });
+
+          paint();
+          wrap.appendChild(trigger);
+          return wrap;
+        }
+
+        var actions = document.querySelector(".site-header__actions");
+        var burger = document.querySelector("[data-burger]");
+        var appearance = document.createElement("div");
+        appearance.className = "appearance";
+        appearance.appendChild(buildMenu("palette"));
+        appearance.appendChild(buildMenu("theme"));
+        actions.insertBefore(appearance, burger);
+
+        document.addEventListener("click", function () {
+          closeOpen(false);
+        });
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") closeOpen(true);
+        });
 
         // Keep following the machine while "system" is selected.
         try {
           var query = window.matchMedia("(prefers-color-scheme: dark)");
           var onChange = function () {
-            if (themeChoice === "system") {
+            if ((root.getAttribute("data-theme-choice") || "system") === "system") {
               root.setAttribute("data-theme", resolve("system"));
             }
           };
-          if (query.addEventListener) {
-            query.addEventListener("change", onChange);
-          } else if (query.addListener) {
-            query.addListener(onChange);
-          }
+          if (query.addEventListener) query.addEventListener("change", onChange);
+          else if (query.addListener) query.addListener(onChange);
         } catch (error) {
           // No matchMedia; the explicit choices still work.
         }
 
-        // Mark the current page in the navigation.
+        // --- the navigation panel ---
+        var panel = document.querySelector("[data-panel]");
+        burger.addEventListener("click", function (event) {
+          event.stopPropagation();
+          var opening = panel.hidden;
+          panel.hidden = !opening;
+          burger.setAttribute("aria-expanded", String(opening));
+          burger.setAttribute("aria-label", opening ? "Close menu" : "Menu");
+        });
+        function closePanel(returnFocus) {
+          if (panel.hidden) return;
+          panel.hidden = true;
+          burger.setAttribute("aria-expanded", "false");
+          burger.setAttribute("aria-label", "Menu");
+          if (returnFocus) burger.focus();
+        }
+        document.addEventListener("click", function (event) {
+          if (!document.querySelector(".site-header").contains(event.target)) {
+            closePanel(false);
+          }
+        });
+        document.addEventListener("keydown", function (event) {
+          if (event.key === "Escape") closePanel(true);
+        });
+        // Widening past the breakpoint puts the links back in the row; a panel
+        // left open over them would be a second copy of the same navigation.
+        window.addEventListener("resize", function () {
+          if (window.innerWidth >= 1024) closePanel(false);
+        });
+
+        // Mark the current page in both copies of the navigation.
         var here = window.location.pathname.replace(/\/$/, "");
         document.querySelectorAll(".site-nav a").forEach(function (link) {
           if (link.pathname.replace(/\/$/, "") === here) {

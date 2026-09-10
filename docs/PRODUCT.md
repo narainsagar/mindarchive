@@ -89,6 +89,12 @@ Light minimal (the default), Warm paper, or Ink & violet — and a theme: Light,
 Dark, or System, which follows the computer. All six combinations must look
 good. See DECISIONS.md D-029.
 
+Each is a menu button rather than a row of options, which is what lets the
+header be a single row: brand, navigation, then actions and appearance. Below
+1024px the navigation folds into a menu; the appearance buttons never do, and
+lose only their text label. **Nothing on either surface scrolls sideways** —
+wide content scrolls inside its own container instead. See D-037.
+
 The interface should read as something a thoughtful person designed: calm,
 clean, obvious, lightweight, professional. It should specifically *not* look
 AI-generated — no gradient-heavy card grids, no decorative dashboards, no

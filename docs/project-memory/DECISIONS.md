@@ -508,6 +508,66 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-037 — One header row; appearance is two menus; navigation folds
+**Date:** 2026-09-10 · **Status:** Accepted
+
+Both surfaces now carry a **single header row**: brand, navigation, then
+actions and appearance. The two segmented radio groups became two menu buttons.
+Below 1024px the navigation folds into a panel behind a hamburger; the
+appearance buttons never fold.
+
+**What forced it.** Six visible radio options is a wide control, and it was the
+reason the header needed a second row at all. That second row did not collapse
+when it ran out of space — it **scrolled sideways**, from
+`.site-nav__in { overflow-x: auto }` and `.sectionnav__list { overflow-x: auto }`.
+Both are gone. The links fold now instead of overflowing.
+
+**`overflow-x` on `pre` and `table` deliberately stays.** That is a scroll
+container doing its job so the *page* never scrolls — the opposite problem, and
+removing it would break wide code blocks.
+
+**Why a hand-built menu rather than `<select>`.** A native select is free,
+bulletproof and gives a phone its own picker. It cannot show colour. Seeing the
+three palettes is the entire job of a palette picker, so the menu is
+hand-written and owns its keyboard and focus behaviour:
+`role="menu"` with `menuitemradio` children — the pair that describes choosing
+one of a few options from a menu button, and it lets each option stay a real
+`<button>`. Arrow keys, `Home`/`End`, `Enter`, `Escape` with focus returned,
+`Tab` to close, click-outside, one menu open at a time.
+
+**The theme button shows the icon of the current choice** — sun, moon, or a
+monitor for System. That is what lets it drop its text label under 640px and
+still read, which is what keeps brand plus three controls inside 320px.
+
+**Consequences:**
+
+- `SegmentedControl.tsx` is deleted; `Menu.tsx` and `icons.tsx` replace it.
+  Icons are inline SVG, not a library — six small paths.
+- **The tagline left the header.** It still opens the landing page. The `<h1>`
+  stays: dropping the tagline must not drop the page's one top-level heading,
+  and it briefly did during implementation.
+- Import and Export moved from the archive panel to the header, so they are
+  reachable wherever you have scrolled to. `ArchivePanel` now reports its count
+  upward (`onTotalChange`) because the export dialog needs it.
+- Written twice — React and vanilla JS — like the pre-paint script before it
+  (D-033). Same roles, same class names, same 1024px breakpoint.
+- About ten test assertions moved from `radio` to `menuitemradio`, plus new
+  tests for opening, arrow keys, Escape-restores-focus, and one-menu-at-a-time.
+- The site's menus are **built by script rather than written into the markup**.
+  Without JavaScript they cannot work, and a dead control is worse than none;
+  `.no-js .appearance` hides them either way.
+- Palette swatch colours are duplicated in `theme.ts` and the site's script. A
+  swatch has to be a literal, because a custom property cannot be read from a
+  palette that is not currently applied.
+
+**Not verified here, and stated as such.** That the page never scrolls sideways
+cannot be proven in this repository's tests: jsdom has no layout, so
+`scrollWidth` is always zero, and there is no headless browser in the
+environment. The rules that caused it are gone and the breakpoints are correct,
+but the final check is dragging a real window from 320px upward — a manual step.
+
+---
+
 ## D-036 — Clean lowercase routes for every page, set per page
 **Date:** 2026-09-10 · **Status:** Accepted
 
@@ -617,7 +677,13 @@ behind it.
 ---
 
 ## D-034 — The appearance controls carry no visible group labels
-**Date:** 2026-09-10 · **Status:** Accepted
+**Date:** 2026-09-10 · **Status:** Superseded by [D-037](#d-037--one-header-row-appearance-is-two-menus-navigation-folds)
+
+**Superseded the same day.** The segmented controls this describes were
+replaced by two menu buttons. Its principle survived and was applied to the new
+control: the group name is still carried in the accessible name — now on the
+trigger, as "Palette: Light minimal" — while nothing redundant is printed on
+screen.
 
 The words "Palette" and "Theme" no longer appear above the segmented controls,
 in the application or on the website. The `<legend>` elements remain in the

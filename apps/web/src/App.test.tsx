@@ -153,11 +153,9 @@ describe("when the backend is not running", () => {
   });
 });
 
-/** The Import button in the archive header — there is a second one in the nav. */
+/** Import now lives in the header, reachable from anywhere on the page. */
 function importButton() {
-  const [button] = screen.getAllByRole("button", { name: /^import/i });
-  if (!button) throw new Error("no Import button was rendered");
-  return button;
+  return screen.getByRole("button", { name: /^import/i });
 }
 
 describe("importing without scrolling", () => {
@@ -166,10 +164,13 @@ describe("importing without scrolling", () => {
     backendAvailable();
   });
 
-  it("offers Import from the archive header and the nav", async () => {
+  it("offers Import once, from the header", async () => {
+    /* It used to appear twice — in the archive panel and in the nav row. Both
+       moved into the header (D-037), where it is reachable wherever you have
+       scrolled to, and there is only one of it. */
     await renderApp();
 
-    expect(screen.getAllByRole("button", { name: /^import/i })).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: /^import/i })).toHaveLength(1);
   });
 
   it("opens import in a dialog rather than further down the page", async () => {
@@ -295,7 +296,7 @@ describe("exporting", () => {
     /* An export can be large. Saying what is in it first is worth one click,
        and the download inside the dialog is still a plain link. */
     await user.click(
-      await screen.findByRole("button", { name: /export everything/i }),
+      await screen.findByRole("button", { name: /^export$/i }),
     );
 
     const dialog = await screen.findByRole("dialog", {
@@ -312,7 +313,7 @@ describe("exporting", () => {
     await renderApp();
 
     await user.click(
-      await screen.findByRole("button", { name: /export everything/i }),
+      await screen.findByRole("button", { name: /^export$/i }),
     );
 
     expect(
@@ -325,7 +326,7 @@ describe("exporting", () => {
     await renderApp();
 
     await user.click(
-      await screen.findByRole("button", { name: /export everything/i }),
+      await screen.findByRole("button", { name: /^export$/i }),
     );
     await screen.findByRole("dialog", { name: /export everything/i });
 
@@ -395,21 +396,25 @@ describe("appearance", () => {
     window.localStorage.clear();
   });
 
-  it("names both groups for screen readers, though the words are not shown", async () => {
-    /* "Palette" and "Theme" were removed from the header (D-034), but only
-       visually — `.segmented__legend` in styles.css hides them. The legends
-       stay in the accessibility tree, because without them a screen reader
-       announces six unrelated radio buttons with no idea which three belong
-       together.
+  /** Open one of the two menus and return the user-event instance. */
+  async function openMenu(name: RegExp) {
+    const user = userEvent.setup();
+    await user.click(await screen.findByRole("button", { name }));
+    return user;
+  }
 
-       That they are invisible is not asserted here and cannot be: jsdom does
-       not load the stylesheet, so every element reports as visible. The CSS is
-       the mechanism; this test guards the half that would otherwise be
-       "tidied away" by someone deleting a legend they could not see. */
+  it("names both menus, and says what is currently chosen", async () => {
+    /* The trigger's accessible name carries the group and its value, because
+       the visible label is dropped on a narrow screen and the icon alone
+       would tell a screen reader nothing. */
     await renderApp();
 
-    expect(screen.getByRole("group", { name: "Palette" })).toBeInTheDocument();
-    expect(screen.getByRole("group", { name: "Theme" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Palette: Light minimal" }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Theme: System" }),
+    ).toBeInTheDocument();
   });
 
   it("starts on light minimal, following the system", async () => {
@@ -418,8 +423,11 @@ describe("appearance", () => {
     expect(document.documentElement.getAttribute("data-palette")).toBe(
       "minimal",
     );
-    expect(screen.getByRole("radio", { name: "Light minimal" })).toBeChecked();
-    expect(screen.getByRole("radio", { name: "System" })).toBeChecked();
+
+    await openMenu(/^Palette:/);
+    expect(
+      screen.getByRole("menuitemradio", { name: /Light minimal/ }),
+    ).toBeChecked();
   });
 
   it("resolves system to a real theme rather than leaving it unset", async () => {
@@ -431,21 +439,21 @@ describe("appearance", () => {
   });
 
   it("switches to dark and back", async () => {
-    const user = userEvent.setup();
     await renderApp();
 
-    await user.click(screen.getByRole("radio", { name: "Dark" }));
+    let user = await openMenu(/^Theme:/);
+    await user.click(screen.getByRole("menuitemradio", { name: /Dark/ }));
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
 
-    await user.click(screen.getByRole("radio", { name: "Light" }));
+    user = await openMenu(/^Theme:/);
+    await user.click(screen.getByRole("menuitemradio", { name: /^Light/ }));
     expect(document.documentElement.getAttribute("data-theme")).toBe("light");
   });
 
   it("remembers the theme choice", async () => {
-    const user = userEvent.setup();
     await renderApp();
-
-    await user.click(screen.getByRole("radio", { name: "Dark" }));
+    const user = await openMenu(/^Theme:/);
+    await user.click(screen.getByRole("menuitemradio", { name: /Dark/ }));
 
     await waitFor(() => {
       expect(window.localStorage.getItem("mindarchive-theme")).toBe("dark");
@@ -453,29 +461,72 @@ describe("appearance", () => {
   });
 
   it("changes palette and remembers it", async () => {
-    const user = userEvent.setup();
     await renderApp();
-
-    await user.click(screen.getByRole("radio", { name: "Ink & violet" }));
+    const user = await openMenu(/^Palette:/);
+    await user.click(screen.getByRole("menuitemradio", { name: /Ink & violet/ }));
 
     expect(document.documentElement.getAttribute("data-palette")).toBe(
       "violet",
     );
     await waitFor(() => {
-      expect(window.localStorage.getItem("mindarchive-palette")).toBe(
-        "violet",
-      );
+      expect(window.localStorage.getItem("mindarchive-palette")).toBe("violet");
     });
   });
 
   it("keeps palette and theme independent", async () => {
-    const user = userEvent.setup();
     await renderApp();
+    let user = await openMenu(/^Palette:/);
+    await user.click(screen.getByRole("menuitemradio", { name: /Warm paper/ }));
 
-    await user.click(screen.getByRole("radio", { name: "Warm paper" }));
-    await user.click(screen.getByRole("radio", { name: "Dark" }));
+    user = await openMenu(/^Theme:/);
+    await user.click(screen.getByRole("menuitemradio", { name: /Dark/ }));
 
     expect(document.documentElement.getAttribute("data-palette")).toBe("warm");
     expect(document.documentElement.getAttribute("data-theme")).toBe("dark");
+  });
+
+  it("closes on Escape and gives focus back to the trigger", async () => {
+    await renderApp();
+    const trigger = screen.getByRole("button", { name: /^Theme:/ });
+    const user = userEvent.setup();
+
+    await user.click(trigger);
+    expect(screen.getByRole("menu", { name: "Theme" })).toBeInTheDocument();
+
+    await user.keyboard("{Escape}");
+
+    expect(screen.queryByRole("menu", { name: "Theme" })).not.toBeInTheDocument();
+    expect(trigger).toHaveFocus();
+  });
+
+  it("moves between options with the arrow keys", async () => {
+    await renderApp();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /^Theme:/ }));
+
+    // Opening focuses the current choice, which is System — the last option.
+    expect(screen.getByRole("menuitemradio", { name: /System/ })).toHaveFocus();
+
+    await user.keyboard("{Home}");
+    expect(screen.getByRole("menuitemradio", { name: /^Light/ })).toHaveFocus();
+
+    await user.keyboard("{ArrowDown}");
+    expect(screen.getByRole("menuitemradio", { name: /Dark/ })).toHaveFocus();
+  });
+
+  it("only one menu is open at a time", async () => {
+    await renderApp();
+    const user = userEvent.setup();
+
+    await user.click(screen.getByRole("button", { name: /^Palette:/ }));
+    expect(screen.getByRole("menu", { name: "Palette" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: /^Theme:/ }));
+
+    expect(
+      screen.queryByRole("menu", { name: "Palette" }),
+    ).not.toBeInTheDocument();
+    expect(screen.getByRole("menu", { name: "Theme" })).toBeInTheDocument();
   });
 });

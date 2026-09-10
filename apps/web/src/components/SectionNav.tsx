@@ -14,8 +14,10 @@ export interface Section {
 
 interface Props {
   sections: readonly Section[];
-  /** Rendered at the end of the row — the Import button lives here. */
-  action?: React.ReactNode;
+  /** `sectionnav--inline` in the header row, `--stacked` in the mobile panel. */
+  className?: string;
+  /** Lets the mobile panel close itself once you have chosen where to go. */
+  onNavigate?: () => void;
 }
 
 /**
@@ -28,7 +30,7 @@ interface Props {
  * The current section is highlighted as you scroll, which is the whole reason
  * this is worth having over a plain list of links.
  */
-export function SectionNav({ sections, action }: Props) {
+export function SectionNav({ sections, className, onNavigate }: Props) {
   const [active, setActive] = useState<string>(sections[0]?.id ?? "");
 
   useEffect(() => {
@@ -64,7 +66,10 @@ export function SectionNav({ sections, action }: Props) {
   }, [sections]);
 
   return (
-    <nav className="sectionnav" aria-label="Sections of this page">
+    <nav
+      className={`sectionnav ${className ?? ""}`.trim()}
+      aria-label="Sections of this page"
+    >
       <ul className="sectionnav__list">
         {sections.map((section) => (
           <li key={section.id}>
@@ -73,7 +78,6 @@ export function SectionNav({ sections, action }: Props) {
               className="sectionnav__link"
               aria-current={active === section.id ? "true" : undefined}
               onClick={(event) => {
-                if (!section.href) return;
                 // Let the browser handle anything but a plain left click, so
                 // "open in new tab" and "copy link" still work.
                 if (
@@ -86,6 +90,8 @@ export function SectionNav({ sections, action }: Props) {
                 ) {
                   return;
                 }
+                onNavigate?.();
+                if (!section.href) return;
                 event.preventDefault();
                 document
                   .getElementById(section.id)
@@ -97,7 +103,6 @@ export function SectionNav({ sections, action }: Props) {
           </li>
         ))}
       </ul>
-      {action}
     </nav>
   );
 }

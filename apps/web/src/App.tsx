@@ -50,6 +50,8 @@ export default function App() {
   const [palette, setPalette] = useState<Palette>(getInitialPalette);
   const [importOpen, setImportOpen] = useState(false);
   const [exportTotal, setExportTotal] = useState<number | null>(null);
+  /** Reported by ArchivePanel; the header's Export button needs the count. */
+  const [archiveTotal, setArchiveTotal] = useState(0);
   const [health, setHealth] = useState<Health | null>(null);
   const [config, setConfig] = useState<PublicConfig | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -120,9 +122,18 @@ export default function App() {
         onPaletteChange={setPalette}
         onThemeChange={setTheme}
         sections={health ? SECTIONS : undefined}
-        navAction={
+        actions={
           health ? (
-            <ImportButton waiting={waiting} onClick={openImport} />
+            <>
+              <ImportButton waiting={waiting} onClick={openImport} />
+              <button
+                type="button"
+                className="button"
+                onClick={() => setExportTotal(archiveTotal)}
+              >
+                Export
+              </button>
+            </>
           ) : undefined
         }
       />
@@ -152,8 +163,7 @@ export default function App() {
           <ArchivePanel
             key={archiveVersion}
             id="archive"
-            action={<ImportButton waiting={waiting} onClick={openImport} />}
-            onExport={setExportTotal}
+            onTotalChange={setArchiveTotal}
           />
         )}
 

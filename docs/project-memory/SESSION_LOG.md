@@ -140,6 +140,47 @@ assertion on wording the compact row had changed.
 
 ---
 
+## 2026-09-10 — One header row, and the last of the sideways scrolling
+
+**Session:** [2026-09-10-02-one-row-header-with-appearance-menus](sessions/2026-09-10-02-one-row-header-with-appearance-menus/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**A preview came first, and earned its keep.** Published as an Artifact using
+container queries, so three breakpoints sat on one page running the real
+responsive logic with working menus — judged rather than imagined, and approved
+unchanged.
+
+**The header is one row now (D-037).** Two segmented radio groups became two
+menu buttons; six visible options was what forced the second row. The
+navigation merged into the header and folds into a hamburger below 1024px. The
+appearance buttons never fold — under 640px they drop their label and keep the
+icon, and the theme icon shows the current choice, so it still reads.
+
+**The sideways scrolling is fixed at the cause.** `.site-nav__in` and
+`.sectionnav__list` both had `overflow-x: auto`; the links fold now instead of
+overflowing. `pre` and `table` keep theirs deliberately — that is a container
+scrolling so the page does not.
+
+**A native `<select>` was rejected on purpose.** Free and bulletproof, but it
+cannot show colour, and the palette options carry real swatches. The cost — a
+hand-built menu owning its keyboard and focus, written twice — was accepted.
+
+**Two regressions caught during the work, both mine.** Rewriting the brand
+markup dropped the page's `<h1>`; two existing tests failed on exactly that. And
+the script that rewrote the app's header CSS took the responsive gutter steps
+with it, leaving a phone on a 60px gutter. Both fixed.
+
+**Verified**: full gate green at 106 tests; site rebuilt with 531/531 internal
+links resolving; every page on one header band with the nav inside it; an `awk`
+pass confirming only `pre` and `table` still declare `overflow-x`.
+
+**Not verified:** that nothing scrolls sideways. jsdom has no layout and there
+is no headless browser here, so that is a manual check at real widths — and
+neither surface has been looked at yet.
+
+---
+
 ## 2026-09-10 — A blog, on the site rather than in the app
 
 **Session:** [2026-09-10-01-a-blog-on-the-jekyll-site](sessions/2026-09-10-01-a-blog-on-the-jekyll-site/SESSION.md)

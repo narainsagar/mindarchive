@@ -43,6 +43,22 @@ export const THEME_LABELS: Record<ThemeChoice, string> = {
   system: "System",
 };
 
+/**
+ * Three colours from each palette, shown as a swatch in the palette menu:
+ * the page, a sunken surface, and the accent.
+ *
+ * Duplicated from styles.css on purpose — a swatch has to be a real colour
+ * value in markup, and a custom property cannot be read from a palette that is
+ * not currently applied. Keep these in step with the token blocks; they are
+ * the light variant of each palette, because the menu shows what a palette
+ * *is* rather than what it looks like right now.
+ */
+export const PALETTE_SWATCHES: Record<Palette, readonly string[]> = {
+  minimal: ["#ffffff", "#f6f8fa", "#0b5fbf"],
+  warm: ["#fbfaf8", "#f4f2ef", "#6b5b45"],
+  violet: ["#ffffff", "#f7f6fa", "#6435cf"],
+};
+
 function isThemeChoice(value: unknown): value is ThemeChoice {
   return value === "system" || value === "light" || value === "dark";
 }
