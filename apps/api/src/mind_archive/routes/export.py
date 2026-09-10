@@ -58,9 +58,9 @@ def export_archive(
         )
 
     stamp = datetime.now(UTC).strftime("%Y-%m-%d")
-    filename = f"mind-archive-{stamp}.zip"
+    filename = f"mindarchive-{stamp}.zip"
 
-    workspace = Path(tempfile.mkdtemp(prefix="mind-archive-export-"))
+    workspace = Path(tempfile.mkdtemp(prefix="mindarchive-export-"))
     bundle = workspace / filename
 
     try:

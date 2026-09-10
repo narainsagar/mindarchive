@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mind-archive-api"
+name = "mindarchive-api"
 version = "0.1.0"
 description = "Mind Archive backend — local-first personal AI archive"
 readme = "README.md"

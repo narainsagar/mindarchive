@@ -106,7 +106,7 @@ MIND_ARCHIVE_INBOX_DIR=~/Documents/ai-exports
 
 Mind Archive reads only `.zip` and `.json` files there, and **leaves your files
 exactly where they are** — moving things out of a folder you use for other
-purposes would be presumptuous. A small `.mind-archive-imported.json` ledger
+purposes would be presumptuous. A small `.mindarchive-imported.json` ledger
 records what has already been read so nothing is imported twice.
 
 The default, `data/inbox/`, is a folder Mind Archive owns. There it does tidy

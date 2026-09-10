@@ -61,7 +61,7 @@ def build_replacements(config):
     copyright_ = config.get("copyright", {})
 
     username = github.get("username", PLACEHOLDER_USERNAME)
-    repository = github.get("repository", "mind-archive")
+    repository = github.get("repository", "mindarchive")
     year = str(copyright_.get("year", "2026"))
     holder = copyright_.get("holder", "Mind Archive contributors")
 
@@ -69,11 +69,11 @@ def build_replacements(config):
         # Full repository URLs first, so the shorter username rule cannot
         # partially rewrite them.
         (
-            r"github\.com/" + re.escape(PLACEHOLDER_USERNAME) + r"/mind-archive",
+            r"github\.com/" + re.escape(PLACEHOLDER_USERNAME) + r"/mindarchive",
             "github.com/{}/{}".format(username, repository),
         ),
         (
-            re.escape(PLACEHOLDER_USERNAME) + r"\.github\.io/mind-archive",
+            re.escape(PLACEHOLDER_USERNAME) + r"\.github\.io/mindarchive",
             "{}.github.io/{}".format(username, repository),
         ),
         (re.escape(PLACEHOLDER_USERNAME), username),

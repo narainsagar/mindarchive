@@ -65,7 +65,7 @@ Once the repository is on GitHub:
 2. **Source:** GitHub Actions
 3. Push to `main`
 
-The site appears at `https://YOUR-USERNAME.github.io/mind-archive/`.
+The site appears at `https://YOUR-USERNAME.github.io/mindarchive/`.
 
 The workflow needs `pages: write` and `id-token: write` permissions, which are
 already declared in `docs-pages.yml`.

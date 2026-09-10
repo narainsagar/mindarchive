@@ -47,7 +47,7 @@ near-instant.
 ## 1. Start it
 
 ```bash
-cd mind-archive
+cd mindarchive
 cp .env.example .env
 python scripts/dev.py up --build
 ```

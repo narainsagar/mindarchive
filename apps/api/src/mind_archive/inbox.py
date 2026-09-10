@@ -44,7 +44,7 @@ IMPORTED_DIR = "imported"
 FAILED_DIR = "failed"
 
 #: Records what has already been imported when files are left in place.
-LEDGER_FILE = ".mind-archive-imported.json"
+LEDGER_FILE = ".mindarchive-imported.json"
 
 #: Largest file the inbox will open, matching the upload limit.
 MAX_FILE_BYTES = 1024 * 1024 * 1024  # 1 GB

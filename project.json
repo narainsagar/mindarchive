@@ -15,7 +15,7 @@
     "This file is committed so contributors and CI see the same values."
   ],
 
-  "name": "mind-archive",
+  "name": "mindarchive",
   "displayName": "Mind Archive",
   "tagline": "Your Personal AI Mind Archive.",
   "slogan": "Own your AI memory. Simple, private, and yours.",
@@ -24,8 +24,8 @@
   "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
 
   "github": {
-    "username": "YOUR-USERNAME",
-    "repository": "mind-archive"
+    "username": "RootedGlobal",
+    "repository": "mindarchive"
   },
 
   "copyright": {
@@ -34,12 +34,12 @@
   },
 
   "author": {
-    "name": "",
+    "name": "ikishorkumar",
     "email": "kishor3947@gmail.com"
   },
 
   "site": {
-    "domain": "mindarchive.app",
+    "domain": "mindarchive.rootedglobal.co",
     "useCustomDomain": false
   }
 }

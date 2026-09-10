@@ -97,7 +97,7 @@ async def import_export(
     filename = safe_filename(file.filename or "upload", fallback="upload")
 
     # A temporary directory outside the archive. Removed however this ends.
-    workspace = Path(tempfile.mkdtemp(prefix="mind-archive-import-"))
+    workspace = Path(tempfile.mkdtemp(prefix="mindarchive-import-"))
     upload_path = workspace / filename
 
     try:

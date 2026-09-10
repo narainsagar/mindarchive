@@ -27,8 +27,8 @@ is a common situation, and Docker removes it as a problem. See decision D-006.
 > command below works either way; use whichever your shell has.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/mind-archive.git
-cd mind-archive
+git clone https://github.com/RootedGlobal/mindarchive.git
+cd mindarchive
 cp .env.example .env
 python scripts/dev.py up --build
 ```
@@ -67,7 +67,7 @@ it does not follow the name of the directory you cloned into. Without that pin,
 renaming the folder makes Compose treat the already-running containers as
 belonging to a different project, and `up` fails with a container name conflict
 instead of reusing them. If you ever hit that error on an older checkout, remove
-the stale container — `docker rm -f mind-archive-api` — and start again; your
+the stale container — `docker rm -f mindarchive-api` — and start again; your
 archive is a bind mount and is not affected.
 
 ## Running natively
@@ -118,8 +118,8 @@ watching unreliable.
 
 ```bash
 cd ~                                    # not /mnt/c
-git clone https://github.com/YOUR-USERNAME/mind-archive.git
-cd mind-archive
+git clone https://github.com/RootedGlobal/mindarchive.git
+cd mindarchive
 code .                                  # opens VS Code attached to WSL
 ```
 
@@ -186,7 +186,7 @@ reading the environment directly.
 ## Project layout
 
 ```
-mind-archive/
+mindarchive/
 ├── apps/
 │   ├── api/           FastAPI backend
 │   │   ├── src/mind_archive/

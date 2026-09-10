@@ -34,19 +34,19 @@ describe("getInitialTheme", () => {
   });
 
   it("uses a stored choice", () => {
-    window.localStorage.setItem("mind-archive-theme", "dark");
+    window.localStorage.setItem("mindarchive-theme", "dark");
 
     expect(getInitialTheme()).toBe("dark");
   });
 
   it("keeps following the system when that is what was chosen", () => {
-    window.localStorage.setItem("mind-archive-theme", "system");
+    window.localStorage.setItem("mindarchive-theme", "system");
 
     expect(getInitialTheme()).toBe("system");
   });
 
   it("ignores a stored value that is not a theme", () => {
-    window.localStorage.setItem("mind-archive-theme", "banana");
+    window.localStorage.setItem("mindarchive-theme", "banana");
 
     expect(getInitialTheme()).toBe("system");
   });
@@ -66,13 +66,13 @@ describe("getInitialPalette", () => {
   });
 
   it("uses a stored choice", () => {
-    window.localStorage.setItem("mind-archive-palette", "violet");
+    window.localStorage.setItem("mindarchive-palette", "violet");
 
     expect(getInitialPalette()).toBe("violet");
   });
 
   it("ignores a stored value that is not a palette", () => {
-    window.localStorage.setItem("mind-archive-palette", "chartreuse");
+    window.localStorage.setItem("mindarchive-palette", "chartreuse");
 
     expect(getInitialPalette()).toBe("minimal");
   });
@@ -129,7 +129,7 @@ describe("applyTheme", () => {
     systemIsDark(true);
     applyTheme("system");
 
-    expect(window.localStorage.getItem("mind-archive-theme")).toBe("system");
+    expect(window.localStorage.getItem("mindarchive-theme")).toBe("system");
   });
 
   it("still applies the theme when storage throws", () => {
@@ -152,7 +152,7 @@ describe("applyPalette", () => {
   it("remembers the choice", () => {
     applyPalette("violet");
 
-    expect(window.localStorage.getItem("mind-archive-palette")).toBe("violet");
+    expect(window.localStorage.getItem("mindarchive-palette")).toBe("violet");
   });
 
   it("still applies the palette when storage throws", () => {

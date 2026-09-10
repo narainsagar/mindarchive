@@ -492,7 +492,7 @@ docker-compose.yml
 The first local experience should ideally be:
 
 git clone ...
-cd mind-archive
+cd mindarchive
 cp .env.example .env
 docker compose up --build
 

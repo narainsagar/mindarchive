@@ -24,7 +24,7 @@
         var theme = "system";
 
         try {
-          var storedPalette = localStorage.getItem("mind-archive-palette");
+          var storedPalette = localStorage.getItem("mindarchive-palette");
           if (
             storedPalette === "minimal" ||
             storedPalette === "warm" ||
@@ -33,7 +33,7 @@
             palette = storedPalette;
           }
 
-          var storedTheme = localStorage.getItem("mind-archive-theme");
+          var storedTheme = localStorage.getItem("mindarchive-theme");
           if (
             storedTheme === "light" ||
             storedTheme === "dark" ||
@@ -194,7 +194,7 @@
             input.addEventListener("change", function () {
               palette = input.value;
               root.setAttribute("data-palette", palette);
-              store("mind-archive-palette", palette);
+              store("mindarchive-palette", palette);
             });
           });
 
@@ -205,7 +205,7 @@
               themeChoice = input.value;
               root.setAttribute("data-theme", resolve(themeChoice));
               root.setAttribute("data-theme-choice", themeChoice);
-              store("mind-archive-theme", themeChoice);
+              store("mindarchive-theme", themeChoice);
             });
           });
 

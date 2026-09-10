@@ -41,7 +41,7 @@ what was true when written, and rewriting them would falsify the record.
 **2. The docker failure was a stale container, not a naming problem.**
 
 `docker compose up --build` failed with a container-name conflict on
-`mind-archive-api`. The container was still running — it had not been deleted —
+`mindarchive-api`. The container was still running — it had not been deleted —
 and its labels said `com.docker.compose.project=mindarchiveapp`, from before the
 directory was renamed to `mindarchive-v1`. Compose derives the project name from
 the directory, so it saw a foreign project and refused to reuse a container whose
@@ -63,8 +63,8 @@ asked for that switcher itself to ship.
 Implemented as two independent, remembered choices:
 
 ```
-mind-archive-palette   minimal | warm | violet     default: minimal
-mind-archive-theme     light   | dark | system     default: system
+mindarchive-palette   minimal | warm | violet     default: minimal
+mindarchive-theme     light   | dark | system     default: system
 ```
 
 The old toggle had a real defect worth recording: `getInitialTheme` resolved the

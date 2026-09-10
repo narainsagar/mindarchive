@@ -596,7 +596,7 @@ Two lessons, both written into `docs/GITHUB_PAGES.md`:
 **Date:** 2026-09-09 · **Status:** Accepted
 
 Mind Archive is published as a **public** GitHub repository named
-`mind-archive`. GitHub Pages serves `docs/` as the project website. **The
+`mindarchive`. GitHub Pages serves `docs/` as the project website. **The
 application itself is not hosted anywhere**, and there is **no public demo**.
 
 **Why public.** The licence is PolyForm Noncommercial 1.0.0 — source-available.
@@ -751,8 +751,8 @@ theme is a three-way choice: Light, Dark, or System. Both live in the header and
 both persist:
 
 ```
-mind-archive-palette   minimal | warm | violet     default: minimal
-mind-archive-theme     light   | dark | system     default: system
+mindarchive-palette   minimal | warm | violet     default: minimal
+mindarchive-theme     light   | dark | system     default: system
 ```
 
 **Why:** Two separate questions were being answered by one control. Which

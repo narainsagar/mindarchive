@@ -26,8 +26,8 @@ The supported way to run Mind Archive is Docker.
 > command below works either way; use whichever your shell has.
 
 ```bash
-git clone https://github.com/YOUR-USERNAME/mind-archive.git
-cd mind-archive
+git clone https://github.com/RootedGlobal/mindarchive.git
+cd mindarchive
 cp .env.example .env
 python scripts/dev.py up --build
 ```
@@ -112,7 +112,7 @@ written to be read by a person.
 ## Project layout
 
 ```
-mind-archive/
+mindarchive/
 ├── apps/
 │   ├── api/          Python + FastAPI backend
 │   └── web/          React + TypeScript + Vite frontend

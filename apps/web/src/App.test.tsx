@@ -27,8 +27,8 @@ const config: PublicConfig = {
   version: "0.1.0",
   storage_mode: "local",
   cloud_enabled: false,
-  archive_location: "/home/someone/mind-archive/data/archive",
-  database_location: "/home/someone/mind-archive/data/mind_archive.db",
+  archive_location: "/home/someone/mindarchive/data/archive",
+  database_location: "/home/someone/mindarchive/data/mind_archive.db",
   privacy_note:
     "Your archive is stored only on this computer. Nothing is uploaded anywhere.",
 };
@@ -361,7 +361,7 @@ describe("appearance", () => {
     await user.click(screen.getByRole("radio", { name: "Dark" }));
 
     await waitFor(() => {
-      expect(window.localStorage.getItem("mind-archive-theme")).toBe("dark");
+      expect(window.localStorage.getItem("mindarchive-theme")).toBe("dark");
     });
   });
 
@@ -375,7 +375,7 @@ describe("appearance", () => {
       "violet",
     );
     await waitFor(() => {
-      expect(window.localStorage.getItem("mind-archive-palette")).toBe(
+      expect(window.localStorage.getItem("mindarchive-palette")).toBe(
         "violet",
       );
     });

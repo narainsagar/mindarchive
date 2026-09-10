@@ -144,7 +144,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     threading.Thread(
         target=_scan_inbox_quietly,
         args=(settings,),
-        name="mind-archive-inbox",
+        name="mindarchive-inbox",
         daemon=True,
     ).start()
 

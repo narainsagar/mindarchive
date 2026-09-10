@@ -19,7 +19,7 @@ vi.mock("../api", async () => {
 const { importExport, fetchInbox, scanInbox } = await import("../api");
 
 const inbox = {
-  folder: "/home/someone/mind-archive/data/inbox",
+  folder: "/home/someone/mindarchive/data/inbox",
   managed: true,
   moves_files: true,
   waiting: 0,
@@ -59,7 +59,7 @@ const success: ImportSummary = {
   unchanged: 0,
   skipped: 0,
   problems: [],
-  archive_location: "/home/someone/mind-archive/data/archive",
+  archive_location: "/home/someone/mindarchive/data/archive",
 };
 
 function exportFile(name = "chatgpt-export.zip") {

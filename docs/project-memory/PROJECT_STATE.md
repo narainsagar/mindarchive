@@ -56,7 +56,7 @@ Fill that file in to turn them on.
 ## Publication
 
 Decided but **not yet done** (D-032): a public GitHub repository named
-`mind-archive`, with Pages serving `docs/`. The application is not hosted
+`mindarchive`, with Pages serving `docs/`. The application is not hosted
 anywhere and there is no public demo — the API has no authentication by design,
 so a public instance would expose one shared archive to every visitor.
 

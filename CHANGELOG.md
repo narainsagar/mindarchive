@@ -182,5 +182,5 @@ cannot import or browse conversations. That is deliberate.
 - Planning transcripts moved to `docs/archive/`, with the durable knowledge in
   them extracted into project memory
 
-[Unreleased]: https://github.com/YOUR-USERNAME/mind-archive/compare/v0.1.0...HEAD
-[0.1.0]: https://github.com/YOUR-USERNAME/mind-archive/releases/tag/v0.1.0
+[Unreleased]: https://github.com/RootedGlobal/mindarchive/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/RootedGlobal/mindarchive/releases/tag/v0.1.0

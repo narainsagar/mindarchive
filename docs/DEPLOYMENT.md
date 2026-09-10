@@ -25,7 +25,7 @@ How Mind Archive gets published, and what deliberately is not published.
 It still holds a placeholder:
 
 ```json
-"github": { "username": "YOUR-USERNAME", "repository": "mind-archive" }
+"github": { "username": "YOUR-USERNAME", "repository": "mindarchive" }
 ```
 
 Replace `YOUR-USERNAME` with your GitHub username. Then see what would change,
@@ -91,14 +91,14 @@ Two things worth knowing before you push:
 
 ## Creating the repository
 
-**Name it `mind-archive`** — that matches `project.json` and the URLs already
+**Name it `mindarchive`** — that matches `project.json` and the URLs already
 written into the documentation. If you name it something else, change
 `project.json` and re-run `set_identity.py`.
 
 ### With the web interface
 
 1. <https://github.com/new>
-2. **Repository name:** `mind-archive`
+2. **Repository name:** `mindarchive`
 3. **Visibility:** Public
 4. **Do not** add a README, `.gitignore` or licence — they already exist here,
    and adding them creates a conflicting first commit.
@@ -110,7 +110,7 @@ written into the documentation. If you name it something else, change
 (`sudo apt install gh`, then `gh auth login`):
 
 ```bash
-gh repo create mind-archive --public --source=. --remote=origin --push
+gh repo create mindarchive --public --source=. --remote=origin --push
 ```
 
 That does the creation, the remote and the first push in one step — skip the
@@ -121,7 +121,7 @@ next section if you use it.
 ## The first push
 
 ```bash
-git remote add origin https://github.com/YOUR-USERNAME/mind-archive.git
+git remote add origin https://github.com/RootedGlobal/mindarchive.git
 git branch -M main
 git push -u origin main
 ```
@@ -129,7 +129,7 @@ git push -u origin main
 If you use SSH instead:
 
 ```bash
-git remote add origin git@github.com:YOUR-USERNAME/mind-archive.git
+git remote add origin git@github.com:YOUR-USERNAME/mindarchive.git
 ```
 
 Check it took:
@@ -161,7 +161,7 @@ It has simply never run, because there was no remote.
 The site appears at:
 
 ```
-https://YOUR-USERNAME.github.io/mind-archive/
+https://YOUR-USERNAME.github.io/mindarchive/
 ```
 
 Give it a minute or two. **Settings → Pages** shows the live URL and the last

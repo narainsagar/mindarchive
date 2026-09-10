@@ -21,8 +21,8 @@ export type ThemeChoice = "system" | "light" | "dark";
 export type ResolvedTheme = "light" | "dark";
 export type Palette = "minimal" | "warm" | "violet";
 
-const THEME_KEY = "mind-archive-theme";
-const PALETTE_KEY = "mind-archive-palette";
+const THEME_KEY = "mindarchive-theme";
+const PALETTE_KEY = "mindarchive-palette";
 
 const DARK_QUERY = "(prefers-color-scheme: dark)";
 
