@@ -110,11 +110,21 @@ in the Pages workflow instead, where the failure is a failed deployment (D-043).
 Still not published: `PROJECT_STATE.md`, `SESSION_LOG.md`, `MEMORY_INDEX.md` and
 the session records.
 
-**The contact address is still `kishor3947@gmail.com`.** A project address was
-chosen to replace it but not named, and `mindarchive.app` has no DNS, so an
-address there would bounce. It is defined in `docs/_data/support.yml`
-(`contact_email`), `apps/web/src/support.ts` (`contactEmail`), `project.json`,
-and asserted in `apps/web/src/App.test.tsx`.
+**The contact address is `info@rootedglobal.co`**, on a domain that already
+exists — the earlier plan of an address at `mindarchive.app` would have bounced,
+since that domain has no DNS. It reaches the project for commercial licensing
+and everything else.
+
+It is defined **twice, unavoidably**: `contact_email` in
+`docs/_data/support.yml` for the site, and `contactEmail` in
+`apps/web/src/support.ts` for the application, because Jekyll cannot read a
+TypeScript file. Change both. Nothing else hardcodes it — the site pages and the
+footer read the data file, and `App.test.tsx` asserts against the configured
+value rather than a copy of it.
+
+`project.json` is **not** one of those places, despite an earlier note saying so:
+its `author.email` is the git commit identity that `scripts/set_identity.py`
+writes into the local git config, not a published contact address.
 
 ## What runs
 

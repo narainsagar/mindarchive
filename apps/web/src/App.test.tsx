@@ -5,6 +5,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import App from "./App";
 import type { Health, PublicConfig } from "./api";
 import { ApiError } from "./api";
+import { SUPPORT } from "./support";
 
 vi.mock("./api", async () => {
   const actual = await vi.importActual<typeof import("./api")>("./api");
@@ -355,7 +356,11 @@ describe("support, contributing and the footer", () => {
   it("gives a way to ask for a commercial licence", async () => {
     await renderApp();
 
-    const link = screen.getByRole("link", { name: /kishor3947@gmail\.com/i });
+    /* The configured address rather than a copy of it: this test asserts that
+       the panel shows whoever `support.ts` says to write to, not that the
+       address is one particular value. Hardcoding it here meant changing the
+       contact address broke a test for no reason. */
+    const link = screen.getByRole("link", { name: SUPPORT.contactEmail });
     expect(link.getAttribute("href")).toMatch(/^mailto:/);
     expect(link.getAttribute("href")).toContain("Commercial%20licence");
   });

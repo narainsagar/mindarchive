@@ -63,3 +63,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-041 | Band elements use `padding-block`, never the `padding` shorthand |
 | D-042 | Exports are sharded; resolve them from the export's own manifest |
 | D-043 | The repository's canonical documents are generated as site pages |
+| D-044 | The published contact address is `info@rootedglobal.co` |

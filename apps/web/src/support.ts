@@ -11,9 +11,12 @@
  * meant to be seen. Nothing secret belongs in this file — it ships to the
  * browser. Secrets go in `.env`, which is git-ignored.
  *
- * `contactEmail` is the only one already filled in, taken from the `author`
- * block in `project.json`, which is committed. Change it in both places if
- * you would rather licensing mail went somewhere else.
+ * `contactEmail` is the only one already filled in. The site keeps its own copy
+ * in `docs/_data/support.yml`, because Jekyll cannot read a TypeScript file —
+ * change both, or the page and the application disagree about where mail goes.
+ *
+ * It is deliberately *not* the `author` address in `project.json`. That one is
+ * the git commit identity; this one is published to anyone who visits.
  */
 
 /**
@@ -48,7 +51,7 @@ interface SupportConfig {
 
 export const SUPPORT: SupportConfig = {
   /** Reaches you for commercial licensing and anything else. */
-  contactEmail: "kishor3947@gmail.com",
+  contactEmail: "info@rootedglobal.co",
 
   /**
    * One link, and it goes to the website — never to a payment provider.

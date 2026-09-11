@@ -5,6 +5,32 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-11 — An address that answers
+
+**Session:** [2026-09-11-04-set-the-project-contact-address](sessions/2026-09-11-04-set-the-project-contact-address/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**`info@rootedglobal.co` replaces `kishor3947@gmail.com`** on the site and in
+the application (**D-044**). The earlier plan of an address at `mindarchive.app`
+was dropped: that domain has no DNS, and an address that bounces is worse than a
+personal one — a licensing enquiry is mail nobody sends twice.
+
+**The inherited list of four places to change was wrong in both directions.**
+`project.json` was on it and is not a contact address at all: `author.email` is
+the git commit identity `set_identity.py` writes into the local git config
+(D-015). Raised as a separate question, and **deliberately left personal** so the
+history keeps one author. `App.test.tsx` was on it because the test named the
+address in a regex; it now asserts against `SUPPORT.contactEmail`, so changing
+the address no longer breaks a test that is not about the address.
+
+**Two definitions remain, unavoidably** — `docs/_data/support.yml` for Jekyll,
+`apps/web/src/support.ts` for Vite. Neither can read the other's file. D-044
+says change both.
+
+**Verified by building:** every `mailto:` in the built site is the new address,
+and the old one appears nowhere. 107 frontend tests, lint, types, 34 routes.
+
 ## 2026-09-11 — The site that could not be built
 
 **Session:** [2026-09-11-03-finish-the-liquid-escaping-fix-and-prove-the-site](sessions/2026-09-11-03-finish-the-liquid-escaping-fix-and-prove-the-site/SESSION.md)

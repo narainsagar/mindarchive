@@ -508,6 +508,52 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-044 — The published contact address is `info@rootedglobal.co`
+**Date:** 2026-09-11 · **Status:** Accepted
+
+Commercial licensing enquiries, support and everything else the site and the
+application offer to answer go to **`info@rootedglobal.co`**.
+
+**Why not an address at `mindarchive.app`.** That was the earlier intention, and
+the domain has no DNS. Publishing an address that bounces is worse than
+publishing a personal one, and a licensing enquiry is exactly the mail nobody
+sends twice. `rootedglobal.co` exists and receives mail today.
+
+**Why not `kishor3947@gmail.com`.** It was a personal address printed on a page
+that asks strangers to write in. The project can change hands, or gain a second
+maintainer, without reissuing every published document.
+
+**It is configured in two places, and that is not an oversight:**
+
+| Where | Key | Read by |
+|---|---|---|
+| `docs/_data/support.yml` | `contact_email` | the Jekyll site — the footer, `/support/`, every generated page |
+| `apps/web/src/support.ts` | `contactEmail` | the application — the footer and the Support panel |
+
+Jekyll cannot read a TypeScript file and Vite cannot read Jekyll's data files, so
+one of them has to hold a copy. **Change both.** Nothing else hardcodes it, and
+`App.test.tsx` now asserts against the configured value rather than a copy of
+it — the test previously named the address and would have failed on this change
+for no reason.
+
+**`project.json` is not a third place.** Its `author.email` is the *git commit
+identity* that `scripts/set_identity.py` writes into the local git config
+(D-015). An earlier note listed it as one of the contact-address locations; it
+never was. It stays `kishor3947@gmail.com` **deliberately**: the existing history
+is authored by that address, and changing it now would attribute one person's
+commits to two identities to no benefit. Commit authorship and a published
+contact address are different things and are allowed to differ.
+
+**Consequences:**
+
+- The two values must be changed together. There is no check that compares them;
+  the honest fix if they ever drift is to notice it here.
+- The address is published on every page of the site, so it will be scraped.
+  That is the cost of a contact address on a public site, and the reason it is
+  not a personal mailbox.
+
+---
+
 ## D-043 — The repository's canonical documents are generated as site pages
 **Date:** 2026-09-11 · **Status:** Accepted
 
