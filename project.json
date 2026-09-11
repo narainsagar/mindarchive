@@ -24,7 +24,7 @@
   "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
 
   "github": {
-    "username": "RootedGlobal",
+    "username": "narainsagar",
     "repository": "mindarchive"
   },
 
@@ -39,7 +39,7 @@
   },
 
   "site": {
-    "domain": "mindarchive.rootedglobal.co",
+    "domain": "mindarchive.narainsagar.com",
     "useCustomDomain": false
   }
 }

@@ -5,7 +5,7 @@
   "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
   "private": true,
   "type": "module",
-  "homepage": "https://rootedglobal.github.io/mindarchive",
+  "homepage": "https://narainsagar.github.io/mindarchive",
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",

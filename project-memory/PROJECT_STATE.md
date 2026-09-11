@@ -61,16 +61,16 @@ anywhere and there is no public demo — the API has no authentication by design
 so a public instance would expose one shared archive to every visitor.
 
 Everything is prepared and committed. Identity is set — the project belongs to
-the **RootedGlobal** organisation as **`mindarchive`**, with
-`mindarchive.rootedglobal.co` reserved as a future custom domain
+the **narainsagar** organisation as **`mindarchive`**, with
+`mindarchive.narainsagar.com` reserved as a future custom domain
 (`useCustomDomain` is still `false`, so URLs use
-`rootedglobal.github.io/mindarchive`).
+`narainsagar.github.io/mindarchive`).
 
 Still outstanding:
 
 - **Nothing is pushed.** `origin` points at
-  `https://github.com/RootedGlobal/mindarchive.git`, but **the repository does
-  not exist on GitHub yet** — the API returns 404 — and `RootedGlobal` is an
+  `https://github.com/narainsagar/mindarchive.git`, but **the repository does
+  not exist on GitHub yet** — the API returns 404 — and `narainsagar` is an
   organisation, so whoever pushes needs membership with write access. GitHub
   password authentication was removed in 2021; a personal access token is
   required.
@@ -110,7 +110,7 @@ in the Pages workflow instead, where the failure is a failed deployment (D-043).
 Still not published: `PROJECT_STATE.md`, `SESSION_LOG.md`, `MEMORY_INDEX.md` and
 the session records.
 
-**The contact address is `info@rootedglobal.co`**, on a domain that already
+**The contact address is `info@narainsagar.com`**, on a domain that already
 exists — the earlier plan of an address at `mindarchive.app` would have bounced,
 since that domain has no DNS. It reaches the project for commercial licensing
 and everything else.

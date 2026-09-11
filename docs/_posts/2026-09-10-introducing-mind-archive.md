@@ -63,7 +63,7 @@ how the thing is built, and you can read the code to check.
 ## Try it
 
 ```bash
-git clone https://github.com/RootedGlobal/mindarchive.git
+git clone https://github.com/narainsagar/mindarchive.git
 cd mindarchive
 cp .env.example .env
 python scripts/dev.py up --build

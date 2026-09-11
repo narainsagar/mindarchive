@@ -84,7 +84,7 @@ Once the repository is on GitHub:
 2. **Source:** GitHub Actions
 3. Push to `main`
 
-The site appears at <https://rootedglobal.github.io/mindarchive/>.
+The site appears at <https://narainsagar.github.io/mindarchive/>.
 
 The workflow needs `pages: write` and `id-token: write` permissions, which are
 already declared in `docs-pages.yml`.
@@ -231,8 +231,8 @@ pull request.
 
 ## A note on the custom domain
 
-`mindarchive.rootedglobal.co` is the intended eventual home — it is set as
+`mindarchive.narainsagar.com` is the intended eventual home — it is set as
 `site.domain` in `project.json`, with `useCustomDomain` still `false`. To turn
 it on, add a `CNAME` file containing the domain to `docs/`, and point a `CNAME`
-DNS record at `rootedglobal.github.io`. Full steps, including the apex-versus-
+DNS record at `narainsagar.github.io`. Full steps, including the apex-versus-
 subdomain distinction, are in [DEPLOYMENT.md]({{ '/deployment/' | relative_url }}).

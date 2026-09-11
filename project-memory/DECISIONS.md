@@ -508,16 +508,16 @@ separation is deliberate and must be preserved.
 
 ---
 
-## D-044 — The published contact address is `info@rootedglobal.co`
+## D-044 — The published contact address is `info@narainsagar.com`
 **Date:** 2026-09-11 · **Status:** Accepted
 
 Commercial licensing enquiries, support and everything else the site and the
-application offer to answer go to **`info@rootedglobal.co`**.
+application offer to answer go to **`info@narainsagar.com`**.
 
 **Why not an address at `mindarchive.app`.** That was the earlier intention, and
 the domain has no DNS. Publishing an address that bounces is worse than
 publishing a personal one, and a licensing enquiry is exactly the mail nobody
-sends twice. `rootedglobal.co` exists and receives mail today.
+sends twice. `narainsagar.com` exists and receives mail today.
 
 **Why not `kishor3947@gmail.com`.** It was a personal address printed on a page
 that asks strangers to write in. The project can change hands, or gain a second
@@ -563,7 +563,7 @@ deliberately excluded from the site."* That is no longer true, and the reason it
 changed is worth keeping.
 
 **The problem.** Fifteen links across ten pages pointed at
-`github.com/RootedGlobal/mindarchive/blob/main/...` — `LICENSING.md`,
+`github.com/narainsagar/mindarchive/blob/main/...` — `LICENSING.md`,
 `CONTRIBUTING.md`, `AGENTS.md`, `.env.example` and four files under
 `project-memory/`. On `localhost:4000` they leave the site entirely, and until
 the repository is published they go nowhere at all. A reader who clicks

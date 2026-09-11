@@ -26,7 +26,7 @@ The supported way to run Mind Archive is Docker.
 > command below works either way; use whichever your shell has.
 
 ```bash
-git clone https://github.com/RootedGlobal/mindarchive.git
+git clone https://github.com/narainsagar/mindarchive.git
 cd mindarchive
 cp .env.example .env
 python scripts/dev.py up --build

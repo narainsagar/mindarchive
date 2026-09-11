@@ -26,8 +26,8 @@ How Mind Archive gets published, and what deliberately is not published.
 it now holds real values:
 
 ```json
-"github":    { "username": "RootedGlobal", "repository": "mindarchive" },
-"site":      { "domain": "mindarchive.rootedglobal.co", "useCustomDomain": false }
+"github":    { "username": "narainsagar", "repository": "mindarchive" },
+"site":      { "domain": "mindarchive.narainsagar.com", "useCustomDomain": false }
 ```
 
 `scripts/set_identity.py` propagated them into `LICENSE`, `README.md`,
@@ -48,8 +48,8 @@ It does **not** manage `homepage` in `apps/web/package.json` or `repositoryUrl`
 in `apps/web/src/support.ts`. Both are set by hand and are currently:
 
 ```
-homepage       https://rootedglobal.github.io/mindarchive
-repositoryUrl  https://github.com/RootedGlobal/mindarchive
+homepage       https://narainsagar.github.io/mindarchive
+repositoryUrl  https://github.com/narainsagar/mindarchive
 ```
 
 ### 2. Confirm your git identity is set
@@ -131,7 +131,7 @@ next section if you use it.
 ## The first push
 
 ```bash
-git remote add origin https://github.com/RootedGlobal/mindarchive.git
+git remote add origin https://github.com/narainsagar/mindarchive.git
 git branch -M main
 git push -u origin main
 ```

@@ -51,7 +51,7 @@ interface SupportConfig {
 
 export const SUPPORT: SupportConfig = {
   /** Reaches you for commercial licensing and anything else. */
-  contactEmail: "info@rootedglobal.co",
+  contactEmail: "info@narainsagar.com",
 
   /**
    * One link, and it goes to the website — never to a payment provider.
@@ -81,7 +81,7 @@ export const SUPPORT: SupportConfig = {
   wallets: [],
 
   /** Where the code lives. Makes the "Read the source" button appear. */
-  repositoryUrl: "https://github.com/RootedGlobal/mindarchive",
+  repositoryUrl: "https://github.com/narainsagar/mindarchive",
 };
 
 /** Only the donation links that have actually been configured. */

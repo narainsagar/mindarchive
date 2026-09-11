@@ -28,7 +28,7 @@ is a common situation, and Docker removes it as a problem. See decision D-006.
 > command below works either way; use whichever your shell has.
 
 ```bash
-git clone https://github.com/RootedGlobal/mindarchive.git
+git clone https://github.com/narainsagar/mindarchive.git
 cd mindarchive
 cp .env.example .env
 python scripts/dev.py up --build
@@ -120,7 +120,7 @@ watching unreliable.
 
 ```bash
 cd ~                                    # not /mnt/c
-git clone https://github.com/RootedGlobal/mindarchive.git
+git clone https://github.com/narainsagar/mindarchive.git
 cd mindarchive
 code .                                  # opens VS Code attached to WSL
 ```
