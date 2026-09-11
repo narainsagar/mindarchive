@@ -181,6 +181,31 @@ existed since Milestone 2, and only a second real provider could expose it —
 which is precisely why the interface was generalised against a genuine second
 case rather than a guessed one.
 
+**Exports are sharded, and the export says so** (D-042). A current ChatGPT
+export contains no `conversations.json` at all — it holds
+`conversations-000.json`, `-001`, `-002` and declares the mapping in its own
+`export_manifest.json`:
+
+```json
+"logical_files": {
+  "conversations.json": {
+    "files": ["conversations-000.json", "conversations-001.json"],
+    "shard_count": 2, "sharded": true
+  }
+}
+```
+
+`reading.py` resolves that to a member list and concatenates the shards, so
+every importer downstream still sees one list. The manifest is preferred over
+guessing filenames, for the same reason detection reads shape over name: the
+export is telling us the answer. A filename fallback covers an export that
+declares nothing.
+
+**Claude's download manifest is recognised, not imported.** Claude now emails a
+small JSON of single-use links rather than the data. It carries no conversations,
+so it is detected only to produce a refusal that names the file to download.
+Mind Archive never fetches those URLs — it makes no network requests at all.
+
 The two formats share almost nothing:
 
 | | ChatGPT | Claude |

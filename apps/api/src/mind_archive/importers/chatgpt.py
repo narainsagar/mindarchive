@@ -59,10 +59,12 @@ from mind_archive.importers.reading import (
     as_dict,
     as_list,
     as_text,
+    conversation_members,
     epoch_to_time,
     has_member,
-    load_json_member,
+    load_conversations,
     peek_conversations,
+    read_download_manifest,
 )
 from mind_archive.importers.zip_safety import UnsafeArchiveError
 from mind_archive.models import Conversation, Message
@@ -181,6 +183,22 @@ def _is_hidden(message: dict[str, Any], role: str) -> bool:
     return False
 
 
+def _children_by_parent(mapping: dict[str, Any]) -> dict[str, list[str]]:
+    """Rebuild the child lists from `parent` links.
+
+    Exports used to carry `children` on every node. They no longer do — a node
+    is `{id, message, parent}` — so the downward walk has to derive it. File
+    order is kept, which is the closest thing to the original ordering the
+    export still gives us.
+    """
+    children: dict[str, list[str]] = {}
+    for node_key, node in mapping.items():
+        parent = as_dict(node).get("parent")
+        if isinstance(parent, str):
+            children.setdefault(parent, []).append(node_key)
+    return children
+
+
 def _thread(mapping: dict[str, Any], current_node: str | None) -> list[dict[str, Any]]:
     """Walk from the current leaf back to the root, then reverse.
 
@@ -209,6 +227,13 @@ def _thread(mapping: dict[str, Any], current_node: str | None) -> list[dict[str,
         return nodes
 
     # No usable current_node. Follow first children down from the root.
+    #
+    # Current exports no longer carry `children` at all — a node is just
+    # `{id, message, parent}` — so the map is rebuilt from the parent links
+    # when it is absent. Reading `children` directly made this whole branch
+    # dead code against any recent export (D-042).
+    children_of = _children_by_parent(mapping)
+
     roots = [
         node_key
         for node_key, node in mapping.items()
@@ -220,7 +245,7 @@ def _thread(mapping: dict[str, Any], current_node: str | None) -> list[dict[str,
             seen.add(node_id)
             node = as_dict(mapping[node_id])
             nodes.append(node)
-            children = as_list(node.get("children"))
+            children = as_list(node.get("children")) or children_of.get(node_id, [])
             node_id = children[0] if children and isinstance(children[0], str) else None
             if len(nodes) > MAX_NODES_PER_CONVERSATION:
                 break
@@ -248,7 +273,21 @@ class ChatGPTImporter:
         if conversations is None:
             # Either not our kind of file, or ours and unreadable. Claim the
             # second so `validate` can say what is actually wrong with it.
-            return has_member(path, CONVERSATIONS_FILE)
+            #
+            # `conversation_members` covers the sharded case: a current export
+            # has no `conversations.json`, only `conversations-000.json` and
+            # friends, so `has_member` alone would disown a real export.
+            #
+            # A download manifest is declined outright. It is a bare .json,
+            # which this fallback would otherwise claim — and the registry
+            # lists this importer first, so ChatGPT would answer for Claude's
+            # file with a worse message than Claude has for it (D-042).
+            if read_download_manifest(path) is not None:
+                return False
+
+            return has_member(path, CONVERSATIONS_FILE) or bool(
+                conversation_members(path, CONVERSATIONS_FILE)
+            )
         return looks_like_chatgpt(conversations)
 
     def validate(self, path: Path) -> ValidationResult:
@@ -312,7 +351,9 @@ class ChatGPTImporter:
     # -- Internals ----------------------------------------------------------
 
     def _load(self, path: Path) -> Any:
-        return load_json_member(path, CONVERSATIONS_FILE, "a ChatGPT")
+        # Joins the shards when the export split conversations.json up, which
+        # current ChatGPT exports always do (D-042).
+        return load_conversations(path, CONVERSATIONS_FILE, "a ChatGPT")
 
     def _convert(self, raw: dict[str, Any]) -> Conversation | None:
         """Turn one raw ChatGPT conversation into our own model."""

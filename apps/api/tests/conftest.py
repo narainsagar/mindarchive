@@ -110,6 +110,109 @@ def write_export(
     return path
 
 
+def write_sharded_export(
+    directory: Path,
+    shards: list[list[dict[str, Any]]],
+    *,
+    name: str = "chatgpt-export.zip",
+    with_manifest: bool = True,
+    inner_folder: str = "",
+) -> Path:
+    """Write a zip shaped like a *current* ChatGPT export.
+
+    Real exports no longer contain `conversations.json`. They contain
+    `conversations-000.json`, `-001`, `-002` and declare the mapping in
+    `export_manifest.json`. Everything here is synthetic — a real export is a
+    copy of somebody's private conversations and must never be committed
+    (D-042).
+    """
+    path = directory / name
+    prefix = f"{inner_folder}/" if inner_folder else ""
+    names = [f"conversations-{index:03d}.json" for index in range(len(shards))]
+
+    with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as archive:
+        for filename, conversations in zip(names, shards, strict=True):
+            archive.writestr(
+                f"{prefix}{filename}",
+                json.dumps(conversations, ensure_ascii=False),
+            )
+
+        if with_manifest:
+            archive.writestr(
+                f"{prefix}export_manifest.json",
+                json.dumps(
+                    {
+                        "export_files": [{"path": n} for n in names],
+                        "logical_files": {
+                            "conversations.json": {
+                                "files": names,
+                                "shard_count": len(names),
+                                "sharded": True,
+                            },
+                            "chat.html": {"files": ["chat.html"], "sharded": False},
+                        },
+                    }
+                ),
+            )
+
+        archive.writestr(f"{prefix}chat.html", "<html><body>ignored</body></html>")
+        archive.writestr(f"{prefix}user.json", json.dumps({"id": "user-1"}))
+
+    return path
+
+
+def write_download_manifest(
+    directory: Path,
+    *,
+    name: str = "manifest-abc123.json",
+    conversations_filename: str = "conversations-000.zip",
+) -> Path:
+    """A Claude download manifest: links, not conversations.
+
+    Modelled on the real shape. The URL is deliberately a placeholder — a real
+    manifest carries single-use signed links.
+    """
+    path = directory / name
+    path.write_text(
+        json.dumps(
+            {
+                "instructions": (
+                    "Download each file using the export_url. Note: Each "
+                    "export URL can only be used once."
+                ),
+                "created_at": "2026-09-08T21:20:02.000000+00:00",
+                "total_files": 3,
+                "version": "1.0",
+                "data_files": [
+                    {
+                        "batch_index": 0,
+                        "part": 0,
+                        "category": "light_metadata",
+                        "filename": "light_metadata-000.zip",
+                        "export_url": "https://claude.ai/placeholder/one",
+                    },
+                    {
+                        "batch_index": 1,
+                        "part": 0,
+                        "category": "projects",
+                        "filename": "projects-000.zip",
+                        "export_url": "https://claude.ai/placeholder/two",
+                    },
+                    {
+                        "batch_index": 2,
+                        "part": 0,
+                        "category": "conversations",
+                        "filename": conversations_filename,
+                        "export_url": "https://claude.ai/placeholder/three",
+                    },
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return path
+
+
 @pytest.fixture
 def export(tmp_path: Path):
     """A factory for synthetic ChatGPT exports."""

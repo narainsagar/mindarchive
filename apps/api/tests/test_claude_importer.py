@@ -16,7 +16,7 @@ from typing import Any
 
 import pytest
 
-from conftest import make_conversation, write_export
+from conftest import make_conversation, write_download_manifest, write_export
 from mind_archive.importers import find_importer
 from mind_archive.importers.claude import ClaudeImporter
 
@@ -455,3 +455,66 @@ def test_a_hostile_archive_is_refused(importer: ClaudeImporter, tmp_path: Path) 
 
     assert importer.detect(path) is False
     assert importer.validate(path).ok is False
+
+
+# ---------------------------------------------------------------------------
+# The download manifest
+#
+# Claude no longer hands you conversations directly. You get a small JSON of
+# single-use links, and importing it can never work. It is recognised so the
+# refusal can say what to download instead of "not recognised" (D-042).
+# ---------------------------------------------------------------------------
+
+
+def test_the_download_manifest_is_recognised(
+    importer: ClaudeImporter, tmp_path: Path
+) -> None:
+    assert importer.detect(write_download_manifest(tmp_path)) is True
+
+
+def test_the_manifest_is_refused_with_the_file_to_download(
+    importer: ClaudeImporter, tmp_path: Path
+) -> None:
+    outcome = importer.validate(write_download_manifest(tmp_path))
+
+    assert outcome.ok is False
+    # The whole point: name the file, do not just say no.
+    assert "conversations-000.zip" in outcome.message
+    assert "only once" in outcome.message
+
+
+def test_the_manifest_names_whatever_filename_it_actually_carries(
+    importer: ClaudeImporter, tmp_path: Path
+) -> None:
+    """Read the filename from the manifest rather than assuming one."""
+    path = write_download_manifest(
+        tmp_path, conversations_filename="conversations-007.zip"
+    )
+
+    assert "conversations-007.zip" in importer.validate(path).message
+
+
+def test_parsing_a_manifest_reports_the_same_advice(
+    importer: ClaudeImporter, tmp_path: Path
+) -> None:
+    result = importer.parse(write_download_manifest(tmp_path))
+
+    assert result.conversations == []
+    assert any("conversations-000.zip" in problem for problem in result.problems)
+
+
+def test_the_registry_sends_a_manifest_to_claude(tmp_path: Path) -> None:
+    """ChatGPT is listed first and must not answer for this file."""
+    found = find_importer(write_download_manifest(tmp_path))
+
+    assert found is not None
+    assert found.name == "claude"
+
+
+def test_an_unrelated_json_object_is_not_a_manifest(
+    importer: ClaudeImporter, tmp_path: Path
+) -> None:
+    path = tmp_path / "settings.json"
+    path.write_text(json.dumps({"data_files": ["not", "objects"]}), encoding="utf-8")
+
+    assert importer.detect(path) is False

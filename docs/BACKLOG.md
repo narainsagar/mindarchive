@@ -120,7 +120,17 @@ Still open:
 - **A filesystem watcher.** Scanning on startup, on demand and on window focus
   covers every case so far. `watchdog` only if that stops being true.
 - **Verify the browser script's output shape** against a real official export.
-  Believed identical; unconfirmed.
+  Believed identical; unconfirmed — and now more doubtful, since the official
+  export shards `conversations.json` while the script produces one file. Both
+  are handled, but the script's output has still never been compared.
+- **Claude is unverified against a real export (D-042).** Only the download
+  manifest was available, and its links are single-use. The importer was
+  written from documentation and is covered by synthetic fixtures only. The
+  first real Claude export should be checked against it — it may shard too.
+- **Attachments.** A real ChatGPT export carries 50+ `file-*.dat` plus
+  `conversation_asset_file_names.json` mapping them to conversations. Nothing
+  reads them yet. Needs a storage layout, a naming scheme, and a decision about
+  a file referenced by several conversations.
 - **Import several exports at once, in the background.** Choose multiple `.zip`
   or `.json` files and start them all with one action. The work must survive the
   import dialog being closed — closing the dialog cancels nothing. While it

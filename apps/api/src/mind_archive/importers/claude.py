@@ -68,6 +68,7 @@ from mind_archive.importers.reading import (
     iso_to_time,
     load_json_member,
     peek_conversations,
+    read_download_manifest,
 )
 from mind_archive.importers.zip_safety import UnsafeArchiveError
 from mind_archive.models import Conversation, Message
@@ -79,6 +80,25 @@ MAX_MESSAGES = 100_000
 
 #: Claude's word for the person, mapped to ours.
 ROLES = {"human": "user", "assistant": "assistant"}
+
+
+def manifest_advice(payload: Any) -> str:
+    """What to do with a download manifest, naming the file to fetch."""
+    wanted = ""
+    for entry in as_list(as_dict(payload).get("data_files")):
+        entry = as_dict(entry)
+        if as_text(entry.get("category")) == "conversations":
+            wanted = as_text(entry.get("filename"))
+            break
+
+    target = wanted or "the file whose category is 'conversations'"
+
+    return (
+        "That is Claude's download manifest, not your conversations — it only "
+        f"holds links. Open it, download {target}, and import that instead. "
+        "Each link works only once, so ask Claude for a new export if they "
+        "have already been used."
+    )
 
 
 def looks_like_claude(conversations: list[Any]) -> bool:
@@ -153,12 +173,22 @@ class ClaudeImporter:
 
     def detect(self, path: Path) -> bool:
         """Does this look like a Claude export? Never raises."""
+        # Claimed so the refusal can explain itself. Nothing else would
+        # recognise a download manifest, and "not recognised" tells you
+        # nothing about what to do next.
+        if self._download_manifest(path) is not None:
+            return True
+
         conversations = peek_conversations(path, CONVERSATIONS_FILE)
         if conversations is None:
             return False
         return looks_like_claude(conversations)
 
     def validate(self, path: Path) -> ValidationResult:
+        manifest = self._download_manifest(path)
+        if manifest is not None:
+            return ValidationResult.invalid(manifest_advice(manifest))
+
         try:
             payload = self._load(path)
         except (UnsafeArchiveError, ImportProblem) as error:
@@ -182,6 +212,11 @@ class ClaudeImporter:
 
     def parse(self, path: Path) -> ImportResult:
         result = ImportResult()
+
+        manifest = self._download_manifest(path)
+        if manifest is not None:
+            result.note_problem(manifest_advice(manifest))
+            return result
 
         try:
             payload = self._load(path)
@@ -220,6 +255,10 @@ class ClaudeImporter:
 
     def _load(self, path: Path) -> Any:
         return load_json_member(path, CONVERSATIONS_FILE, "a Claude")
+
+    def _download_manifest(self, path: Path) -> Any | None:
+        """The parsed manifest if this is one, otherwise None. Never raises."""
+        return read_download_manifest(path)
 
     def _convert(self, raw: dict[str, Any]) -> Conversation | None:
         messages: list[Message] = []

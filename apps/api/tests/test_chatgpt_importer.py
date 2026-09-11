@@ -13,7 +13,13 @@ from pathlib import Path
 
 import pytest
 
-from conftest import make_conversation, make_mapping, write_export
+from conftest import (
+    make_conversation,
+    make_mapping,
+    write_download_manifest,
+    write_export,
+    write_sharded_export,
+)
 from mind_archive.importers import find_importer
 from mind_archive.importers.chatgpt import ChatGPTImporter
 
@@ -434,3 +440,119 @@ def test_junk_conversations_never_crash_the_import(
 
     assert result.imported == 1
     assert result.skipped == 1
+
+
+# ---------------------------------------------------------------------------
+# Sharded exports
+#
+# OpenAI no longer ships a single conversations.json. A real export contains
+# conversations-000.json, -001, -002 and declares the mapping in
+# export_manifest.json. Looking only for the plain name found nothing, so a
+# 204-conversation export was reported as "not recognised" (D-042).
+# ---------------------------------------------------------------------------
+
+
+def _shards(tmp_path: Path, counts: list[int], **kwargs) -> Path:
+    """A sharded export with `counts` conversations in each shard."""
+    number = 0
+    shards = []
+    for count in counts:
+        shard = []
+        for _ in range(count):
+            number += 1
+            shard.append(make_conversation(conversation_id=f"conversation-{number}"))
+        shards.append(shard)
+    return write_sharded_export(tmp_path, shards, **kwargs)
+
+
+def test_detects_a_sharded_export(importer: ChatGPTImporter, tmp_path: Path) -> None:
+    assert importer.detect(_shards(tmp_path, [2, 2, 1])) is True
+
+
+def test_reads_every_shard(importer: ChatGPTImporter, tmp_path: Path) -> None:
+    """The count must be the sum, not the first shard."""
+    result = importer.parse(_shards(tmp_path, [3, 3, 1]))
+
+    assert result.imported == 7
+    assert result.problems == []
+
+
+def test_validate_counts_across_shards(
+    importer: ChatGPTImporter, tmp_path: Path
+) -> None:
+    outcome = importer.validate(_shards(tmp_path, [2, 2, 1]))
+
+    assert outcome.ok is True
+    assert "5 conversations" in outcome.message
+
+
+def test_shards_are_read_in_manifest_order(
+    importer: ChatGPTImporter, tmp_path: Path
+) -> None:
+    first = [make_conversation(title="First", conversation_id="a")]
+    second = [make_conversation(title="Second", conversation_id="b")]
+    path = write_sharded_export(tmp_path, [first, second])
+
+    result = importer.parse(path)
+
+    assert [conversation.title for conversation in result.conversations] == [
+        "First",
+        "Second",
+    ]
+
+
+def test_shards_are_found_without_a_manifest(
+    importer: ChatGPTImporter, tmp_path: Path
+) -> None:
+    """Falling back to the filenames, for an export that declares nothing."""
+    path = _shards(tmp_path, [2, 1], with_manifest=False)
+
+    assert importer.detect(path) is True
+    assert importer.parse(path).imported == 3
+
+
+def test_sharded_export_inside_a_folder(
+    importer: ChatGPTImporter, tmp_path: Path
+) -> None:
+    path = _shards(tmp_path, [1, 1], inner_folder="chatgpt-export-2026-09-08")
+
+    assert importer.detect(path) is True
+    assert importer.parse(path).imported == 2
+
+
+def test_the_plain_single_file_export_still_works(
+    importer: ChatGPTImporter, export
+) -> None:
+    """Older exports have one conversations.json, and must keep working."""
+    result = importer.parse(export([make_conversation(), make_conversation()]))
+
+    assert result.imported == 2
+
+
+def test_a_conversation_whose_nodes_have_no_children_key(
+    importer: ChatGPTImporter, export
+) -> None:
+    """Current exports drop `children`; nodes are just id/message/parent.
+
+    With `current_node` missing as well, the walk has to rebuild the tree from
+    the parent links or the conversation comes out empty.
+    """
+    conversation = make_conversation(
+        turns=[("user", "Only question"), ("assistant", "Only answer")]
+    )
+    for node in conversation["mapping"].values():
+        node.pop("children", None)
+    conversation["current_node"] = None
+
+    result = importer.parse(export([conversation]))
+
+    assert result.imported == 1
+    assert len(result.conversations[0].messages) == 2
+
+
+def test_a_claude_download_manifest_is_not_claimed(
+    importer: ChatGPTImporter, tmp_path: Path
+) -> None:
+    """The registry lists this importer first, and it must not answer for a
+    file Claude has a far better message for (D-042)."""
+    assert importer.detect(write_download_manifest(tmp_path)) is False

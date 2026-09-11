@@ -116,7 +116,7 @@ is pinned to `mindarchive`, so renaming the checkout directory no longer breaks
 | `importers/zip_safety.py` | Reading archives someone else produced: zip slip, zip bombs, size caps |
 | `importers/chatgpt.py` | The ChatGPT adapter, including the branching `mapping` tree |
 | `importers/claude.py` | The Claude adapter: a flat message list, ISO timestamps, content blocks |
-| `importers/reading.py` | Untrusted-JSON coercion and zip member loading, shared by both |
+| `importers/reading.py` | Untrusted-JSON coercion, zip member loading, and shard resolution from `export_manifest.json`, shared by both |
 | `routes/export.py` | `GET /api/export` — the archive folder, zipped, plus a README |
 | `archive/writer.py` | Conversations to `conversation.md` + `metadata.json`, one folder each |
 | `archive/reader.py` | ... and back off disk, tolerating folders that are not conversations |
@@ -230,17 +230,24 @@ All verification above was run inside Docker for this reason.
   Docker bind mount (R-005). Do not optimise the importer against the second
   number.
 - **The Claude importer has never seen a real Claude export.** Written from
-  Anthropic's documented format and third-party parsers. Same caveat the
-  ChatGPT importer carried at this stage.
+  Anthropic's documented format and third-party parsers. The only real Claude
+  file available was the download manifest, whose links are single-use, so the
+  conversation path is still covered by synthetic fixtures alone (D-042). It may
+  well shard the way ChatGPT's does — check the first real one against it.
 - **Nothing since Milestone 3 has been clicked through in a browser.** 254 backend and
   64 frontend tests pass, but the tag interface has never been used by a
   person. The blocker is the development environment, not the code.
 - **No progress reporting during a long import.** It runs on a background
   thread so nothing blocks, but the interface says nothing while it works.
-- **The importer has only seen synthetic exports.** Tests cover malformed and
-  hostile input thoroughly, but no real ChatGPT export has been imported yet.
-  `local/` exists (git-ignored) for exactly this. **This is the outstanding
-  verification for Milestone 2.**
+- **The ChatGPT importer has now been run against a real export** — 204
+  conversations, 2,866 messages, no problems reported (D-042). That export
+  turned out not to contain `conversations.json` at all; it shards it, which the
+  importer had no idea about until it was tried. Two providers remain the
+  limit: everything else is still synthetic.
+- **The browser script's output has still never been compared** against an
+  official export, and is now more doubtful rather than less: it produces one
+  `conversations.json` while the official export shards. Both shapes are
+  handled; only one has been seen.
 - **Attachments are not imported** — images and files appear as placeholders in
   the Markdown.
 

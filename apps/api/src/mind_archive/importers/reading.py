@@ -13,6 +13,7 @@ read is skipped and reported.
 from __future__ import annotations
 
 import json
+import re
 import zipfile
 from datetime import UTC, datetime
 from pathlib import Path
@@ -76,6 +77,155 @@ def iso_to_time(value: Any) -> datetime | None:
     return parsed if parsed.tzinfo else parsed.replace(tzinfo=UTC)
 
 
+#: The file an export uses to describe its own contents, if it has one.
+EXPORT_MANIFEST = "export_manifest.json"
+
+#: A shard of a logical file: `conversations-000.json` for `conversations.json`.
+_SHARD = re.compile(r"^(?P<stem>.+)-(?P<index>\d{3,})\.json$", re.IGNORECASE)
+
+
+def _manifest_shards(archive: zipfile.ZipFile, filename: str) -> list[str] | None:
+    """The members a manifest says make up `filename`, in its own order.
+
+    ChatGPT exports carry `export_manifest.json` with:
+
+        "logical_files": {
+          "conversations.json": {
+            "files": ["conversations-000.json", ...],
+            "shard_count": 3,
+            "sharded": true
+          }
+        }
+
+    Reading that is always better than guessing from filenames — the export is
+    telling us the answer. Same principle as detecting by shape (D-027).
+    """
+    member = find_member(archive, EXPORT_MANIFEST)
+    if member is None:
+        return None
+
+    try:
+        manifest = json.loads(read_member(archive, member).decode("utf-8"))
+    except (UnsafeArchiveError, ValueError, UnicodeDecodeError):
+        return None
+
+    entry = as_dict(as_dict(as_dict(manifest).get("logical_files")).get(filename))
+    if not entry.get("sharded"):
+        return None
+
+    files = [name for name in as_list(entry.get("files")) if isinstance(name, str)]
+    return [name for name in files if find_member(archive, name)] or None
+
+
+def _guessed_shards(archive: zipfile.ZipFile, filename: str) -> list[str]:
+    """Shards found by name, for an export with no manifest.
+
+    Sorted by the numeric index rather than as text, so a hypothetical
+    `-010.json` lands after `-009.json` instead of after `-001.json`.
+    """
+    stem = filename[: -len(".json")] if filename.lower().endswith(".json") else filename
+
+    found: list[tuple[int, str]] = []
+    for name in archive.namelist():
+        match = _SHARD.match(name.rsplit("/", 1)[-1])
+        if match and match.group("stem").lower() == stem.lower():
+            found.append((int(match.group("index")), name))
+
+    return [name for _, name in sorted(found)]
+
+
+def conversation_members(path: Path, filename: str) -> list[str]:
+    """Which members of this export hold `filename`.
+
+    OpenAI no longer ships a single `conversations.json`. A real export now
+    contains `conversations-000.json`, `-001`, `-002` and declares the mapping
+    in `export_manifest.json`. Looking only for the plain name found nothing,
+    so a 204-conversation export was reported as "not recognised" (D-042).
+
+    Returns `[filename]` for the plain single-file form, so nothing about the
+    old shape changes.
+    """
+    suffix = path.suffix.lower()
+
+    if suffix == ".json":
+        # A bare export: the file is its own only member.
+        return [filename]
+
+    if suffix != ".zip":
+        # Not something that could hold conversations at all. Returning the
+        # filename here made `detect` claim any file, including notes.txt.
+        return []
+
+    try:
+        with inspect(path) as archive:
+            if find_member(archive, filename) is not None:
+                return [filename]
+            return _manifest_shards(archive, filename) or _guessed_shards(
+                archive, filename
+            )
+    except (UnsafeArchiveError, OSError, zipfile.BadZipFile):
+        return []
+
+
+def load_conversations(path: Path, filename: str, provider: str) -> Any:
+    """Read `filename`, joining its shards if the export split it up.
+
+    Returns the concatenated list when sharded, so every caller downstream sees
+    the single list it always expected.
+    """
+    members = conversation_members(path, filename)
+
+    if len(members) <= 1:
+        return load_json_member(path, members[0] if members else filename, provider)
+
+    joined: list[Any] = []
+    for member in members:
+        payload = load_json_member(path, member, provider)
+        if not isinstance(payload, list):
+            raise ImportProblem(
+                f"{member} should contain a list of conversations, but it does not."
+            )
+        joined.extend(payload)
+
+    return joined
+
+
+def looks_like_download_manifest(payload: Any) -> bool:
+    """Is this JSON a list of download links rather than conversation data?
+
+    Claude hands you one of these instead of your conversations:
+
+        {"version": "1.0", "total_files": 3,
+         "data_files": [{"category": "conversations",
+                         "filename": "conversations-000.zip",
+                         "export_url": "https://claude.ai/..."}]}
+
+    It lives here rather than in `claude.py` because **two** importers need it,
+    and an adapter must never import another adapter. Claude uses it to explain
+    what to download; ChatGPT uses it to decline a file that is plainly not
+    its own (D-042).
+    """
+    entries = as_list(as_dict(payload).get("data_files"))
+    if not entries:
+        return False
+
+    return any(
+        as_text(as_dict(entry).get("export_url")) and as_dict(entry).get("filename")
+        for entry in entries[:20]
+    )
+
+
+def read_download_manifest(path: Path) -> Any | None:
+    """The parsed manifest if this file is one, else None. Never raises."""
+    if path.suffix.lower() != ".json":
+        return None
+    try:
+        payload = json.loads(path.read_bytes().decode("utf-8"))
+    except (OSError, ValueError):
+        return None
+    return payload if looks_like_download_manifest(payload) else None
+
+
 def load_json_member(path: Path, filename: str, provider: str) -> Any:
     """Read one JSON file from an export zip, or from a bare JSON file.
 
@@ -132,15 +282,30 @@ def peek_conversations(path: Path, filename: str) -> list[Any] | None:
     called `conversations.json`, so matching on the name alone would have one
     importer confidently claiming another's export — which is exactly what
     happened before this existed.
+
+    Sharded exports are joined here too. Detection has to see the same thing
+    the import will, or a real export is refused as "not recognised" while
+    holding hundreds of conversations (D-042).
     """
     try:
         if path.suffix.lower() == ".zip":
+            members = conversation_members(path, filename)
+            if not members:
+                return None
+
+            joined: list[Any] = []
             with inspect(path) as archive:
-                member = find_member(archive, filename)
-                if member is None:
-                    return None
-                data = read_member(archive, member)
-        elif path.suffix.lower() == ".json":
+                for name in members:
+                    member = find_member(archive, name)
+                    if member is None:
+                        return None
+                    payload = json.loads(read_member(archive, member).decode("utf-8"))
+                    if not isinstance(payload, list):
+                        return None
+                    joined.extend(payload)
+            return joined
+
+        if path.suffix.lower() == ".json":
             data = path.read_bytes()
         else:
             return None

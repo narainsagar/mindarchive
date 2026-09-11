@@ -508,6 +508,64 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-042 — Exports are sharded; resolve them from the export's own manifest
+**Date:** 2026-09-11 · **Status:** Accepted
+
+Both importers had only ever been run against synthetic fixtures. Given real
+exports, neither worked — for entirely different reasons.
+
+**ChatGPT no longer ships `conversations.json`.** A real export contains
+`conversations-000.json`, `-001`, `-002` and declares the mapping in
+`export_manifest.json`:
+
+```json
+"logical_files": { "conversations.json":
+  { "files": [...], "shard_count": 3, "sharded": true } }
+```
+
+`chatgpt.py` looked only for the plain name, found nothing, and `detect()`
+returned `False` — **204 conversations reported as "not recognised"**.
+
+`reading.py` now resolves a logical filename to its members and concatenates
+them. **The manifest is preferred over guessing filenames**, for the same
+reason detection reads shape rather than name (D-027): the export is telling us
+the answer. A `stem-NNN.json` fallback covers an export that declares nothing,
+and the plain single-file form still works untouched.
+
+**Claude's file is not an export.** It is a download manifest — a 989-byte JSON
+of three single-use links. It carries no conversations, so importing it can
+never succeed. It is now detected **only to refuse it usefully**, naming the
+file to download rather than saying "not recognised".
+
+**Mind Archive does not fetch those URLs.** Downloading them would be the
+application's first network request, against the promise in `LICENSING.md` and
+D-038. The refusal tells you what to do; you do it.
+
+**Two bugs found while doing this, both latent:**
+
+- **`children` is gone from mapping nodes** — they are now `{id, message,
+  parent}`. The main walk follows `current_node` upward and was fine, but the
+  fallback walked *down* via `children` and had become dead code. It rebuilds
+  the child map from parent links now.
+- **`detect()` claimed files it should not.** The ChatGPT fallback accepted any
+  bare `.json`, so it answered for Claude's manifest — and the registry lists
+  ChatGPT first, so it would have won with a worse message. The manifest check
+  lives in `reading.py`, not `claude.py`, because **an adapter must never
+  import another adapter**.
+
+**Consequences:**
+
+- Verified against the maintainer's real export: **204 conversations, 2866
+  messages, 0 problems**, counts matching the shards exactly (100 + 100 + 4).
+- **The Claude path is not verified against real data.** Only the manifest was
+  available, and its links are single-use. Claude keeps synthetic fixtures.
+- Test fixtures are hand-written and always will be. A real export is a copy of
+  somebody's private conversations; test files are committed.
+- Attachments (`file-*.dat`, 50+ in a real export) remain out of scope and stay
+  in `BACKLOG.md`.
+
+---
+
 ## D-041 — Band elements use `padding-block`, never the `padding` shorthand
 **Date:** 2026-09-10 · **Status:** Accepted
 

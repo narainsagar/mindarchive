@@ -161,6 +161,13 @@ export function ImportPanel({ inbox: inboxState, onImported }: Props) {
             . ChatGPT emails you when it is ready.
           </p>
 
+          <p>
+            <strong>Import the zip exactly as it arrives.</strong> Do not
+            unpack it looking for <code>conversations.json</code> — recent
+            exports split it into <code>conversations-000.json</code> and
+            friends, and Mind Archive puts them back together for you.
+          </p>
+
           <p className="import__warning">
             <strong>ChatGPT says this can take a few days.</strong> Two things
             catch people out: the download link{" "}

@@ -59,3 +59,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-039 | Project memory lives at the repository root, not under `docs/` |
 | D-040 | Full-width bands, a centred footer, and a site URL that works locally |
 | D-041 | Band elements use `padding-block`, never the `padding` shorthand |
+| D-042 | Exports are sharded; resolve them from the export's own manifest |

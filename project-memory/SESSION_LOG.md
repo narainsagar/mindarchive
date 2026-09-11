@@ -5,6 +5,42 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-11 — The export the importer could not see
+
+**Session:** [2026-09-11-01-real-exports-chatgpt-sharding-and-claude-download](sessions/2026-09-11-01-real-exports-chatgpt-sharding-and-claude-download/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**Both importers had only ever been run on synthetic fixtures.** Given real
+exports, both failed — for completely different reasons.
+
+**ChatGPT no longer ships `conversations.json`.** The export shards it into
+`conversations-000.json`, `-001`, `-002` and declares the mapping in
+`export_manifest.json` under `logical_files`. The importer looked for the plain
+name, found nothing, and reported a **204-conversation export as "not
+recognised"**. Shard resolution now lives in `importers/reading.py` — the
+manifest first, filename matching only as a fallback (**D-042**, the same
+principle as D-027: believe what the file says about itself).
+
+**Claude's `manifest-*.json` is not conversations.** It is three single-use
+download links. It is now recognised and refused with the filename to fetch,
+and **nothing follows those links** — no network access, so the no-phone-home
+promise stands.
+
+**Two latent bugs surfaced.** Current exports have dropped `children` from
+mapping nodes, which had quietly killed the fallback walk — the only protection
+against a missing `current_node`; it now rebuilds children from `parent` links.
+And `ChatGPT.detect()` claimed the Claude manifest, so the manifest check went
+into `reading.py` rather than `claude.py` — an adapter must never import another
+adapter.
+
+**Verified against the real export:** 204 conversations, 0 problems, 2866
+messages. **Claude was not**, and the backlog says so: only the manifest was
+available and its links are single-use.
+
+**Nothing from `tmp/` was committed.** Inspection printed shape only — key
+names, types, counts. No message text was read.
+
 ## 2026-09-09 — Ready to publish, and two things refused
 
 **Session:** [2026-09-09-04-prepare-for-publication-on-github-and-pages](sessions/2026-09-09-04-prepare-for-publication-on-github-and-pages/SESSION.md)
