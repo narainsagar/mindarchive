@@ -487,7 +487,7 @@ describe("appearance", () => {
   it("changes palette and remembers it", async () => {
     await renderApp();
     const user = await openMenu(/^Palette:/);
-    await user.click(screen.getByRole("menuitemradio", { name: /Ink & Violet/i }));
+    await user.click(screen.getByRole("menuitemradio", { name: /Ink & violet/i }));
 
     expect(document.documentElement.getAttribute("data-palette")).toBe(
       "violet",

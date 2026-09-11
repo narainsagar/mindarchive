@@ -5,6 +5,26 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-11 — Ink & violet, lowercase
+
+**Session:** [2026-09-11-05-palette-label-ink-and-violet-lowercase](sessions/2026-09-11-05-palette-label-ink-and-violet-lowercase/SESSION.md)
+
+**Agent:** Kishor (manual edits) · Claude Opus 5 (verification, commit)
+
+**The third palette is "Ink & violet"** — renamed by hand in `theme.ts`, the
+site's appearance menu, `PRODUCT.md` and the test that clicks the menu item.
+The application and the site each keep their own copy of the palette labels, so
+those two must change together; nothing checks that they agree.
+
+**One file was reverted.** The rename had also been applied to the 2026-09-10-03
+session record, whose whole point was that the label read one way on the site
+and another in `theme.ts`. Replacing both spellings left it recording a drift
+from a string to itself. **A session record is what happened on its date, not
+what is true now** — it is the only place "Ink & Violet" now appears, correctly.
+
+**Verified by building:** one spelling everywhere in the built site. 107
+frontend tests, lint, types, 34 routes.
+
 ## 2026-09-11 — An address that answers
 
 **Session:** [2026-09-11-04-set-the-project-contact-address](sessions/2026-09-11-04-set-the-project-contact-address/SESSION.md)
