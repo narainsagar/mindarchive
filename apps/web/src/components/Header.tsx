@@ -79,7 +79,26 @@ export function Header({
           <a
             className="header__brand"
             href="/"
-            onClick={(event) => event.preventDefault()}
+            onClick={(event) => {
+              // The same rule the nav's Home entry follows: the href stays "/"
+              // so copying the link or opening it in a new tab behaves, but a
+              // plain click scrolls instead of navigating — a real navigation
+              // would reload and throw away the search and any open
+              // conversation. It used to only cancel the click, which made the
+              // brand a link that did nothing at all.
+              if (
+                event.defaultPrevented ||
+                event.button !== 0 ||
+                event.metaKey ||
+                event.ctrlKey ||
+                event.shiftKey ||
+                event.altKey
+              ) {
+                return;
+              }
+              event.preventDefault();
+              document.getElementById("top")?.scrollIntoView({ block: "start" });
+            }}
           >
             Mind Archive
           </a>

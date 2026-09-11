@@ -5,6 +5,29 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-11 — A link that did nothing
+
+**Session:** [2026-09-11-06-brand-link-and-a-floating-back-to-top](sessions/2026-09-11-06-brand-link-and-a-floating-back-to-top/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**The brand in the header had never worked.** `href="/"` with an `onClick` that
+called `preventDefault()` and stopped — it cancelled the navigation and never
+replaced it, so it looked like a link, took focus like a link, and did nothing.
+Inert since `651ea60` (D-037). It now scrolls to `#top` using the same guard
+clause as the nav's Home entry, and still leaves Ctrl-click and the rest to the
+browser (**D-045**).
+
+**A floating Back to top** appears after one screen of scrolling and hides at
+the top. The footer already had one and the site at :4000 has none — that was
+reported before building anything, and the maintainer chose to add it anyway.
+
+**The new brand test was mutation-checked**: restore the old handler and it
+fails. A test that cannot fail is not a test. 112 frontend tests, lint, types.
+
+**Nobody has looked at it in a browser** — there is no screenshot tool here, and
+the six palette/theme combinations are unverified by anything but argument.
+
 ## 2026-09-11 — Ink & violet, lowercase
 
 **Session:** [2026-09-11-05-palette-label-ink-and-violet-lowercase](sessions/2026-09-11-05-palette-label-ink-and-violet-lowercase/SESSION.md)

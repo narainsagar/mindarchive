@@ -1,4 +1,10 @@
-import { render, screen, waitFor, within } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
@@ -265,10 +271,95 @@ describe("moving around the page", () => {
   it("offers a way back to the top from the bottom", async () => {
     await renderApp();
 
-    expect(screen.getByRole("link", { name: /back to top/i })).toHaveAttribute(
-      "href",
-      "#top",
-    );
+    // Scoped to the footer: the floating control below carries the same name
+    // and the same destination, so an unscoped query now finds two.
+    const footer = screen.getByRole("contentinfo");
+    expect(
+      within(footer).getByRole("link", { name: /back to top/i }),
+    ).toHaveAttribute("href", "#top");
+  });
+
+  /** jsdom implements no scrolling at all, so the target has to say it moved. */
+  function watchScrollTo(container: HTMLElement) {
+    const target = container.querySelector("#top") as HTMLElement;
+    const scrollIntoView = vi.fn();
+    target.scrollIntoView = scrollIntoView;
+    return scrollIntoView;
+  }
+
+  it("takes you back to the top from the brand, without navigating away", async () => {
+    /* The brand used to cancel its own click and do nothing else, which made
+       it a link that did nothing at all. It scrolls now — a real navigation
+       would reload and throw away the search and any open conversation. */
+    const user = userEvent.setup();
+    const { container } = await renderApp();
+    const scrolled = watchScrollTo(container);
+
+    const brand = screen.getByRole("link", { name: "Mind Archive" });
+    expect(brand).toHaveAttribute("href", "/");
+
+    await user.click(brand);
+
+    expect(scrolled).toHaveBeenCalled();
+  });
+
+  it("leaves a modified click on the brand to the browser", async () => {
+    /* Ctrl-click, and the rest, must still open a new tab or copy the link.
+       Intercepting every click would break that. */
+    const user = userEvent.setup();
+    const { container } = await renderApp();
+    const scrolled = watchScrollTo(container);
+
+    await user.keyboard("{Control>}");
+    await user.click(screen.getByRole("link", { name: "Mind Archive" }));
+    await user.keyboard("{/Control}");
+
+    expect(scrolled).not.toHaveBeenCalled();
+  });
+});
+
+describe("back to top", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+    backendAvailable();
+    scrollTo(0);
+  });
+
+  /** jsdom does not scroll, so say where the page is and tell the page so. */
+  function scrollTo(y: number) {
+    Object.defineProperty(window, "scrollY", { value: y, configurable: true });
+    // fireEvent rather than dispatchEvent: it wraps the listener's state
+    // update in act(), so React has re-rendered before the next assertion.
+    fireEvent.scroll(window);
+  }
+
+  function floatingLink() {
+    return document.querySelector(".backtotop");
+  }
+
+  it("stays out of the way until there is something to scroll back from", async () => {
+    await renderApp();
+
+    expect(floatingLink()).not.toHaveClass("backtotop--shown");
+  });
+
+  it("appears once you are a screen down, and points at the top", async () => {
+    await renderApp();
+
+    scrollTo(window.innerHeight + 1);
+
+    expect(floatingLink()).toHaveClass("backtotop--shown");
+    expect(floatingLink()).toHaveAttribute("href", "#top");
+  });
+
+  it("goes away again when you are back at the top", async () => {
+    await renderApp();
+
+    scrollTo(window.innerHeight + 1);
+    expect(floatingLink()).toHaveClass("backtotop--shown");
+
+    scrollTo(0);
+    expect(floatingLink()).not.toHaveClass("backtotop--shown");
   });
 
   it("hides the nav when there is nothing to navigate to", async () => {

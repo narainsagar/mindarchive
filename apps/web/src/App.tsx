@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { ApiError, fetchConfig, fetchHealth } from "./api";
 import type { Health, PublicConfig } from "./api";
 import { ArchivePanel } from "./components/ArchivePanel";
+import { BackToTop } from "./components/BackToTop";
 import { ContributePanel } from "./components/ContributePanel";
 import { ExportPanel } from "./components/ExportPanel";
 import { Header } from "./components/Header";
@@ -192,6 +193,9 @@ export default function App() {
       </Modal>
 
       <SiteFooter />
+
+      {/* Fixed to the viewport, so it sits outside the flow of the page. */}
+      <BackToTop />
     </div>
   );
 }

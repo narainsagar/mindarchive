@@ -508,6 +508,62 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-045 — The brand goes back to the top, and so does a floating link
+**Date:** 2026-09-11 · **Status:** Accepted
+
+**The brand in the header was a link that did nothing.** `href="/"` with an
+`onClick` that called `preventDefault()` and stopped there — it cancelled the
+navigation and never replaced it. Introduced with the one-row header (D-037,
+commit `651ea60`) and inert from its first line: it looked like a link, took
+focus like a link, and answered a click with nothing at all.
+
+`preventDefault()` was right; what was missing was the rest. There is no router
+(D-008, D-030), so a real navigation to `/` reloads the page and throws away the
+current search and any open conversation.
+
+**The brand now does what the nav's Home entry already did.** The guard clause
+is copied from `SectionNav` deliberately, so the two read the same: a plain left
+click scrolls `#top` into view, and a click with Ctrl, Cmd, Shift or Alt, or a
+non-primary button, is handed back to the browser so "open in new tab" and "copy
+link address" keep working. The header is sticky, so this is a way back to the
+top from any scroll position.
+
+**A floating `Back to top` appears after one screen of scrolling**, bottom
+right, and hides again at the top. It is a plain `<a href="#top">` — the same
+destination the footer link and the header use — so it works before React has
+hydrated and with JavaScript off. The only thing the component decides is
+whether the link is worth showing.
+
+**Two links with the same name is deliberate.** The footer keeps its Back to top
+(D-031); the floating one exists because the footer is a long scroll away from
+the middle of a large archive. Renaming one to avoid the duplicate would make it
+describe itself less accurately, which is the worse trade.
+
+**Against the clutter rule, on purpose.** AGENTS.md rules out visual clutter, and
+a control pinned over the page is exactly that if it is always there. So it is
+hidden at the top of the page; hidden by `visibility` rather than unmounted, so
+it stays out of the tab order and away from screen readers until it is offered;
+and it sits below the dialog backdrop, because with a dialog open there is
+nothing behind it worth scrolling to.
+
+**No JavaScript animation.** `html` already carries `scroll-behavior: smooth`,
+which the existing reduced-motion block turns off. The only transition is the
+link's own 120ms fade, which that same block already reduces to nothing.
+
+**Consequences:**
+
+- `#top` is now load-bearing for three controls. It is rendered unconditionally,
+  including when the backend is unreachable — which is why the brand works in
+  the error state, where the section nav is not rendered at all.
+- A test asserting on "Back to top" must say *which* one. The footer's is scoped
+  to `contentinfo`.
+- The brand's click path had never been tested, and nothing clicked Home either.
+  It is tested now in both directions: a plain click scrolls, a Ctrl-click does
+  not. jsdom implements no scrolling, so the target's `scrollIntoView` is stubbed
+  per element rather than on the prototype.
+
+---
+
 ## D-044 — The published contact address is `info@narainsagar.com`
 **Date:** 2026-09-11 · **Status:** Accepted
 

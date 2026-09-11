@@ -965,6 +965,39 @@ html {
   color: var(--accent);
 }
 
+/* The same link again, floating, for when the footer is a long scroll away.
+   Below the dialog backdrop (z-index 100) on purpose: with a dialog open there
+   is nothing behind it worth scrolling to. */
+.backtotop {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 20;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: 0 2px 10px rgba(10, 10, 12, 0.12);
+  color: var(--text-soft);
+  font-size: 0.8125rem;
+  text-decoration: none;
+  /* Hidden rather than unmounted, which keeps it out of the tab order and
+     away from screen readers until it is offered. */
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.backtotop--shown {
+  visibility: visible;
+  opacity: 1;
+}
+
+.backtotop:hover {
+  color: var(--text);
+  border-color: var(--text-faint);
+}
+
 /* Every anchored section clears the sticky header. */
 .panel[id],
 .intro[id] {

@@ -48,6 +48,11 @@ than sitting below the archive, and the sticky header links to five sections —
 Archive, Coming next, Status, Support, Contribute — with a Back to top link in
 the footer. In-page anchors, not routes (D-030, D-031).
 
+There are three ways back to the top and they all go to `#top` (D-045): the
+brand in the sticky header, the footer link, and a floating link that appears
+once you have scrolled a screen and hides again at the top. The brand was a
+link that did nothing at all until 2026-09-11 — it cancelled its own click.
+
 Support and Contribute explain donations and commercial licensing. **Donation
 links are not configured yet**: every URL in `apps/web/src/support.ts` ships
 blank on purpose and unset ones are not rendered, so nothing shows a dead link.
