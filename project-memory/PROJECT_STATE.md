@@ -103,7 +103,9 @@ python scripts/sync_site_pages.py --list
 Bare `jekyll serve` now shows an incomplete site, because the generated pages are
 not in the repository. `dev.py verify` runs the generator and
 `scripts/check_site_links.py`, which walks every internal link — a standard
-D-036 required and nothing had automated.
+D-036 required and nothing had automated. **It also builds the site with
+Jekyll**, because a page that will not parse passes every other check and fails
+in the Pages workflow instead, where the failure is a failed deployment (D-043).
 
 Still not published: `PROJECT_STATE.md`, `SESSION_LOG.md`, `MEMORY_INDEX.md` and
 the session records.

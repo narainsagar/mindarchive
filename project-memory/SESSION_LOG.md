@@ -5,6 +5,38 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-11 — The site that could not be built
+
+**Session:** [2026-09-11-03-finish-the-liquid-escaping-fix-and-prove-the-site](sessions/2026-09-11-03-finish-the-liquid-escaping-fix-and-prove-the-site/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**`main` could not build its own site**, and had not been able to since the
+previous commit. The generator wrapped the raw block in `DECISIONS.md` inside
+another raw block; Liquid does not nest them, and Jekyll refused: *Unknown tag
+'endraw'*. An uncommitted half-repair was sitting in the working tree with no
+session record and no check run against it.
+
+**That repair was wrong too.** It printed a lone tag from a string literal, and
+Liquid ends an output at the first `}` — so the `%}` inside the quotes closed it
+early. Only the opening brace is hidden now. Both mistakes had been invisible
+for the same reason: **nothing local ran Liquid.**
+
+**So `dev.py verify` now builds the site**, in a throwaway container, output
+discarded. The generator's own guard was rewritten to read a page the way Liquid
+tokenises it rather than to count tags — the version left in the tree passed the
+page that actually broke the build.
+
+**Session 02 recorded an annotation it did not make.** Its amendment to D-036
+had been pasted into D-043's header, leaving D-036 still ending with the clause
+it was meant to retract. Moved.
+
+**Verified by building:** Jekyll fails on `main`, passes after the fix — 33
+pages. The new gate step returns 1 on a deliberately broken page and 0 once it
+is removed. `dev.py verify`: all checks passed.
+
+**Still blocked, unchanged:** the project contact address. No mailbox exists yet.
+
 ## 2026-09-11 — The links that left the site
 
 **Session:** [2026-09-11-02-publish-the-canonical-documents-as-site-pages-and](sessions/2026-09-11-02-publish-the-canonical-documents-as-site-pages-and/SESSION.md)

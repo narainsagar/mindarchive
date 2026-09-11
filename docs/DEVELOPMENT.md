@@ -257,6 +257,12 @@ Checks are **required** at three points (decision D-018):
 python scripts/dev.py verify     # everything, then tidies up — the gate
 ```
 
+`verify` covers both test suites, lint, types, the production build, project
+memory, the generated documentation pages, every internal site link, the CSS
+layout bands, and a **full Jekyll build of the site** — the last one because a
+page that will not parse passes every other check and fails in the Pages
+workflow, where the first thing it breaks is the deployment.
+
 In between, run whatever is relevant to what you touched, whenever you like:
 
 ```bash

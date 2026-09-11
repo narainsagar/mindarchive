@@ -141,6 +141,15 @@ python scripts/sync_site_pages.py --list    # what is published, and where
 - **Links inside the generated content are rewritten** to
   `{% raw %}{{ '/permalink/' | relative_url }}{% endraw %}`, because Kramdown
   leaves `.md` links alone and they 404.
+- **Liquid already in the document is escaped**, because Liquid runs over the
+  whole file before Kramdown sees any Markdown — backticks do not protect it. A
+  raw block the author wrote is left alone rather than wrapped again, and a lone
+  `raw` or `endraw` tag written as prose is printed instead. Getting this wrong
+  produces a page Jekyll will not parse, so the generator checks each page and
+  refuses to write one that would fail (D-043).
+- **Writing about Liquid in a document that gets published is awkward on
+  purpose.** If you need to show a `raw` tag, name it without its braces. Only
+  one form survives being escaped and it is not worth memorising.
 
 **What to check in the built output**, not the source folder:
 
@@ -155,8 +164,9 @@ python scripts/sync_site_pages.py --list    # what is published, and where
 
   This ran by hand exactly once between D-036 and D-043 — which is to say it did
   not run. It is now part of `dev.py verify`. It reads the source rather than a
-  built site, so it needs no Ruby and takes under a second; building and walking
-  the output is still the final word before a release.
+  built site, so it needs no Ruby and takes under a second. `verify` also builds
+  the site itself, which is what catches a page Liquid cannot parse; walking the
+  built output by hand is still worth doing before a release.
 - `blog/index.html` exists and every post has its own `blog/<slug>/index.html`.
 - `_drafts/TEMPLATE.md` did **not** get published.
 - `feed.xml` is present and parses.

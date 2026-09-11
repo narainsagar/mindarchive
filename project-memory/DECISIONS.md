@@ -513,13 +513,7 @@ separation is deliberate and must be preserved.
 
 **Supersedes the closing clause of [D-036](#d-036--clean-lowercase-routes-for-every-page-set-per-page):**
 *"Links to `project-memory/` now point at GitHub, since that directory is
-deliberately excluded from the site.
-
-> **Amended 2026-09-11 by [D-043](#d-043--the-repositorys-canonical-documents-are-generated-as-site-pages).**
-> That last paragraph no longer holds. Pointing at GitHub meant every such link
-> left the site on `localhost:4000` and went nowhere at all before the
-> repository was public. The documents are now generated as pages and linked
-> with `relative_url` like everything else. The rest of this decision stands."* That is no longer true, and the reason it
+deliberately excluded from the site."* That is no longer true, and the reason it
 changed is worth keeping.
 
 **The problem.** Fifteen links across ten pages pointed at
@@ -565,7 +559,7 @@ convention D-036 set. **A link to a document with no page fails the build.**
    file before Kramdown sees any Markdown, so D-036's own entry — which
    *explains* the `relative_url` convention by quoting it — would have rendered
    the evaluated URL instead of the syntax. Pre-existing Liquid is now wrapped
-   in `{% raw %}`.
+   in `{% raw %}`. **Wrapping everything was wrong, twice** — see below.
 2. **A link label containing backticks is still a link.** The first version
    skipped every code span, which split ``[`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md)``
    apart and left three real links unconverted. Only a whole link wrapped in
@@ -573,6 +567,39 @@ convention D-036 set. **A link to a document with no page fails the build.**
 3. **Three stale `docs/project-memory/` paths** survived the D-039 move, in
    `apps/api/Dockerfile` and `apps/web/src/styles.css`. Same root cause D-039
    recorded: the path was split across lines, so the search for it missed.
+
+**Escaping Liquid has three cases, and only the first is obvious.** Wrapping
+every tag in a raw block broke the site build twice before the rule was right.
+
+*The tags are named without their braces below — `raw`, `endraw` — because a
+document that prints them literally is exactly the document that breaks. That is
+case 3.*
+
+1. An ordinary tag or output — wrap it, so it is shown rather than run.
+2. **A raw block the author already wrote — leave it completely alone.**
+   Wrapping one produced `raw raw … endraw endraw`, and Jekyll refused to build:
+   *Unknown tag 'endraw'*. Liquid does not nest raw blocks: the first `endraw`
+   closes the block, so the last one has nothing to close.
+3. **A lone `raw` or `endraw` tag, written as prose about escaping.** It cannot
+   go inside a raw block — `endraw` is exactly what closes one. The obvious
+   alternative, printing the whole tag from a string literal, **also fails**:
+   Liquid ends an output at the first `}`, so the `%}` inside the quotes closes
+   it early and the parse dies on an unterminated variable. Only the opening
+   brace is printed, and the rest of the tag stays ordinary text.
+
+`project-memory/DECISIONS.md` contains all three, so this is not hypothetical —
+this entry is one of them.
+
+**`check_liquid()` in the generator refuses to write a page Liquid cannot
+parse**, reading it with the same tokenising rule Liquid uses — an output ends
+at the first `}`, and a raw block ends at the first `endraw`.
+
+It exists because nothing else would have caught this. The generator was happy,
+the link checker reads source rather than Liquid, and **`dev.py verify` did not
+build the site**: the Pages workflow was the first thing that ran Liquid at all,
+by which point the failure is a failed deployment. **`verify` now builds the
+site** in a throwaway container, discarding the output — the check is whether
+Jekyll can render every page, not what it rendered.
 
 **`scripts/check_site_links.py` is the other half**, and arguably the more
 important one. D-036 has required since the day it was written that every
@@ -598,6 +625,12 @@ nothing links to them from a page.
 - `docs/reference/` is git-ignored. Never edit a file there; edit the source.
 - Bare `jekyll serve` now shows an incomplete site. Use `python scripts/dev.py
   docs`, which generates first.
+- `dev.py verify` now ends with a Jekyll build, so the gate needs the
+  `jekyll/jekyll:4` image as well as the project's own. It is the same image
+  `dev.py docs` already used, and the build takes about a second.
+- Writing *about* Liquid in a document that is published is awkward, and the
+  workaround is to name a tag without its braces rather than to fight the
+  escaper. This entry does exactly that.
 - The Pages workflow's path filter had to grow. Without it, editing
   `LICENSING.md` would change the published site and trigger no rebuild.
 
@@ -935,6 +968,12 @@ free choice.
 
 Links to `project-memory/` now point at GitHub, since that directory is
 deliberately excluded from the site.
+
+> **Amended 2026-09-11 by [D-043](#d-043--the-repositorys-canonical-documents-are-generated-as-site-pages).**
+> That last paragraph no longer holds. Pointing at GitHub meant every such link
+> left the site on `localhost:4000` and went nowhere at all before the
+> repository was public. The documents are now generated as pages and linked
+> with `relative_url` like everything else. The rest of this decision stands.
 
 **Consequences:**
 

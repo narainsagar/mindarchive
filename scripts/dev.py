@@ -221,6 +221,27 @@ def frontend(*command: str) -> list:
     return RUN + ["web"] + list(command)
 
 
+def site_build() -> list:
+    """Build the documentation site the way GitHub Pages will, and throw it away.
+
+    The output goes to a path inside the container, so nothing is written to the
+    repository and no root-owned directory is left behind. What is being checked
+    is whether Jekyll can parse and render every page at all.
+    """
+    return [
+        "docker",
+        "run",
+        "--rm",
+        "-v",
+        f"{REPO_ROOT / 'docs'}:/srv/jekyll",
+        "jekyll/jekyll:4",
+        "jekyll",
+        "build",
+        "-d",
+        "/tmp/site",
+    ]
+
+
 def cmd_test(args) -> int:
     require_docker()
     target = args.target or "all"
@@ -356,6 +377,10 @@ def cmd_verify(args) -> int:
         # using the `padding` shorthand loses its side gutter silently, and
         # every other check passes while it is broken (D-041).
         ("CSS layout bands", [sys.executable, "scripts/check_css_bands.py"]),
+        # The only step that actually runs Liquid. A generated page that will
+        # not parse passed every check above it and failed in the Pages
+        # workflow, where the first thing it breaks is the deployment (D-043).
+        ("Site build", site_build()),
     ]
 
     for name, command in steps:

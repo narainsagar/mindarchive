@@ -127,6 +127,32 @@ _LINK = re.compile(r"\[([^\]]*)\]\((?!https?://|mailto:|#)([^)\s]+)\)")
 #: syntax it is trying to show. D-036's own entry does exactly this.
 _LIQUID = re.compile(r"\{\{.*?\}\}|\{%.*?%\}", re.DOTALL)
 
+#: A `raw` block the author wrote themselves. Already protected; leave it be.
+_RAW_BLOCK = re.compile(r"\{%-?\s*raw\s*-?%\}.*?\{%-?\s*endraw\s*-?%\}", re.DOTALL)
+
+#: A lone `raw` or `endraw` tag, written as prose *about* the tag.
+#:
+#: These cannot be escaped the usual way: `{% endraw %}` inside a raw block is
+#: what ends the block. Only the opening brace has to be hidden, so Liquid
+#: prints that one character and the rest is ordinary text.
+_RAW_TAG = re.compile(r"\{%-?\s*(raw|endraw)\s*-?%\}")
+
+#: How Liquid itself finds tags and outputs, and the reason case 3 is awkward.
+#:
+#: An output ends at the *first* `}`, not at the first `}}` — Liquid's
+#: `VariableIncompleteEnd` is `}}?`. So `{{ '{% raw %}' }}`, the obvious way to
+#: print a tag from a string literal, ends at the `}` of `%}` inside the quotes
+#: and Liquid reports an unterminated variable. This is the regex `check_liquid`
+#: reads the page with, so the check sees what the renderer will see.
+_TOKEN = re.compile(r"\{%.*?%\}|\{\{.*?\}\}?", re.DOTALL)
+
+#: Either of the above, or any other Liquid — matched in this order so that a
+#: complete raw block wins over the tags inside it.
+_ESCAPABLE = re.compile(
+    "%s|%s|%s" % (_RAW_BLOCK.pattern, _RAW_TAG.pattern, _LIQUID.pattern),
+    re.DOTALL,
+)
+
 #: A fenced block. Everything inside one is an example, never a link.
 _FENCE = re.compile(r"```.*?```", re.DOTALL)
 
@@ -140,13 +166,94 @@ class UnknownTarget(Exception):
     """A published page links to a document that is not published."""
 
 
+class BrokenLiquid(Exception):
+    """The generated page would not parse as Liquid."""
+
+
 def escape_liquid(text: str) -> str:
     """Stop Liquid already in the document from being executed as Liquid.
 
     Must run **before** the links are rewritten — what this protects is the
     author's text, not the tags this script goes on to insert.
+
+    Three cases, and getting the third wrong took the whole site down:
+
+    1. An ordinary tag or output — wrap it in `raw` so it is shown, not run.
+    2. A `raw` block the author already wrote — leave it completely alone.
+       Wrapping it produced `{% raw %}{% raw %}...{% endraw %}{% endraw %}`,
+       and Jekyll refused to build: *Unknown tag 'endraw'*.
+    3. A lone `raw` or `endraw` tag, in prose *about* escaping. It cannot go
+       inside a raw block — `endraw` is precisely what closes one — so Liquid
+       prints the opening brace and the rest stays as text:
+       `{% raw %}` is written `{{ '{' }}% raw %}`. Printing the whole tag from
+       one string literal looks tidier and does not work; see `_TOKEN`.
     """
-    return _LIQUID.sub(lambda m: "{% raw %}" + m.group(0) + "{% endraw %}", text)
+
+    def replace(match):
+        found = match.group(0)
+        if _RAW_BLOCK.fullmatch(found):
+            return found
+        if _RAW_TAG.fullmatch(found):
+            return "{{ '{' }}" + found[1:]
+        return "{% raw %}" + found + "{% endraw %}"
+
+    return _ESCAPABLE.sub(replace, text)
+
+
+def check_liquid(text: str, name: str) -> None:
+    """Refuse to write a page that Liquid will not parse.
+
+    The bugs this exists for reached a running Jekyll before anyone saw them:
+    the generator was happy, the link checker reads source rather than Liquid,
+    and `dev.py verify` does not build the site. Catching them here means the
+    generator cannot emit a page that will not parse.
+
+    It reads the page the way Liquid tokenises it (`_TOKEN`), so both failures
+    that have actually happened are caught: an `endraw` with nothing open, and
+    an output ended early by a `%}` inside it.
+
+    A raw block is open or it is not — Liquid does not nest them. Inside one,
+    everything up to the next `endraw` is literal text, including another `raw`
+    and including an output that never closes. That is why raw blocks wrapped
+    around raw blocks failed on the *trailing* `endraw` rather than the inner
+    tag: the first `endraw` had already closed the block, leaving the last one
+    with nothing to close. Jekyll called it *Unknown tag 'endraw'*.
+    """
+    open_at = None
+    for token in _TOKEN.finditer(text):
+        found = token.group(0)
+        tag = _RAW_TAG.fullmatch(found)
+
+        if open_at is not None:
+            if tag is not None and tag.group(1) == "endraw":
+                open_at = None
+            continue
+
+        if found.startswith("{{"):
+            if not found.endswith("}}"):
+                raise BrokenLiquid(
+                    "%s: an output is never closed, at character %d: %r\n"
+                    "    Liquid ends one at the first `}`, so a `%%}` inside it "
+                    "closes it early." % (name, token.start(), found)
+                )
+            continue
+
+        if tag is None:
+            continue
+
+        if tag.group(1) == "raw":
+            open_at = token.start()
+        else:
+            raise BrokenLiquid(
+                "%s: endraw with nothing open, at character %d. Jekyll reports "
+                "this as Unknown tag 'endraw'." % (name, token.start())
+            )
+
+    if open_at is not None:
+        raise BrokenLiquid(
+            "%s: a raw block opened at character %d is never closed."
+            % (name, open_at)
+        )
 
 
 def rewrite_links(text: str, source: str):
@@ -240,7 +347,9 @@ def build_page(source: str, title: str, permalink: str) -> str:
         permalink,
         BANNER.format(source=source),
     )
-    return front + body
+    page = front + body
+    check_liquid(page, source)
+    return page
 
 
 def main() -> int:
@@ -274,6 +383,9 @@ def main() -> int:
             (OUT / name).write_text(build_page(source, title, permalink), encoding="utf-8")
     except UnknownTarget as error:
         print("Broken link in a generated page:\n    %s" % error, file=sys.stderr)
+        return 1
+    except BrokenLiquid as error:
+        print("Generated page would not build:\n    %s" % error, file=sys.stderr)
         return 1
 
     print("Generated %d pages in docs/reference/" % len(PAGES))
