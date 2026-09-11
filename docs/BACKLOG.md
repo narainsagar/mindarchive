@@ -73,7 +73,7 @@ and `docker compose up`.
 
 None of this is application work — it belongs on the project website, not in
 this repository. Recorded here so the plan is not lost. See
-[LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md) and decision D-016.
+[LICENSING.md]({{ '/licensing/' | relative_url }}) and decision D-016.
 
 **Decided (D-038):** a **merchant of record** — Polar, Paddle or Lemon Squeezy —
 sells both the licence and the donations. They are the legal seller and remit
@@ -110,7 +110,7 @@ Still open:
 
 Done in Milestone 3.5: watched inbox folder, re-import reporting, correct
 guidance, and an optional browser script. See decisions D-023 and D-024, and
-[RESEARCH.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/RESEARCH.md) R-004 for the export's real timings.
+[RESEARCH.md]({{ '/research/' | relative_url }}) R-004 for the export's real timings.
 
 Still open:
 

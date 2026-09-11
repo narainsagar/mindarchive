@@ -2,7 +2,7 @@
 #
 # Python 3.12 rather than whatever happens to be installed on the host — the
 # machine this project started on had Python 3.7 and 3.8, both end-of-life.
-# See docs/project-memory/DECISIONS.md D-006.
+# See project-memory/DECISIONS.md D-006.
 
 FROM python:3.12-slim
 

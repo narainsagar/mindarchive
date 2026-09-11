@@ -96,38 +96,75 @@ as they are on disk. It does not run Jekyll, so no `.md` becomes `.html` and
 every documentation link 404s — which looks exactly like a broken site when the
 site is fine. Use it only to check the landing page's own layout.
 
-To see what GitHub will actually publish, build it with Jekyll. Docker needs
-nothing installed:
+To see what GitHub will actually publish:
 
 ```bash
+python scripts/dev.py docs        # http://localhost:4000
+```
+
+**Use this rather than `jekyll serve` directly.** Eleven pages are generated
+before the build — `/licensing/`, `/agents/`, `/decisions/log/` and the rest —
+and they are git-ignored, so a bare `jekyll serve` shows a site that is missing
+them and full of dead links (D-043). `dev.py docs` generates them, checks every
+internal link, and then serves.
+
+If you would rather drive it yourself, generate first and then build:
+
+```bash
+python scripts/sync_site_pages.py
+
 docker run --rm -v "$PWD/docs:/srv/jekyll" -v /tmp/ma_site:/out \
   jekyll/jekyll:4 jekyll build --destination /out
 
 python -m http.server 8080 --directory /tmp/ma_site
 ```
 
-Or serve it directly, with live reload:
+If you have Ruby and the gems locally, `cd docs && bundle exec jekyll serve`
+does the same thing — again, after generating.
+
+## Pages generated from the repository's own documents
+
+Jekyll is rooted at `docs/` and cannot read above it, and the Pages build runs
+in safe mode so it will not follow a symlink out of the source folder either.
+`LICENSING.md`, `AGENTS.md` and everything under `project-memory/` are therefore
+**generated** into `docs/reference/` by `scripts/sync_site_pages.py`.
 
 ```bash
-docker run --rm -p 4000:4000 -v "$PWD/docs:/srv/jekyll" \
-  jekyll/jekyll:4 jekyll serve --host 0.0.0.0
+python scripts/sync_site_pages.py --list    # what is published, and where
 ```
 
-If you have Ruby and the gems locally, `cd docs && bundle exec jekyll serve`
-does the same thing.
+- **`docs/reference/` is git-ignored. Never edit a file in it** — edit the
+  canonical document at the repository root. The page is regenerated from it,
+  so the two cannot drift.
+- **Adding a page** means adding a row to `PAGES` in that script. Linking to a
+  document that has no page is a build failure, not a silent 404.
+- **Links inside the generated content are rewritten** to
+  `{% raw %}{{ '/permalink/' | relative_url }}{% endraw %}`, because Kramdown
+  leaves `.md` links alone and they 404.
 
 **What to check in the built output**, not the source folder:
 
 - `product/index.html`, `architecture/index.html` and the rest exist. If one is
   missing, its `.md` is missing front matter or a `permalink`.
 - **Every internal link resolves.** A permalink change can silently 404 a whole
-  section, so check the links rather than a handful of files — walk the built
-  output and confirm every `href` that is not an external URL points at a file
-  that exists.
+  section, so check the links rather than a handful of files.
+
+  ```bash
+  python scripts/check_site_links.py
+  ```
+
+  This ran by hand exactly once between D-036 and D-043 — which is to say it did
+  not run. It is now part of `dev.py verify`. It reads the source rather than a
+  built site, so it needs no Ruby and takes under a second; building and walking
+  the output is still the final word before a release.
 - `blog/index.html` exists and every post has its own `blog/<slug>/index.html`.
 - `_drafts/TEMPLATE.md` did **not** get published.
 - `feed.xml` is present and parses.
-- `project-memory/` is absent.
+- No `project-memory/` directory in the output. Four of its documents are
+  published, but as generated pages at `/decisions/log/`, `/milestones/`,
+  `/research/` and `/session-protocol/` (D-043) — the directory itself is still
+  outside anything Jekyll can reach. `PROJECT_STATE.md`, `SESSION_LOG.md` and
+  the session records are not published at all.
 - **No band rule uses the `padding` shorthand.** The band gives every page its
   side gutter with `padding-inline: var(--gutter)`. Any rule on the *same
   element* that uses the `padding` shorthand silently resets that to zero and

@@ -101,7 +101,7 @@ Company use needs a commercial licence.
 
 Unsure whether you need one? Ask. Answering a question is easier for everyone
 than quietly getting it wrong. The full terms are in
-[LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md).
+[LICENSING.md]({{ '/licensing/' | relative_url }}).
 
 ## What this page does not do
 
@@ -113,7 +113,7 @@ choose to go and pay.
 The same rule applies more strictly inside the application: Mind Archive itself
 will never contain payment code, phone home, or ask you for money while you are
 using it. That is a promise in
-[LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md),
+[LICENSING.md]({{ '/licensing/' | relative_url }}),
 and it is why this page exists instead.
 
 <script>

@@ -3,7 +3,7 @@
 
   Three palettes, each in light and dark, and all six must look good. Light
   minimal is the default palette and the theme follows the computer until the
-  reader says otherwise. See docs/project-memory/DECISIONS.md D-008 and D-029.
+  reader says otherwise. See project-memory/DECISIONS.md D-008 and D-029.
 
   Plain CSS with custom properties, deliberately. A component framework would
   add a large dependency and push the interface toward a generic look, and the
@@ -21,7 +21,7 @@
    "System" is a choice the person makes, not a state the stylesheet knows
    about. theme.ts resolves it to light or dark and stamps the answer, so
    every colour here is selected by exactly one rule and no value is written
-   twice. See docs/project-memory/DECISIONS.md D-029.
+   twice. See project-memory/DECISIONS.md D-029.
 
    The bare :root block below is the pre-JavaScript default and matches
    minimal / light. The inline script in index.html stamps both attributes

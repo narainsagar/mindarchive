@@ -287,6 +287,44 @@ def cmd_build(args) -> int:
     return report([] if run(frontend("npm", "run", "build")) == 0 else ["frontend build"])
 
 
+def cmd_docs(args) -> int:
+    """Preview the documentation site the way GitHub Pages will build it.
+
+    Generating the pages first is the point of having this command at all:
+    `jekyll serve` on its own shows a site with no /licensing/, /agents/ or
+    /decisions/log/, because those are generated and git-ignored (D-043).
+    """
+    require_docker()
+
+    say("\n-- Generating pages from the canonical documents --", DIM)
+    if run([sys.executable, "scripts/sync_site_pages.py"]) != 0:
+        return 1
+
+    say("\n-- Checking every internal link --", DIM)
+    if run([sys.executable, "scripts/check_site_links.py"]) != 0:
+        say("Serving anyway - but those links are broken.", RED)
+
+    say("\nThe site will be at http://localhost:4000", GREEN)
+    say("Stop it with Ctrl-C.\n", DIM)
+
+    return run(
+        [
+            "docker",
+            "run",
+            "--rm",
+            "-p",
+            "4000:4000",
+            "-v",
+            f"{REPO_ROOT / 'docs'}:/srv/jekyll",
+            "jekyll/jekyll:4",
+            "jekyll",
+            "serve",
+            "--host",
+            "0.0.0.0",
+        ]
+    )
+
+
 def cmd_verify(args) -> int:
     """Everything. The milestone gate.
 
@@ -306,6 +344,14 @@ def cmd_verify(args) -> int:
         ("Frontend tests", frontend("npm", "test")),
         ("Frontend build", frontend("npm", "run", "build")),
         ("Project memory", [sys.executable, "scripts/session.py", "check"]),
+        # Generates the site pages for LICENSING.md, AGENTS.md, project-memory/
+        # and the rest. It fails if one of them links to a document that has no
+        # page, so it is a check as well as a build step (D-043).
+        ("Documentation pages", [sys.executable, "scripts/sync_site_pages.py"]),
+        # Walks every internal link on the site. D-036 has required this since
+        # a global permalink 404ed the entire navigation, but nothing did it —
+        # the check written that day looked only at the blog, and passed.
+        ("Site links", [sys.executable, "scripts/check_site_links.py"]),
         # Reads the stylesheets, which nothing else here does. A band element
         # using the `padding` shorthand loses its side gutter silently, and
         # every other check passes while it is broken (D-041).
@@ -395,6 +441,10 @@ def main() -> int:
     sub.add_parser(
         "build", help="CHECK the frontend production build compiles"
     ).set_defaults(func=cmd_build)
+
+    sub.add_parser(
+        "docs", help="preview the documentation site on :4000"
+    ).set_defaults(func=cmd_docs)
 
     verify = sub.add_parser("verify", help="every check - the milestone gate")
     verify.add_argument(

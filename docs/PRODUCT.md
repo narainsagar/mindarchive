@@ -73,7 +73,7 @@ modern document archive.
 are trusting it with private conversations, so you should be able to check what
 it does with them. Free for any noncommercial use; commercial use needs a
 licence. No private credentials are needed to build or run it. See
-[../LICENSING.md](https://github.com/RootedGlobal/mindarchive/blob/main/LICENSING.md).
+[LICENSING.md]({{ '/licensing/' | relative_url }}).
 
 ## What Mind Archive is not
 
@@ -111,4 +111,4 @@ milestones add browsing and search, organisation, more importers, and finally
 optional cloud synchronisation.
 
 The full plan is in [ROADMAP.md]({{ '/roadmap/' | relative_url }}) and
-[project-memory/MILESTONES.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/MILESTONES.md).
+[MILESTONES.md]({{ '/milestones/' | relative_url }}).

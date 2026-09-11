@@ -5,6 +5,44 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-11 — The links that left the site
+
+**Session:** [2026-09-11-02-publish-the-canonical-documents-as-site-pages-and](sessions/2026-09-11-02-publish-the-canonical-documents-as-site-pages-and/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**Four reported broken links were fifteen**, across ten pages — and none of
+their targets was a page on this site. `LICENSING.md`, `AGENTS.md`,
+`CONTRIBUTING.md`, `.env.example` and four files under `project-memory/` all
+live outside `docs/`, which Jekyll cannot read above. Rewriting the URLs was
+never going to be enough; the destinations had to be made to exist.
+
+**Eleven pages are now generated** from the canonical files by
+`scripts/sync_site_pages.py`, git-ignored rather than committed so no copy can
+drift from its source (**D-043**). Three of them — `LICENSE`,
+`CODE_OF_CONDUCT.md`, `AI_AGENT_PROTOCOL.md` — nobody asked for; the requested
+documents link to them 22 times, and a published page whose own links dead-end
+just moves the problem one click deeper.
+
+**D-043 amends D-036 rather than contradicting it.** D-036's closing clause —
+*"Links to `project-memory/` now point at GitHub, since that directory is
+deliberately excluded from the site"* — is exactly why the links were written
+that way. It is annotated in place.
+
+**The link checker D-036 required now exists.** It had been documented as the
+standard since the day a global permalink 404ed the whole navigation, and in all
+that time it ran by hand once. `scripts/check_site_links.py` is in
+`dev.py verify`. It immediately caught three links my own generator had failed
+to convert.
+
+**Found along the way:** Liquid inside backticks is still executed (the decision
+explaining the convention would have rendered its own example); three stale
+`docs/project-memory/` paths surviving the D-039 move; a Pages workflow whose
+path filter would not have rebuilt when `LICENSING.md` changed; and the contact
+address written out by hand in the footer beside the data file that defines it.
+
+**Verified by building:** 987 internal links across 33 pages all resolve.
+
 ## 2026-09-11 — The export the importer could not see
 
 **Session:** [2026-09-11-01-real-exports-chatgpt-sharding-and-claude-download](sessions/2026-09-11-01-real-exports-chatgpt-sharding-and-claude-download/SESSION.md)

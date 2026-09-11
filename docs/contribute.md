@@ -84,9 +84,9 @@ explaining to someone outside the project.
 ## The full guide
 
 Everything above is the summary for a site visitor. The canonical document is
-[CONTRIBUTING.md](https://github.com/RootedGlobal/mindarchive/blob/main/CONTRIBUTING.md)
-in the repository, alongside
-[AGENTS.md](https://github.com/RootedGlobal/mindarchive/blob/main/AGENTS.md) —
+[CONTRIBUTING.md]({{ '/contributing/' | relative_url }}),
+alongside
+[AGENTS.md]({{ '/agents/' | relative_url }}) —
 which applies whether you are a human or an AI coding agent.
 
 Security issues should not go in a public issue. See

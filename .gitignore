@@ -102,6 +102,12 @@ desktop.ini
 # ---------------------------------------------------------------
 /tmp/
 
+# Site pages generated from the repository's canonical documents by
+# scripts/sync_site_pages.py — LICENSING.md, AGENTS.md, project-memory/ and the
+# rest. Generated rather than committed so the published copy cannot drift from
+# the file it came from (D-043). Regenerated before every build.
+docs/reference/
+
 # Jekyll build output from previewing the documentation site locally.
 # GitHub Pages builds its own copy; this one is scratch.
 docs/_site/

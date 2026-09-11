@@ -508,6 +508,101 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-043 — The repository's canonical documents are generated as site pages
+**Date:** 2026-09-11 · **Status:** Accepted
+
+**Supersedes the closing clause of [D-036](#d-036--clean-lowercase-routes-for-every-page-set-per-page):**
+*"Links to `project-memory/` now point at GitHub, since that directory is
+deliberately excluded from the site.
+
+> **Amended 2026-09-11 by [D-043](#d-043--the-repositorys-canonical-documents-are-generated-as-site-pages).**
+> That last paragraph no longer holds. Pointing at GitHub meant every such link
+> left the site on `localhost:4000` and went nowhere at all before the
+> repository was public. The documents are now generated as pages and linked
+> with `relative_url` like everything else. The rest of this decision stands."* That is no longer true, and the reason it
+changed is worth keeping.
+
+**The problem.** Fifteen links across ten pages pointed at
+`github.com/RootedGlobal/mindarchive/blob/main/...` — `LICENSING.md`,
+`CONTRIBUTING.md`, `AGENTS.md`, `.env.example` and four files under
+`project-memory/`. On `localhost:4000` they leave the site entirely, and until
+the repository is published they go nowhere at all. A reader who clicks
+"the full terms are in LICENSING.md" on the donation page gets a 404 from
+GitHub.
+
+Those links were not careless. Jekyll is rooted at `docs/` and **cannot read
+above it**, which D-039 made explicit on purpose — *"the site cannot publish
+what it cannot reach."* There was no local page to point at. A symlink does not
+help either: the Pages build runs Jekyll in safe mode and will not follow one
+out of the source folder.
+
+**The decision.** `scripts/sync_site_pages.py` generates a page for each
+canonical document — eleven of them, at `/licensing/`, `/license/`,
+`/contributing/`, `/code-of-conduct/`, `/agents/`, `/env-example/`,
+`/decisions/log/`, `/milestones/`, `/research/`, `/session-protocol/` and
+`/agent-protocol/`.
+
+`LICENSE`, `CODE_OF_CONDUCT.md` and `AI_AGENT_PROTOCOL.md` were not on the
+original list. They are here because the documents that *were* link to them 22
+times between them, and publishing a page whose own links dead-end just moves
+the problem one click deeper.
+
+**The output is git-ignored, not committed.** Generated into `docs/reference/`
+before every build — by `dev.py verify`, by `dev.py docs`, and by the Pages
+workflow. Committing copies would mean a second version of every decision in the
+repository and a check to notice when the two disagree; generating them means
+the two *cannot* disagree. D-010 forbade a second decision log for exactly this
+reason, and a committed copy would have been one.
+
+**Links inside the generated content are rewritten**, because Kramdown does not
+touch `.md` links and they would 404: `[RESEARCH.md](RESEARCH.md)` becomes
+`[RESEARCH.md]({% raw %}{{ '/research/' | relative_url }}{% endraw %})`, per the
+convention D-036 set. **A link to a document with no page fails the build.**
+
+**Three things this surfaced that were already broken:**
+
+1. **Liquid inside backticks is still executed.** Liquid runs over the whole
+   file before Kramdown sees any Markdown, so D-036's own entry — which
+   *explains* the `relative_url` convention by quoting it — would have rendered
+   the evaluated URL instead of the syntax. Pre-existing Liquid is now wrapped
+   in `{% raw %}`.
+2. **A link label containing backticks is still a link.** The first version
+   skipped every code span, which split ``[`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md)``
+   apart and left three real links unconverted. Only a whole link wrapped in
+   backticks is an example rather than a link.
+3. **Three stale `docs/project-memory/` paths** survived the D-039 move, in
+   `apps/api/Dockerfile` and `apps/web/src/styles.css`. Same root cause D-039
+   recorded: the path was split across lines, so the search for it missed.
+
+**`scripts/check_site_links.py` is the other half**, and arguably the more
+important one. D-036 has required since the day it was written that every
+internal link be walked and resolved — **and nothing did it.** It was done by
+hand, once. Its own post-mortem is the argument: *"a check that only looks where
+you just worked cannot find what you broke elsewhere."* The checker reads the
+source rather than a built site, so it needs no Ruby, Docker or Jekyll and runs
+in under a second inside `verify`. It also refuses a GitHub link to a document
+that now has a page — this exact regression.
+
+**A 404 page exists** at `docs/404.html`, in the site's layout. It is a safety
+net, not a fix: a link that lands on a styled 404 is still a broken link, and
+the checker is what stops one shipping.
+
+**What is still not published:** `PROJECT_STATE.md`, `SESSION_LOG.md`,
+`MEMORY_INDEX.md` and the per-session records. Those are working scratch, and
+nothing links to them from a page.
+
+**Consequences:**
+
+- A new canonical document that a page links to must be added to `PAGES` in
+  `sync_site_pages.py`, or the build fails. That is the intended failure.
+- `docs/reference/` is git-ignored. Never edit a file there; edit the source.
+- Bare `jekyll serve` now shows an incomplete site. Use `python scripts/dev.py
+  docs`, which generates first.
+- The Pages workflow's path filter had to grow. Without it, editing
+  `LICENSING.md` would change the published site and trigger no rebuild.
+
+---
+
 ## D-042 — Exports are sharded; resolve them from the export's own manifest
 **Date:** 2026-09-11 · **Status:** Accepted
 

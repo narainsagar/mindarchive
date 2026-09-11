@@ -81,7 +81,7 @@ You do not have to take any of it on trust.
 
 1. **Watch the network.** Run the app, import something, search it. Open your
    browser's network tab, or point `tcpdump` at it. Nothing leaves.
-2. **Read the config.** [`.env.example`](https://github.com/RootedGlobal/mindarchive/blob/main/.env.example)
+2. **Read the config.** [`.env.example`]({{ '/env-example/' | relative_url }})
    documents every setting and its default, in one file.
 3. **Read the security notes.** [The threat model]({{ '/security/' | relative_url }})
    states the threat model plainly, including what Mind Archive does *not*

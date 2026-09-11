@@ -207,7 +207,7 @@ mindarchive/
 
 ## Working on the project
 
-Read [AGENTS.md](https://github.com/RootedGlobal/mindarchive/blob/main/AGENTS.md) before your first change. It applies to humans
+Read [AGENTS.md]({{ '/agents/' | relative_url }}) before your first change. It applies to humans
 and AI agents alike, and describes the read order, working method and the
 definition of done.
 
@@ -239,7 +239,7 @@ python scripts/session.py check      # validates project memory
 ```
 
 The mechanism is described in
-[project-memory/SESSION_PROTOCOL.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/SESSION_PROTOCOL.md).
+[SESSION_PROTOCOL.md]({{ '/session-protocol/' | relative_url }}).
 `scripts/session.py check` also runs in CI.
 
 ## Tests and when to run them

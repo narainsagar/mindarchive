@@ -149,7 +149,10 @@
           <a href="{{ '/contribute/' | relative_url }}">Contribute</a>
           <a href="{{ '/support/' | relative_url }}">Support</a>
           <a href="https://github.com/RootedGlobal/mindarchive">Source</a>
-          <a href="mailto:kishor3947@gmail.com?subject=Mind%20Archive">Contact</a>
+          <!-- One address, defined once in _data/support.yml. It was written
+               out by hand here as well, so changing it meant changing it in
+               two places and discovering the second one later. -->
+          <a href="mailto:{{ site.data.support.contact_email }}?subject=Mind%20Archive">Contact</a>
         </div>
       </div>
     </footer>

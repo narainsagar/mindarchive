@@ -13,6 +13,17 @@ on:
     paths:
       - "docs/**"
       - ".github/workflows/docs-pages.yml"
+      # Pages are generated from these (D-043). Without them listed, editing
+      # LICENSING.md or a decision would change the published site and trigger
+      # no rebuild - the site would quietly serve the previous version.
+      - "scripts/sync_site_pages.py"
+      - "LICENSING.md"
+      - "LICENSE"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+      - "AGENTS.md"
+      - ".env.example"
+      - "project-memory/**"
   workflow_dispatch:
 
 permissions:
@@ -32,6 +43,19 @@ jobs:
       - uses: actions/checkout@v4
 
       - uses: actions/configure-pages@v5
+
+      # Jekyll is rooted at docs/ and cannot read above it, and the Pages build
+      # runs in safe mode so a symlink out of the source folder is not followed
+      # either. The pages for LICENSING.md, AGENTS.md and project-memory/ are
+      # therefore written here, immediately before the build (D-043).
+      #
+      # This also fails the build if a published page links to a document that
+      # has no page, rather than publishing a dead link.
+      - name: Generate pages from the canonical documents
+        run: python3 scripts/sync_site_pages.py
+
+      - name: Check every internal link
+        run: python3 scripts/check_site_links.py
 
       - name: Build with Jekyll
         uses: actions/jekyll-build-pages@v1

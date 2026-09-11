@@ -84,6 +84,36 @@ Still outstanding:
 
 Steps are in [`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md).
 
+## The documentation site
+
+34 routes, all of them working on `localhost:4000` before anything is pushed —
+987 internal links across 33 built pages resolve (D-043).
+
+**Eleven of those pages are generated, not written.** `LICENSING.md`, `LICENSE`,
+`CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `AGENTS.md`, `.env.example` and four
+documents from `project-memory/` become pages via
+`scripts/sync_site_pages.py`. The output lands in `docs/reference/` and is
+**git-ignored** — never edit it, edit the canonical file.
+
+```bash
+python scripts/dev.py docs              # generate, check links, serve on :4000
+python scripts/sync_site_pages.py --list
+```
+
+Bare `jekyll serve` now shows an incomplete site, because the generated pages are
+not in the repository. `dev.py verify` runs the generator and
+`scripts/check_site_links.py`, which walks every internal link — a standard
+D-036 required and nothing had automated.
+
+Still not published: `PROJECT_STATE.md`, `SESSION_LOG.md`, `MEMORY_INDEX.md` and
+the session records.
+
+**The contact address is still `kishor3947@gmail.com`.** A project address was
+chosen to replace it but not named, and `mindarchive.app` has no DNS, so an
+address there would bounce. It is defined in `docs/_data/support.yml`
+(`contact_email`), `apps/web/src/support.ts` (`contactEmail`), `project.json`,
+and asserted in `apps/web/src/App.test.tsx`.
+
 ## What runs
 
 ```bash

@@ -5,8 +5,10 @@ permalink: /decisions/
 
 # Decisions
 
-**The decision log lives in
-[project-memory/DECISIONS.md](https://github.com/RootedGlobal/mindarchive/blob/main/project-memory/DECISIONS.md).**
+**The full decision log is at
+[/decisions/log/]({{ '/decisions/log/' | relative_url }}).** Its canonical home
+in the repository is `project-memory/DECISIONS.md`; that page is generated from
+it, so the two cannot drift.
 
 This file is a pointer, deliberately. Keeping two decision logs guarantees they
 will disagree, and a decision log that cannot be trusted is worse than none.
@@ -53,10 +55,11 @@ Record new architectural and product decisions there, numbered and dated.
 | D-033 | The website shares the application's palettes, through one Jekyll layout |
 | D-034 | ~~The appearance controls carry no visible group labels~~ — superseded by D-037 |
 | D-035 | The blog is part of the Jekyll site, and nothing publishes itself |
-| D-036 | Clean lowercase routes for every page, set per page |
+| D-036 | Clean lowercase routes for every page, set per page — *project-memory links amended by D-043* |
 | D-037 | One header row; appearance is two menus; navigation folds |
 | D-038 | Money is taken by a merchant of record, through plain links |
 | D-039 | Project memory lives at the repository root, not under `docs/` |
 | D-040 | Full-width bands, a centred footer, and a site URL that works locally |
 | D-041 | Band elements use `padding-block`, never the `padding` shorthand |
 | D-042 | Exports are sharded; resolve them from the export's own manifest |
+| D-043 | The repository's canonical documents are generated as site pages |
