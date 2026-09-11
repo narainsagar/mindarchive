@@ -51,11 +51,11 @@ donations:
     url: ""
   - label: Buy lunch
     emoji: "🍕"
-    amount: 20
+    amount: 15
     url: ""
   - label: Buy dinner
     emoji: "🍽️"
-    amount: 25
+    amount: 20
     url: ""
 
 # "Any amount you choose" — the provider's own amount field does the work.

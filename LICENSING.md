@@ -62,8 +62,8 @@ there will be a simple way to say so:
 |---|---|
 | ☕ **Buy a coffee** | $5 |
 | 🍺 **Buy a beer** | $10 |
-| 🍕 **Buy lunch** | $20 |
-| 🍽️ **Buy dinner** | $25 |
+| 🍕 **Buy lunch** | $15 |
+| 🍽️ **Buy dinner** | $20 |
 | 💛 **Something else** | Any amount you choose |
 
 Why it matters: AI tools change constantly, and provider export formats change
