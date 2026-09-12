@@ -305,14 +305,23 @@ All verification above was run inside Docker for this reason.
 - **Attachments are not imported** — images and files appear as placeholders in
   the Markdown.
 
-## Licence
+## Licence and repository visibility
 
-**Source-available, not open source.** Free for noncommercial use under PolyForm
-Noncommercial 1.0.0; commercial use requires a separate licence. See
-`LICENSING.md` and decisions D-016 and D-012.
+**Proprietary — all rights reserved** (D-046, 2026-09-12). Not open source, not
+source-available, no licence granted to anyone, and nothing for sale. `LICENSE`
+is a copyright notice; `LICENSING.md` is the plain-language version. The
+withdrawn PolyForm licence is recorded in D-016, which is kept for its reasoning.
 
-A Contributor Licence Agreement must exist before outside contributions can be
-accepted. It does not exist yet.
+**This repository is private and stays private.** A separate public repository
+will be created later, with clean history, populated from an explicit allowlist —
+never by copying this one and deleting things. `project-memory/`, `prompts/`,
+`.claude/`, the session records and this file are never published.
+
+**AI-assisted development is disclosed at a high level**, in `README.md`, and the
+machinery behind it is not: no prompts, no agent rules, no project memory, no
+session records, no internal research.
+
+Outside contributions cannot be accepted while no licensing arrangement exists.
 
 ## Next step
 

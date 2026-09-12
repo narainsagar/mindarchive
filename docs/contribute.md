@@ -1,7 +1,7 @@
 ---
 title: Contribute
 permalink: /contribute/
-description: What is genuinely useful right now, and what has to wait for a Contributor Licence Agreement.
+description: What is genuinely useful right now, and why outside code cannot be accepted yet.
 ---
 
 # Contribute
@@ -10,17 +10,15 @@ The most valuable contributions to Mind Archive are not code.
 
 ## Outside code is not being accepted yet
 
-Mind Archive is **source-available, not open source** — free for noncommercial
-use under PolyForm Noncommercial 1.0.0, with commercial licences sold
-separately.
+Mind Archive is **proprietary software, all rights reserved** — not open source,
+not source-available, and no licence is granted to use or modify it.
 
-That means contributed code has to be includable in commercially licensed
-releases, which requires a **Contributor Licence Agreement**. The CLA does not
-exist yet, so pull requests from outside the project cannot be merged. Opening
-one before then risks wasting your time, which we would rather avoid.
+Accepting outside code would need a licensing arrangement that does not exist
+yet, so pull requests from outside the project cannot be merged. Opening one
+risks wasting your time, which we would rather avoid.
 
-This is a temporary state, and it is stated plainly rather than left for you to
-discover after doing the work.
+This is stated plainly rather than left for you to discover after doing the
+work.
 
 ## What is genuinely useful right now
 

@@ -31,12 +31,16 @@
 
 contact_email: info@narainsagar.com
 
-# The commercial licence. Price is published in LICENSING.md — keep them equal.
+# The commercial licence — NOT IN USE.
+#
+# Mind Archive is proprietary, all rights reserved (D-046). No licence is on
+# sale, so nothing reads these values any more: the support page states the
+# position and gives the contact address instead. The keys are kept, empty, so
+# that a future licensing model has somewhere obvious to go — and so that no
+# page can accidentally advertise a price nobody has approved.
 licence:
-  price: 49
-  currency: USD
-  # Hosted checkout for a single seat. Volume pricing is configured at the
-  # provider, not here.
+  price: ""
+  currency: ""
   url: ""
 
 # Suggested donation amounts, in order. Blank url = not shown.

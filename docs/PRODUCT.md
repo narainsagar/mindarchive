@@ -69,10 +69,10 @@ written for people. "Import archive", not "Initialize ingestion pipeline".
 no permanent sidebars, no unnecessary animation. It should feel like a calm,
 modern document archive.
 
-**Source available.** The whole application is readable and inspectable — you
-are trusting it with private conversations, so you should be able to check what
-it does with them. Free for any noncommercial use; commercial use needs a
-licence. No private credentials are needed to build or run it. See
+**Proprietary, and honest about it.** Mind Archive is **All Rights Reserved**:
+not open source, not source-available, no licence granted. What that does not
+change is the promise underneath — your archive is ordinary readable files on
+your own disk, exportable at any time, whatever happens to the software. See
 [LICENSING.md]({{ '/licensing/' | relative_url }}).
 
 ## What Mind Archive is not

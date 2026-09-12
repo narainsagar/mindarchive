@@ -11,14 +11,19 @@ here; they do not repeat it.
 **Mind Archive — Your Personal AI Mind Archive.**
 *Own your AI memory. Simple, private, and yours.*
 
-A local-first, source-available application for preserving, organising,
-searching, importing and exporting your AI conversations, memories, knowledge
-and files. It must remain useful after you change AI provider.
+A local-first application for preserving, organising, searching, importing and
+exporting your AI conversations, memories, knowledge and files. It must remain
+useful after you change AI provider.
 
-Licensed under [PolyForm Noncommercial 1.0.0](LICENSE) — free for noncommercial
-use, commercial use requires a separate licence. See [LICENSING.md](LICENSING.md).
-Source-available, not open source: keep the code readable and inspectable, and
-do not describe the project as open source.
+**Proprietary — all rights reserved** ([LICENSE](LICENSE), [LICENSING.md](LICENSING.md)).
+Never describe the project as open source *or* source-available; both were used
+before 2026-09-12 and both are now wrong (D-046).
+
+**This repository is private and stays private.** A separate public repository
+will be created later, with clean history, from an explicit allowlist. Nothing
+in `project-memory/`, `prompts/` or `.claude/` is ever published. Write every
+file as though the private ones will stay private and the public ones will be
+read by strangers — because that is the arrangement (D-046).
 
 ## The rule behind every other rule
 
@@ -53,8 +58,7 @@ The full working method is in
 ## Principles
 
 Local first · Privacy first · User owns their data · AI-provider agnostic ·
-Source available · Human readable · Simple UX · Event driven · Portable ·
-Extensible · Contributor friendly
+Human readable · Simple UX · Event driven · Portable · Extensible
 
 ## Architecture
 

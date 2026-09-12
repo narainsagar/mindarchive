@@ -8,22 +8,20 @@ without any private credentials. If you cannot, that is a bug — please tell us
 
 ## Before anything else: outside code is not being accepted yet
 
-Mind Archive is **source-available, not open source** — free for noncommercial
-use under [PolyForm Noncommercial 1.0.0](LICENSE), with commercial licences sold
-separately. See [LICENSING.md](LICENSING.md).
+Mind Archive is **proprietary software, all rights reserved** — not open source,
+not source-available, and no licence to use or modify it is granted. See
+[LICENSE](LICENSE) and [LICENSING.md](LICENSING.md).
 
-That means contributed code has to be includable in commercially licensed
-releases, which requires a **Contributor Licence Agreement**. The CLA does not
-exist yet, so pull requests from outside the project cannot be merged at this
-stage. Opening one before then risks wasting your time, which we would rather
-avoid.
+Accepting outside code would need a licensing arrangement that does not exist,
+so pull requests from outside the project cannot be merged at this stage.
+Opening one risks wasting your time, which we would rather avoid.
 
 **What is very welcome right now:** bug reports, feature ideas, documentation
 corrections, questions that reveal unclear docs, and testing on platforms we
 cannot reach. Open an issue.
 
-The rest of this document describes how contribution will work once the CLA is
-in place, and applies today to anyone working on the project directly.
+The rest of this document applies to anyone working on the project directly, and
+describes how contribution would work if that ever opens up.
 
 ## Before you start
 
@@ -184,12 +182,11 @@ maintained.
 
 ## Licensing of contributions
 
-Once the CLA exists, contributors will be asked to sign it before their first
-merge. It grants the rights needed to include contributed work in commercially
-licensed releases, while leaving contributors their own copyright.
+Mind Archive is proprietary and all rights are reserved, so there is currently no
+arrangement under which outside contributions can be accepted (D-046).
 
-This is the standard arrangement for a project that sells commercial licences.
-Without it, contributed code could not legally be included in what is sold.
+If that changes, the terms will be published here before anyone is asked to
+write anything — not after.
 
 ## Security
 

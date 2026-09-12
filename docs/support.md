@@ -1,14 +1,13 @@
 ---
 title: Support
 permalink: /support/
-description: Donate to keep the importers working, or buy a commercial licence for use at work.
+description: Donate to keep the importers working, and where a licensing question goes.
 ---
 
 # Support Mind Archive
 
-Mind Archive is free for personal use, and for schools, charities, public
-research bodies and government. It stays that way — no feature limits, no
-accounts, no nags, permanently.
+Mind Archive asks for nothing while you use it — no feature limits, no accounts,
+no nags, permanently. Donations are optional and unlock nothing.
 
 {%- comment -%}
   Blank entries in _data/support.yml render nothing, so the page never shows a
@@ -75,33 +74,17 @@ checkout below.
 
 ## Using it at work
 
-Company use needs a commercial licence.
+**Mind Archive is proprietary software, all rights reserved.** No licence to use
+it — at work or anywhere else — is currently granted, and nothing is for sale.
 
-| | |
-|---|---|
-| **Price** | ${{ site.data.support.licence.price }} per seat |
-| **Term** | Perpetual — it does not expire |
-| **Updates** | One year included |
-| **Support** | Email, best effort |
+There is no price list, no checkout and no commercial tier, and inventing one
+here would be worse than saying so plainly. If you want to use Mind Archive in a
+company, write and ask:
 
-{% if site.data.support.licence.url != "" %}
-<p class="cta-row">
-  <a class="button button--primary" href="{{ site.data.support.licence.url }}">
-    Buy a commercial licence — ${{ site.data.support.licence.price }}
-  </a>
-</p>
-{% else %}
-> **Checkout is not live yet.** Email
-> [{{ site.data.support.contact_email }}](mailto:{{ site.data.support.contact_email }}?subject=Commercial%20licence)
-> and a licence comes back. It is a short email, not a sales process.
-{% endif %}
+> [{{ site.data.support.contact_email }}](mailto:{{ site.data.support.contact_email }}?subject=Licensing%20enquiry)
 
-**Ten seats or more, or terms your legal team needs to read?**
-[{{ site.data.support.contact_email }}](mailto:{{ site.data.support.contact_email }}?subject=Volume%20licence)
-
-Unsure whether you need one? Ask. Answering a question is easier for everyone
-than quietly getting it wrong. The full terms are in
-[LICENSING.md]({{ '/licensing/' | relative_url }}).
+The position in full is on the
+[licensing page]({{ '/licensing/' | relative_url }}).
 
 ## What this page does not do
 

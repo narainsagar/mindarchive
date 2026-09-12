@@ -73,20 +73,16 @@ Then open <http://localhost:5173>. Getting your export out of ChatGPT is the
 slow part — it can take a few days, and the download link expires 24 hours after
 the email arrives, so ask once and wait.
 
-## Free, and staying free
+## Licensing
 
-Mind Archive is free for personal use, and for schools, charities, public
-research bodies and government — under the
-[PolyForm Noncommercial 1.0.0](https://polyformproject.org/licenses/noncommercial/1.0.0/)
-licence. No feature limits, no accounts, no nagging.
+Mind Archive is **proprietary software, all rights reserved**. It is not open
+source and it is not source-available, and we are not going to describe it as
+either, because those words mean something specific.
 
-Company use needs a commercial licence, which is a short email rather than a
-sales process.
+Nothing is for sale yet and there is no price list. If that changes it will be
+announced here, not implied.
 
-The code is **source-available**: readable and inspectable, but not open source,
-and we are not going to describe it as open source because that word means
-something specific.
-
-A privacy product you cannot read the source of is a promise. One you can read
-is a fact. Start with
+What none of it touches is your archive: Markdown and JSON on your own disk,
+exportable at any time, readable without this application. That is the part of
+the promise that does not depend on a licence. Start with
 [what "local-first" actually means]({{ '/blog/what-local-first-actually-means/' | relative_url }}).

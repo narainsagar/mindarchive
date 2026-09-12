@@ -56,8 +56,8 @@ product that oversells is a privacy-first product nobody trusts.
 - British spelling, matching the rest of the documentation.
 - Write for humans: "Import your archive", not "Initialise the ingestion
   pipeline".
-- The project is **source-available**, never "open source". The licence is
-  PolyForm Noncommercial 1.0.0 and the distinction is deliberate.
+- The project is **proprietary, all rights reserved** — never "open source" and
+  never "source-available". Both were used before 2026-09-12; see D-046.
 - Link related posts and docs with `relative_url`, so they work at
   `/mindarchive/` as well as at a custom domain:
   `[the decision log]({{ '/decisions/' | relative_url }})`

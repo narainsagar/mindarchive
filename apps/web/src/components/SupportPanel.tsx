@@ -6,11 +6,11 @@ interface Props {
 }
 
 /**
- * Donations, and how to get a commercial licence.
+ * Donations, and where a licensing question goes.
  *
- * Mind Archive is free for noncommercial use and always will be (D-016), so
- * this asks rather than nags: no modal, no banner, no counting down to
- * anything. Links that have not been configured in `support.ts` are simply
+ * Mind Archive is proprietary, all rights reserved, and nothing is on sale
+ * (D-046) — so this panel sells nothing: no modal, no banner, no counting down
+ * to anything. Links that have not been configured in `support.ts` are simply
  * absent — better nothing than a dead link.
  */
 export function SupportPanel({ id }: Props) {
@@ -24,9 +24,8 @@ export function SupportPanel({ id }: Props) {
       </h2>
 
       <p className="support__lede">
-        Mind Archive is free for personal use, and for schools, charities and
-        public research bodies. It stays that way. If it has been useful and you
-        want to put something behind it, here is how.
+        Mind Archive never nags, never counts down, and never asks twice. If it
+        has been useful and you want to put something behind it, here is how.
       </p>
 
       {donations.length > 0 && (
@@ -66,11 +65,12 @@ export function SupportPanel({ id }: Props) {
       <div className="support__commercial">
         <h3>Using it at work?</h3>
         <p>
-          Company use needs a commercial licence. It is a short email, not a
-          sales process — say what you are doing and a licence comes back.
+          Mind Archive is proprietary and nothing is for sale yet, so there is
+          no price to quote and nowhere to send you. If you want to use it in a
+          company, write and ask.
         </p>
         <p>
-          <a href={mailto("Commercial licence")}>{SUPPORT.contactEmail}</a>
+          <a href={mailto("Licensing enquiry")}>{SUPPORT.contactEmail}</a>
         </p>
       </div>
     </section>

@@ -2,7 +2,7 @@
   "name": "mindarchive-web",
   "version": "0.1.0",
   "description": "Mind Archive — your personal AI mind archive",
-  "license": "LicenseRef-PolyForm-Noncommercial-1.0.0",
+  "license": "LicenseRef-Proprietary-AllRightsReserved",
   "private": true,
   "type": "module",
   "homepage": "https://narainsagar.github.io/mindarchive",

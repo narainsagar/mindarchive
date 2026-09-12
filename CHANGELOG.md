@@ -109,6 +109,18 @@ something.
 
 ### Changed
 
+- **Mind Archive is now proprietary — all rights reserved.** The PolyForm
+  Noncommercial 1.0.0 licence is withdrawn, and with it the free noncommercial
+  tier and the planned commercial pricing. Nothing is for sale, and no licence
+  to use, copy, modify or distribute the software is granted. The software had
+  never been published or distributed to anyone, so no grant is being taken back
+  from anybody. See decision **D-046**, which supersedes D-016.
+- **The project repository stays private.** A separate public repository will be
+  created later, with its own clean history, containing only deliberately
+  approved material. See D-046, which supersedes the publication half of D-032.
+- **Mind Archive states that it is built with AI assistance.** One sentence in
+  `README.md`; the prompts, agent rules and working memory behind it stay
+  private.
 - **Tests are no longer expected on every change.** Verification is developer-
   controlled during development and required at milestone boundaries and on
   pull requests. See decision D-018.

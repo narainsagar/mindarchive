@@ -21,9 +21,8 @@ export function SiteFooter() {
           <strong className="footer__slogan">
             Local first. Privacy first. Yours.
           </strong>{" "}
-          © {COPYRIGHT_YEAR} {COPYRIGHT_HOLDER}. Source-available under PolyForm
-          Noncommercial 1.0.0. Free for personal and noncommercial use; company
-          use needs a commercial licence.
+          © {COPYRIGHT_YEAR} {COPYRIGHT_HOLDER}. Proprietary software, all rights
+          reserved. No licence to use, copy, modify or distribute it is granted.
         </p>
 
         <nav className="footer__links" aria-label="Footer">

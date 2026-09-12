@@ -71,9 +71,17 @@ and `docker compose up`.
 
 ## Commercial and licensing
 
+> **Superseded 2026-09-12 by D-046.** Mind Archive is proprietary, all rights
+> reserved, and **nothing is for sale**: the free noncommercial tier, the $49
+> seat price and the volume tier below all belonged to the PolyForm model that
+> was withdrawn. The section is kept because the *mechanics* it researched — a
+> merchant of record rather than raw Stripe, hosted links rather than payment
+> code — remain correct if anything is ever sold. Read it as research, not as a
+> plan.
+
 None of this is application work — it belongs on the project website, not in
 this repository. Recorded here so the plan is not lost. See
-[LICENSING.md]({{ '/licensing/' | relative_url }}) and decision D-016.
+[LICENSING.md]({{ '/licensing/' | relative_url }}) and decisions D-016 and D-046.
 
 **Decided (D-038):** a **merchant of record** — Polar, Paddle or Lemon Squeezy —
 sells both the licence and the donations. They are the legal seller and remit

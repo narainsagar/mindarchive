@@ -4,10 +4,9 @@
 
 *Own your AI memory. Simple, private, and yours.*
 
-Mind Archive is a local-first, source-available application for preserving,
-organising, searching and exporting your AI conversations, memories, knowledge
-and files — so that they stay yours, and stay useful even when you change AI
-provider.
+Mind Archive is a local-first application for preserving, organising, searching
+and exporting your AI conversations, memories, knowledge and files — so that they
+stay yours, and stay useful even when you change AI provider.
 
 Your archive lives on your own computer. There is no account, no server, and
 nothing is uploaded anywhere unless you explicitly configure it.
@@ -152,22 +151,25 @@ committed.
 Please read [CONTRIBUTING.md](CONTRIBUTING.md) and [AGENTS.md](AGENTS.md) — the
 second one applies whether you are a human or an AI coding agent.
 
-Outside contributions are not being accepted yet: a Contributor Licence
-Agreement has to exist first, because commercial licences are sold. Issues and
-ideas are welcome in the meantime.
+Outside contributions are not being accepted at this stage. Issues and ideas are
+welcome in the meantime.
 
-You should be able to clone, install, run, understand, modify and test the
-project without any private credentials.
+You should be able to clone, install, run, understand and test the project
+without any private credentials.
+
+## How it is built
+
+Mind Archive is developed with AI-assisted engineering workflows alongside human
+design, review, testing and decision-making. Every change is reviewed and
+verified by a person before it lands.
 
 ## License
 
-Mind Archive is **source-available**, not open source.
+**Mind Archive is proprietary software. All rights reserved.**
 
-- **Free** for any noncommercial use, under
-  [PolyForm Noncommercial 1.0.0](LICENSE) — personal use, study, research,
-  hobby projects, and use by charities, schools, public research bodies and
-  government institutions.
-- **Commercial use requires a licence.** See [LICENSING.md](LICENSING.md).
+It is not open source and it is not source-available. No licence to use, copy,
+modify or distribute it is granted — see [LICENSE](LICENSE), and
+[LICENSING.md](LICENSING.md) for the plain-language version.
 
-Your archive is yours under every tier. Licensing governs the software, never
-your data.
+Your archive is yours regardless. Licensing governs the software, never your
+data.

@@ -7,7 +7,7 @@ name = "mindarchive-api"
 version = "0.1.0"
 description = "Mind Archive backend — local-first personal AI archive"
 readme = "README.md"
-license = { text = "LicenseRef-PolyForm-Noncommercial-1.0.0" }
+license = { text = "LicenseRef-Proprietary-AllRightsReserved" }
 requires-python = ">=3.11"
 
 # Kept deliberately small. Every dependency is a maintenance cost and a

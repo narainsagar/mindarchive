@@ -179,7 +179,14 @@ licence. See D-016.
 ---
 
 ## D-016 — PolyForm Noncommercial 1.0.0, with commercial licences sold separately
-**Date:** 2026-09-08 · **Status:** Accepted
+**Date:** 2026-09-08 · **Status:** Superseded by D-046
+
+> **Superseded 2026-09-12 by [D-046](#d-046--proprietary-and-published-from-an-allowlist-into-a-separate-repository).**
+> Mind Archive is now proprietary, all rights reserved. Everything below was true
+> on 2026-09-08 and is kept because its central argument — that a licence travels
+> one way — is precisely what made this reversal possible while the software was
+> still unpublished, and impossible afterwards. The pricing described here is
+> withdrawn, not repriced.
 
 Mind Archive is **source-available, not open source**. Free for any
 noncommercial use under PolyForm Noncommercial 1.0.0. Commercial use requires a
@@ -505,6 +512,120 @@ clean environment rather than a container that has drifted.
 **Consequences:** `./data` is a bind mount, not a Docker volume, so no cleanup
 command can delete the user's archive — including `down --volumes`. That
 separation is deliberate and must be preserved.
+
+---
+
+## D-046 — Proprietary, and published from an allowlist into a separate repository
+**Date:** 2026-09-12 · **Status:** Accepted
+
+**Supersedes [D-016](#d-016--polyform-noncommercial-100-with-commercial-licences-sold-separately)
+(the licence) and the publication half of
+[D-032](#d-032--published-publicly-on-github-pages-for-docs-no-hosted-application).**
+Both are annotated in place rather than rewritten; they were correct decisions on
+their dates and the reasoning in them is still worth reading.
+
+### The licence is All Rights Reserved
+
+Mind Archive is **proprietary software**. Not open source, not source-available,
+no licence granted to anyone. `LICENSE` is a copyright notice rather than a
+licence text, and `LICENSING.md` says so in plain language.
+
+**Why now.** D-016 chose PolyForm Noncommercial specifically because *"licence
+changes only travel one way"* — a permissive grant, once published, is permanent.
+That reasoning is exactly what makes this change possible today and impossible
+later: **the software has never been published or distributed to anyone.** The
+repository has been private since its first commit and the documentation site has
+never been deployed. There is no recipient of the PolyForm grant, so withdrawing
+it takes nothing away from anybody.
+
+**No commercial licensing system replaces it.** D-016's $49 seat price, the $39
+volume tier and the merchant-of-record plan in D-038 belonged to a model that no
+longer exists. They are removed rather than repriced: **nothing is for sale, and
+inventing a price nobody has approved would be worse than saying so.** The
+donation configuration stays as it is — blank, therefore invisible — because
+donations are not a licence.
+
+D-038's substantive promise survives unchanged: **the application will never
+contain payment code, phone home, or ask for money while it is running.** A test
+still fails if any payment provider's name appears in the interface.
+
+### This repository stays private, permanently
+
+It is the development workspace, and a third of it by file count is working
+memory: 45 decisions, 23 session records, verbatim prompts, internal research
+including a profile of the development machine, and agent instructions.
+
+**A separate public repository will be created later, with clean history.** Not a
+fork, not a mirror, not a history rewrite of this one. The audit on 2026-09-11
+established why: no secret was ever committed — `.gitignore` has covered secrets,
+`data/`, `local/`, databases and provider exports since the first commit, and CI
+enforces it — but the history contains the raw planning transcripts deleted in
+`14159dc`, a probe of the development machine, 534 lines of verbatim prompts in
+the first session record alone, and a personal email address in all 39 commit
+author fields. **Flipping this repository to public would publish all of it.**
+
+### AI-assisted development is disclosed, at a high level
+
+Mind Archive may state publicly that it is built with AI assistance. `README.md`
+carries one sentence to that effect. **What stays private is the machinery**:
+prompts, agent rules, `project-memory/`, session records, internal research and
+development transcripts. The disclosure is a fact about how the work is done, not
+an invitation to read the workshop.
+
+### The publication mechanism: allowlist out, never denylist in
+
+**Publishing copies approved files into a clean tree. It must never copy the
+repository and then delete the private parts.** The difference is not stylistic:
+a denylist fails open — anything new is public until someone remembers to exclude
+it — while an allowlist fails closed, which is the only acceptable direction for
+a repository whose private material is the majority.
+
+```
+private repository (source of truth)
+        │
+        ▼
+explicit allowlist  ──► sanitised public tree (built fresh, never a copy)
+        │
+        ▼
+new public repository, clean history, own initial commit
+```
+
+**Recommended home when it is built:** `scripts/publish_public.py`, beside
+`sync_site_pages.py` and `check_site_links.py` — the same shape as the existing
+scripts, standard library only, and with a `--check` mode that lists what would
+be published without writing anything. It is deliberately **not** in `dev.py`:
+publishing is not a development command and should not sit one typo away from
+`verify`.
+
+Four things it has to handle, all of them established by inspection rather than
+guessed:
+
+1. **`project-memory/` is referenced from 22 tracked files**, about 40 times.
+   Most are prose citations in comments (*"see D-009"*); those are harmless but
+   dangling once the target is not published.
+2. **`sync_site_pages.py` would fail outright.** Five of its eleven `PAGES`
+   sources live in `project-memory/`; a missing source is a hard error by design.
+   The public copy needs a trimmed list.
+3. **`session.py check` would fail**, and it runs both in `dev.py verify` and as
+   its own CI job. Neither belongs in the public repository.
+4. **Three navigation links** in `docs/documentation.html` point at pages
+   generated from private files, and `check_site_links.py` correctly refuses to
+   ship dead links.
+
+**Consequences:**
+
+- Every published page, manifest and UI string must now say proprietary. The
+  application's Support and Contribute panels, the site footer, the landing page,
+  `README.md`, `CONTRIBUTING.md` and both package manifests were changed with
+  this decision.
+- **Historical records are not rewritten.** `CHANGELOG.md`'s 0.1.0 entry,
+  `MILESTONES.md`, the session records and the superseded decisions still say
+  PolyForm, because on their dates that was true. Only current-state documents
+  were changed.
+- The public repository's name is expected to be `mindarchive`; this one is
+  expected to be renamed to something like `mindarchive-private` later. Neither
+  has been done.
+- Nothing here changes the product, the architecture or the privacy model.
 
 ---
 
@@ -1236,7 +1357,18 @@ Two lessons, both written into `docs/GITHUB_PAGES.md`:
 ---
 
 ## D-032 — Published publicly on GitHub; Pages for docs; no hosted application
-**Date:** 2026-09-09 · **Status:** Accepted
+**Date:** 2026-09-09 · **Status:** Partly superseded by D-046
+
+> **Amended 2026-09-12 by [D-046](#d-046--proprietary-and-published-from-an-allowlist-into-a-separate-repository).**
+> The publication half no longer holds: **this** repository stays private, and a
+> separate public repository will be created later with clean history, populated
+> from an allowlist. The reasoning below — *"a privacy-first product has to let
+> people read what they are running"* — is why a public repository still exists
+> in the plan at all; it is the **history** that is not published, not the idea.
+> One clause is now simply wrong, and was argued against at the time by this very
+> decision: it says `project-memory/` being public is acceptable. It is not.
+> **The rest of this decision stands**, including the refusal to host the
+> application and the refusal of a public demo.
 
 Mind Archive is published as a **public** GitHub repository named
 `mindarchive`. GitHub Pages serves `docs/` as the project website. **The

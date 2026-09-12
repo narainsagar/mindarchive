@@ -1,4 +1,4 @@
-import { SUPPORT } from "../support";
+import { mailto } from "../support";
 
 interface Props {
   /** Anchor target for the header nav. */
@@ -42,23 +42,20 @@ export function ContributePanel({ id }: Props) {
       </ul>
 
       <p className="note">
-        Mind Archive is source-available under PolyForm Noncommercial 1.0.0 —
-        readable and inspectable, but not open source. Read the code before you
-        trust it with your archive.
+        Mind Archive is proprietary software, all rights reserved — not open
+        source and not source-available. Outside code cannot be accepted yet;
+        the reports above are what helps most.
       </p>
 
-      {SUPPORT.repositoryUrl && (
-        <p>
-          <a
-            className="button"
-            href={SUPPORT.repositoryUrl}
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Read the source
-          </a>
-        </p>
-      )}
+      {/* Email, not a repository link. The repository is private (D-046), so a
+          "Read the source" button answered 404 and contradicted the sentence
+          above it. Writing in is the route that actually works today, and it is
+          the one the panel has always really been asking for. */}
+      <p>
+        <a className="button" href={mailto("Mind Archive")}>
+          Get in touch
+        </a>
+      </p>
     </section>
   );
 }

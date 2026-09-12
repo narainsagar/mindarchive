@@ -35,7 +35,7 @@ Record new architectural and product decisions there, numbered and dated.
 | D-013 | `AGENTS.md` is the canonical cross-agent instruction file |
 | D-014 | ~~Light mode default; dark mode toggle~~ — superseded by D-029 |
 | D-015 | Default branch `main`; per-repository git identity |
-| D-016 | PolyForm Noncommercial 1.0.0; commercial licences sold separately |
+| D-016 | ~~PolyForm Noncommercial 1.0.0; commercial licences sold separately~~ — superseded by D-046 |
 | D-017 | ~~Repository stays local until there is a product worth showing~~ — superseded by D-032 |
 | D-018 | Verification is developer-controlled; required at milestone boundaries |
 | D-019 | Docker containers are disposable and never left running |
@@ -51,7 +51,7 @@ Record new architectural and product decisions there, numbered and dated.
 | D-029 | Appearance is two choices: a palette, and light / dark / system |
 | D-030 | Import is a dialog; the header navigates within the one page |
 | D-031 | The page carries Support, Contribute and a real footer |
-| D-032 | Published publicly on GitHub; Pages for docs; no hosted application |
+| D-032 | Published publicly on GitHub; Pages for docs; no hosted application — publication half superseded by D-046 |
 | D-033 | The website shares the application's palettes, through one Jekyll layout |
 | D-034 | ~~The appearance controls carry no visible group labels~~ — superseded by D-037 |
 | D-035 | The blog is part of the Jekyll site, and nothing publishes itself |
@@ -65,3 +65,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-043 | The repository's canonical documents are generated as site pages |
 | D-044 | The published contact address is `info@narainsagar.com` |
 | D-045 | The brand goes back to the top, and so does a floating link |
+| D-046 | Proprietary, all rights reserved; published from an allowlist into a separate clean repository |

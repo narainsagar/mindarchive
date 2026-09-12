@@ -5,6 +5,66 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-12 — Five links to a repository nobody can open
+
+**Session:** [2026-09-12-04-verify-the-licence-change-and-fix-the-source-link](sessions/2026-09-12-04-verify-the-licence-change-and-fix-the-source-link/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**The licence work verifies: 113 frontend tests, lint, types, site build.** The
+three assertions rewritten blind in session 03 all pass, including the D-038
+payment-provider guard against the new wording.
+
+**"Read the source" pointed at a private repository** from a product that says it
+is not source-available — wrong twice over. Searching rather than remembering
+found **five** such links: the app's Contribute button and footer, the site
+footer, the documentation index, and the `repositoryUrl` behind them. Blanking
+that one configuration value removed two of the five on its own, which is the
+existing "unset renders nothing" convention working as intended.
+
+**The Contribute panel now ends with an email button instead.** Deleting the
+link outright would have left a panel listing three ways to help and offering no
+way to do any of them; email is the route that actually works, and arguably what
+the panel was always asking for.
+
+**`CHANGELOG.md` records the licence change** under `[Unreleased] → Changed`.
+The 0.1.0 entry still says PolyForm, because that is what shipped that day.
+
+**Still uncommitted, by instruction** — two sessions of work in the tree.
+
+## 2026-09-12 — Proprietary, and a boundary drawn on purpose
+
+**Session:** [2026-09-12-03-proprietary-licence-and-the-public-private](sessions/2026-09-12-03-proprietary-licence-and-the-public-private/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**Mind Archive is proprietary — all rights reserved (D-046).** PolyForm
+Noncommercial 1.0.0 is withdrawn. **D-016's own argument is what allowed it:** a
+licence travels one way, and this software has never been published or
+distributed, so there is no recipient of the grant to take anything away from.
+After a first public release it would have been impossible.
+
+**Nothing replaced the commercial model.** The $49 seat, the volume tier and the
+checkout path are withdrawn rather than repriced — a price nobody approved is
+worse than no price. D-038's real promise survives: no payment code in the
+application, still guarded by a test.
+
+**This repository stays private, permanently.** A separate public repository
+comes later, clean history, built from an **allowlist** — never by copying this
+one and deleting the private parts. An allowlist fails closed; a denylist fails
+open, and two thirds of this repository is private.
+
+**AI-assisted development is disclosed in one sentence in `README.md`.** The
+machinery — prompts, agent rules, project memory, session records — stays
+private.
+
+**History was not rewritten to match.** `CHANGELOG`'s 0.1.0 entry, `MILESTONES`,
+`prompts/` and the superseded decisions still say PolyForm, because on their
+dates that was true. D-016 and D-032 carry dated forward-links instead.
+
+**Nothing was committed** — working-tree changes only, by instruction. Three
+edited test assertions are unverified because the suites need containers.
+
 ## 2026-09-12 — The audit becomes a punch list
 
 **Session:** [2026-09-12-02-keep-the-audit-report-current](sessions/2026-09-12-02-keep-the-audit-report-current/SESSION.md)

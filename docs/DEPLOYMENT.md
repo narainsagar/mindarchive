@@ -11,8 +11,9 @@ How Mind Archive gets published, and what deliberately is not published.
 
 | | Where | Why |
 |---|---|---|
-| Source code | A public GitHub repository | Source-available. People should be able to read what they run. |
-| Documentation site | GitHub Pages, from `docs/` | Static. No backend needed. |
+| This repository | **Stays private, permanently** | It is the development workspace: project memory, session records, prompts (D-046). |
+| Approved source and docs | A **separate** public repository, created later with clean history | Nothing from this history is published. Proprietary, all rights reserved. |
+| Documentation site | GitHub Pages, from the public repository's `docs/` | Static. No backend needed. |
 | The application | **Nowhere.** People run it themselves | It is local-first. A hosted copy would defeat the point. |
 | A public demo | **Not yet — see below** | The API has no authentication. |
 
@@ -97,13 +98,16 @@ git status --short
 
 Two things worth knowing before you push:
 
-- **`project-memory/` will be public.** Session records, decisions and the
-  prompts that produced them. It sits at the repository root, outside `docs/`,
-  so the website never publishes it — but anyone browsing the repository can
-  read it. This was a deliberate choice: for a source-available project the
-  reasoning is the interesting part.
-- **Your email address will be public.** It is in `project.json` and in
-  `apps/web/src/support.ts`, where it is the contact for commercial licences.
+- **`project-memory/` is never published.** Session records, decisions, research
+  and the prompts that produced them stay in this private repository (D-046).
+  Publishing happens from an explicit allowlist into a separate repository, so
+  nothing here reaches the public one by default.
+- **Your email address is public on the site.** `contact_email` in
+  `docs/_data/support.yml` and `contactEmail` in `apps/web/src/support.ts` are
+  printed on every page and in the application (D-044).
+- **Commit authorship is permanent.** Every commit in this repository carries the
+  author identity in `project.json`; it is one reason this history is not the
+  history that gets published.
 
 ---
 

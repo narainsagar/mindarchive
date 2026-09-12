@@ -436,15 +436,21 @@ describe("support, contributing and the footer", () => {
     backendAvailable();
   });
 
-  it("says the noncommercial licence is free, and stays free", async () => {
+  it("promises not to nag, which is the whole posture of the panel", async () => {
     await renderApp();
 
-    expect(
-      screen.getByText(/free for personal use, and for schools/i),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/never nags/i)).toBeInTheDocument();
   });
 
-  it("gives a way to ask for a commercial licence", async () => {
+  it("quotes no price, because nothing is for sale", async () => {
+    /* Mind Archive is proprietary and no licence is on offer (D-046). The panel
+       must not invent a commercial tier: it says so and gives an address. */
+    await renderApp();
+
+    expect(screen.getByText(/nothing is for sale yet/i)).toBeInTheDocument();
+  });
+
+  it("gives a way to ask a licensing question", async () => {
     await renderApp();
 
     /* The configured address rather than a copy of it: this test asserts that
@@ -453,7 +459,7 @@ describe("support, contributing and the footer", () => {
        contact address broke a test for no reason. */
     const link = screen.getByRole("link", { name: SUPPORT.contactEmail });
     expect(link.getAttribute("href")).toMatch(/^mailto:/);
-    expect(link.getAttribute("href")).toContain("Commercial%20licence");
+    expect(link.getAttribute("href")).toContain("Licensing%20enquiry");
   });
 
   it("sends people to the website rather than to a payment provider", async () => {
@@ -500,7 +506,7 @@ describe("support, contributing and the footer", () => {
     await renderApp();
 
     const footer = screen.getByText(/© 2026 Mind Archive/i);
-    expect(footer).toHaveTextContent(/PolyForm Noncommercial 1\.0\.0/);
+    expect(footer).toHaveTextContent(/all rights reserved/i);
   });
 });
 

@@ -50,7 +50,7 @@ interface SupportConfig {
 }
 
 export const SUPPORT: SupportConfig = {
-  /** Reaches you for commercial licensing and anything else. */
+  /** Reaches you for licensing questions and anything else. */
   contactEmail: "info@narainsagar.com",
 
   /**
@@ -80,8 +80,16 @@ export const SUPPORT: SupportConfig = {
    */
   wallets: [],
 
-  /** Where the code lives. Makes the "Read the source" button appear. */
-  repositoryUrl: "https://github.com/narainsagar/mindarchive",
+  /**
+   * A repository anyone can actually open. **Blank on purpose.**
+   *
+   * The repository this is built from is private and stays private (D-046), and
+   * Mind Archive is proprietary — linking "the source" to a page that answers
+   * 404, from a product that says it is not source-available, would be wrong
+   * twice over. A blank value renders no link anywhere, which is the honest
+   * state until a public repository exists.
+   */
+  repositoryUrl: "",
 };
 
 /** Only the donation links that have actually been configured. */
