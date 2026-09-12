@@ -5,6 +5,33 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-12 — The audit becomes a punch list
+
+**Session:** [2026-09-12-02-keep-the-audit-report-current](sessions/2026-09-12-02-keep-the-audit-report-current/SESSION.md)
+
+**Agent:** Kishor (moved and renamed the file) · Claude Opus 5 (updates)
+
+**`AUDIT-REPORT.md` is now at the repository root and is kept current.** Every
+finding carries Resolved, Partly done or Open; the header holds both dates and the
+count; and the file says at the top that it should be **deleted once everything in
+it is closed** — it is a punch list, not a permanent record. What deserves to
+outlive it belongs in `DECISIONS.md` and here.
+
+**Line numbers came out of it.** They were stale the moment the first finding was
+fixed. File plus section instead.
+
+**Three of fourteen are resolved**, all in `1435ea8`. The repository name is
+*Partly done* rather than done: the remote still reads `narainsagar/mind-archive`.
+
+**A fourth structural risk was recorded, from this session's own evidence:**
+`git add -A` sweeps up whatever the maintainer is mid-way through. It pulled an
+untracked `AUDIT_REPORT.md` into a commit about documentation wording, which was
+then reported as three files when it was four. Stage by explicit path.
+
+**The duplicate copy in session 01's `REPORT.md` is now a pointer.** Two full
+copies of one document is what D-010 refuses for the decision log, for the same
+reason: they disagree eventually.
+
 ## 2026-09-12 — One repository name, and an audit brought indoors
 
 **Session:** [2026-09-12-01-mind-archive-to-mindarchive-consistency](sessions/2026-09-12-01-mind-archive-to-mindarchive-consistency/SESSION.md)
