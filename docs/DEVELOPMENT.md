@@ -7,6 +7,10 @@ permalink: /development/
 
 How to set up, run and work on Mind Archive.
 
+> **Cloning it for the first time?** The repository is private, so Git has to
+> authenticate. [Git and SSH setup]({{ '/git-ssh/' | relative_url }}) covers keys,
+> the agent, the remote, and the network where port 22 does not work.
+
 ## Requirements
 
 | | Docker path (recommended) | Native path |
@@ -197,13 +201,19 @@ mindarchive/
 │   └── web/           React frontend
 │       ├── src/
 │       └── package.json
-├── docs/
-│   ├── project-memory/   Decisions, state, milestones, sessions
-│   └── archive/          Original planning notes
+├── docs/              Documentation, and the site built from it
+│   └── development/   Setup guides — Git and SSH
+├── project-memory/    Decisions, state, milestones, sessions (D-039)
 ├── scripts/           Development helpers
 ├── data/              Your archive. Git-ignored.
 └── docker-compose.yml
 ```
+
+`project-memory/` sits at the repository root, one level above `docs/`, so the
+site cannot reach it — the site publishes what it can read, and it cannot read
+upwards (D-039). `docs/archive/`, which this diagram used to show, was removed;
+its content was merged into project memory and it survives in git history at
+commit `fcf1f5c`.
 
 ## Working on the project
 
@@ -314,6 +324,12 @@ Small, meaningful commits. The default branch is `main`.
 
 Before committing, run `git status` and read `git diff --cached`. Confirm there
 is no `.env`, no secret, no database file and no personal archive.
+
+**Stage with `git add -u`, not `git add -A`.** The second sweeps up untracked
+files, including whatever you are part-way through drafting.
+
+Authentication, the remote, per-repository identity and the everyday command
+sequence are in [Git and SSH setup]({{ '/git-ssh/' | relative_url }}).
 
 ## Troubleshooting
 

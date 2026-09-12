@@ -42,8 +42,9 @@ Still open:
   Anything hosted needs a static build behind nginx or similar. Milestone 7.
 - **Release process, versioning and packaging.** Milestone 7. `DEPLOYMENT.md`
   has the manual steps in the meantime.
-- **Custom domain `mindarchive.app`.** DNS and `docs/CNAME` documented, not set
-  up.
+- **Domain names.** `mindarchive.narainsagar.com` for the application,
+  `api.` for the API, `docs.` for the documentation site (D-047). Documented,
+  none configured — no DNS record, no certificate.
 
 ### A public demo — what it would actually take
 

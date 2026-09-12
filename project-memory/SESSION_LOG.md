@@ -5,6 +5,38 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-12 — The setup guide that was a stub
+
+**Session:** [2026-09-12-05-reconcile-development-git-ssh-documentation](sessions/2026-09-12-05-reconcile-development-git-ssh-documentation/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**`docs/development/GIT_SSH_SETUP.md` was 37 lines of preamble** — a tool list
+and a diagram, ending mid-sentence on an unclosed code fence. No keys, no agent,
+no remote, nothing about port 443. There was nothing to merge; the guide had to
+be written.
+
+**It exists now**, at `/git-ssh/`: keys, the agent and keeping it alive across
+WSL shells, the public key, the remote, per-repository identity, the everyday
+commands, and a troubleshooting table. **The port-443 route is written
+generically** — some networks drop outbound 22 and GitHub serves SSH on 443 for
+that reason — with no hostname, address, network name or key material in it.
+
+**No new documentation tree.** Twelve documents sit flat in `docs/` with clean
+permalinks; moving them into `development/` and `deployment/` would rewrite every
+internal link and every published URL to gain nothing a reader can perceive.
+`DEVELOPMENT.md` and `DEPLOYMENT.md` now point at the new page rather than
+half-repeating it (**D-047**).
+
+**The domain architecture is recorded for the first time** — the application,
+`api.`, `docs.`, and the Pages URL that survives whatever DNS does. Three
+documents still said `mindarchive.app`; none does now. **Nothing is configured**,
+and D-047 notes that a public name does not fix the API having no authentication.
+
+**Two stale claims fixed on the way past:** `DEVELOPMENT.md`'s project layout
+still showed `docs/project-memory/` (moved in D-039) and `docs/archive/` (deleted
+in `14159dc`).
+
 ## 2026-09-12 — Five links to a repository nobody can open
 
 **Session:** [2026-09-12-04-verify-the-licence-change-and-fix-the-source-link](sessions/2026-09-12-04-verify-the-licence-change-and-fix-the-source-link/SESSION.md)

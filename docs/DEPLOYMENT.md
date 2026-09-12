@@ -61,15 +61,18 @@ docs/DEPLOYMENT.md           this file — it is not in TARGETS either
 
 Read the diff of any run rather than committing it unseen.
 
-### 2. Confirm your git identity is set
+### 2. Confirm your git identity and authentication
 
-Set per-repository, not globally, so it does not leak into your other projects
-(decision D-015):
+Identity is set per repository, not globally, so it does not leak into your
+other projects (decision D-015):
 
 ```bash
-git config user.name  "Your Name"
-git config user.email "you@example.com"
+git config user.name && git config user.email
 ```
+
+Authentication is SSH, because the repository is private.
+[Git and SSH setup]({{ '/git-ssh/' | relative_url }}) has the whole of it —
+keys, the agent, the remote, and what to do on a network that blocks port 22.
 
 ### 3. Run the gate
 
@@ -143,23 +146,21 @@ next section if you use it.
 ## The first push
 
 ```bash
-git remote add origin https://github.com/narainsagar/mindarchive.git
+git remote add origin git@github.com:narainsagar/mindarchive.git
 git branch -M main
 git push -u origin main
 ```
 
-If you use SSH instead:
-
-```bash
-git remote add origin git@github.com:YOUR-USERNAME/mindarchive.git
-```
-
-Check it took:
+Check it took, and that the remote agrees with `project.json`:
 
 ```bash
 git remote -v
 git log --oneline -5
 ```
+
+SSH rather than HTTPS because the repository is private; keys, the agent and the
+port-443 route are in
+[Git and SSH setup]({{ '/git-ssh/' | relative_url }}).
 
 ---
 
@@ -218,37 +219,35 @@ deployment once it succeeds.
 
 ---
 
-## A custom domain
+## The domain names
 
-`mindarchive.app` is the intended home. Not configured yet.
+Four names, three of them subdomains of one apex nobody has to buy again
+(**D-047**). **None of this is configured yet** — no DNS record exists, and no
+certificate has been issued.
 
-1. Create `docs/CNAME` containing exactly one line:
+| Name | Serves | Where it runs |
+|---|---|---|
+| `mindarchive.narainsagar.com` | The application | A private VPS instance |
+| `api.mindarchive.narainsagar.com` | The API | The same VPS, behind the same proxy |
+| `docs.mindarchive.narainsagar.com` | The documentation site | GitHub Pages, custom domain |
+| `narainsagar.github.io/mindarchive/` | The same site, unbranded | GitHub Pages, default URL |
 
-   ```
-   mindarchive.app
-   ```
+The last two are one deployment with two addresses; the Pages URL keeps working
+whatever happens to DNS, which is why `_config.yml` leaves `baseurl` unset and
+lets the Pages build inject it.
 
-2. DNS, at your registrar:
+**When the documentation site gets its custom domain:**
 
-   **Apex domain** (`mindarchive.app`) — four `A` records:
-
-   ```
-   185.199.108.153
-   185.199.109.153
-   185.199.110.153
-   185.199.111.153
-   ```
-
-   **Subdomain** (`www.mindarchive.app`) — one `CNAME` record pointing at
-   `YOUR-USERNAME.github.io`.
-
-   Use the apex or the subdomain as the primary, not both as equals — pick one
-   and redirect the other.
-
-3. **Settings → Pages → Custom domain**, enter it, and tick **Enforce HTTPS**
-   once the certificate is issued. That can take up to an hour.
-
+1. `docs/CNAME`, one line: `docs.mindarchive.narainsagar.com`
+2. A `CNAME` record at the registrar pointing that name at
+   `narainsagar.github.io` — a subdomain, so no apex `A` records are needed.
+3. **Settings → Pages → Custom domain**, then tick **Enforce HTTPS** once the
+   certificate is issued, which can take up to an hour.
 4. Set `site.useCustomDomain` to `true` in `project.json`.
+
+The application's two names are a VPS and reverse-proxy matter, not a Pages one.
+See [Hosting the application on a VPS](#hosting-the-application-on-a-vps) below,
+and note what it says before you point a public name at anything.
 
 ---
 

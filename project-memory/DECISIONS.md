@@ -515,6 +515,73 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-047 — Four names on one apex, and one page for Git and SSH
+**Date:** 2026-09-12 · **Status:** Accepted
+
+### The domain architecture
+
+| Name | Serves | Runs on |
+|---|---|---|
+| `mindarchive.narainsagar.com` | The application | A private VPS instance |
+| `api.mindarchive.narainsagar.com` | The API | The same VPS, same proxy |
+| `docs.mindarchive.narainsagar.com` | The documentation site | GitHub Pages |
+| `narainsagar.github.io/mindarchive/` | The same site, unbranded | GitHub Pages |
+
+**Nothing is configured.** No DNS record exists, no certificate has been issued,
+and this decision authorises none of that — it records the shape so that
+documentation stops contradicting itself.
+
+**Why subdomains of an existing apex** rather than `mindarchive.app`, which the
+documentation named until today: the apex is already owned, a subdomain needs one
+`CNAME` record instead of four apex `A` records, and no renewal is at stake. The
+`mindarchive.app` plan predated the identity being settled and was never acted on.
+
+**Why the API gets its own name** rather than a path on the application's: it is
+a separate process behind the same proxy, and a name can be moved, firewalled or
+taken down without touching the other. Note that the API has **no
+authentication** (D-032, `docs/SECURITY.md`) — giving it a public name does not
+make it safe to expose, and nothing here says it should be.
+
+**Why the site keeps both addresses.** The Pages URL works whatever happens to
+DNS, which is why `_config.yml` deliberately leaves `baseurl` unset and lets the
+Pages build inject it. A custom domain is an addition, never a replacement.
+
+### Git and SSH get one page, not a section and not a tree
+
+`docs/development/GIT_SSH_SETUP.md` — published at `/git-ssh/`.
+
+**Why a page.** Authentication is a one-time task consulted in a crisis, usually
+when a push has just hung. `DEVELOPMENT.md` is 340 lines about running and
+changing the software; burying "your network blocks port 22" inside it means
+nobody finds it at the moment they need it.
+
+**Why not a `docs/development/` + `docs/deployment/` tree.** Twelve documents sit
+flat in `docs/` with explicit permalinks, and the routes are already clean —
+`/development/`, `/deployment/`, `/security/`. Restructuring twelve files to
+match a diagram would change every internal link and every published URL to gain
+nothing a reader can perceive. The subdirectory holds setup guides because that
+is where this one already was; future setup guides join it.
+
+**The rule that matters is no duplication.** The page owns keys, the agent, the
+remote and the port-443 route. `DEVELOPMENT.md` owns installing, running and
+committing conventions. `DEPLOYMENT.md` owns publication. Each links to the
+others; none restates them.
+
+**The port-443 route is the durable technical content.** Some networks drop
+outbound port 22, and GitHub serves SSH on 443 for exactly that reason. It is
+written generically — no hostname, address, network name or key material — so it
+is safe to publish, which matters because this page is intended to become public.
+
+**Consequences:**
+
+- `project.json` holds `site.domain` and `useCustomDomain: false`. Turning the
+  custom domain on is four steps in `DEPLOYMENT.md`, none of them taken.
+- A second setup guide belongs in `docs/development/`, not in `DEVELOPMENT.md`.
+- If the application ever answers on a public name, the authentication problem
+  has to be solved first. The name is not the missing piece.
+
+---
+
 ## D-046 — Proprietary, and published from an allowlist into a separate repository
 **Date:** 2026-09-12 · **Status:** Accepted
 

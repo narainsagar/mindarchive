@@ -231,8 +231,12 @@ pull request.
 
 ## A note on the custom domain
 
-`mindarchive.narainsagar.com` is the intended eventual home — it is set as
-`site.domain` in `project.json`, with `useCustomDomain` still `false`. To turn
-it on, add a `CNAME` file containing the domain to `docs/`, and point a `CNAME`
-DNS record at `narainsagar.github.io`. Full steps, including the apex-versus-
-subdomain distinction, are in [DEPLOYMENT.md]({{ '/deployment/' | relative_url }}).
+**This site's eventual home is `docs.mindarchive.narainsagar.com`** — a
+subdomain, so one `CNAME` record pointing at `narainsagar.github.io` is all the
+DNS it needs, and no apex `A` records are involved. The application takes
+`mindarchive.narainsagar.com` and its API takes
+`api.mindarchive.narainsagar.com`; neither is a Pages concern (**D-047**).
+
+`project.json` holds `site.domain` with `useCustomDomain` still `false`, and
+nothing is configured. Full steps are in
+[DEPLOYMENT.md]({{ '/deployment/' | relative_url }}#the-domain-names).
