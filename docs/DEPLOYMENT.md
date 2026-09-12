@@ -38,19 +38,27 @@ python scripts/set_identity.py --check   # show what would change
 python scripts/set_identity.py           # apply it
 ```
 
-**Check its work.** It rewrites `mind-archive` to `mindarchive` across the whole
-repository, which reaches further than URLs — the first run also renamed the
-inbox ledger file, the export filename prefix, temporary directory prefixes and
-both `container_name` values. All harmless here, but read the diff rather than
-committing it unseen.
+**What it actually replaces**, so you know what it cannot do for you: the literal
+`YOUR-USERNAME` placeholder, the two URL forms built from it
+(`github.com/YOUR-USERNAME/mindarchive` and
+`YOUR-USERNAME.github.io/mindarchive`), and the `Copyright (c) YEAR HOLDER` line
+— in the 16 files listed in `TARGETS` at the top of the script, and nowhere else.
 
-It does **not** manage `homepage` in `apps/web/package.json` or `repositoryUrl`
-in `apps/web/src/support.ts`. Both are set by hand and are currently:
+**It does not rename anything.** Changing `repository` in `project.json` from one
+real name to another rewrites no existing URL, because the script matches the
+placeholder rather than the current value. A rename is a manual pass, and these
+are the places it has to reach:
 
 ```
-homepage       https://narainsagar.github.io/mindarchive
-repositoryUrl  https://github.com/narainsagar/mindarchive
+apps/web/package.json        homepage
+apps/web/src/support.ts      repositoryUrl — the Source link inside the app
+docs/_data/support.yml       contact_email
+docs/documentation.html      and docs/index.html
+docs/_posts/                 the launch post's git clone line
+docs/DEPLOYMENT.md           this file — it is not in TARGETS either
 ```
+
+Read the diff of any run rather than committing it unseen.
 
 ### 2. Confirm your git identity is set
 

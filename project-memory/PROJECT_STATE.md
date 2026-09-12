@@ -73,19 +73,26 @@ the **narainsagar** organisation as **`mindarchive`**, with
 
 Still outstanding:
 
-- **Nothing is pushed.** `origin` points at
-  `https://github.com/narainsagar/mindarchive.git`, but **the repository does
-  not exist on GitHub yet** — the API returns 404 — and `narainsagar` is an
-  organisation, so whoever pushes needs membership with write access. GitHub
-  password authentication was removed in 2021; a personal access token is
-  required.
+- **Nothing is pushed.** The repository name is **`mindarchive`**, without a
+  hyphen — that is what `project.json` says and what all 20 published URLs use.
+  On 2026-09-12 `origin` was still `git@github.com:narainsagar/mind-archive.git`;
+  the maintainer is renaming the GitHub repository and pointing the remote at
+  `narainsagar/mindarchive` to match. **Check `git remote -v` against
+  `project.json` before the first push** — if the two ever disagree again, the
+  clone command in the launch post and the Source link inside the application
+  are the first things to break.
+- `narainsagar` is an organisation, so whoever pushes needs membership with write
+  access. GitHub password authentication was removed in 2021; a personal access
+  token or an SSH key is required.
 - The CI and Pages workflows have still never run against a live repository.
-- `scripts/set_identity.py` rewrites `mindarchive` to `mindarchive` repository-
-  wide, which reaches beyond URLs — it renamed the inbox ledger file, the export
-  filename prefix, temp-directory prefixes and both `container_name` values.
-  Read its diff rather than committing it unseen. It does not manage `homepage`
-  in `apps/web/package.json` or `repositoryUrl` in `apps/web/src/support.ts`;
-  both are maintained by hand.
+- `scripts/set_identity.py` **replaces the `YOUR-USERNAME` placeholder and the
+  copyright line, in the 16 files in its `TARGETS` list — nothing else.** It
+  cannot rename one real name to another, because it matches the placeholder
+  rather than the current value. `homepage` in `apps/web/package.json`,
+  `repositoryUrl` in `apps/web/src/support.ts`, `contact_email` in
+  `docs/_data/support.yml`, `docs/documentation.html`, `docs/_posts/` and
+  `docs/DEPLOYMENT.md` are all maintained by hand. The list is in
+  [`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md).
 
 Steps are in [`docs/DEPLOYMENT.md`](../docs/DEPLOYMENT.md).
 

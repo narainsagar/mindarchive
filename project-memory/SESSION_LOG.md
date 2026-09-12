@@ -5,6 +5,34 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-12 — One repository name, and an audit brought indoors
+
+**Session:** [2026-09-12-01-mind-archive-to-mindarchive-consistency](sessions/2026-09-12-01-mind-archive-to-mindarchive-consistency/SESSION.md)
+· [audit report](sessions/2026-09-12-01-mind-archive-to-mindarchive-consistency/REPORT.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**The repository is `mindarchive`, without a hyphen** — `project.json`, both
+workflows, Compose, the container names and all 20 published URLs already said
+so. The odd one out was the git remote, `narainsagar/mind-archive`, which the
+maintainer is renaming on GitHub. **Check `git remote -v` against `project.json`
+before the first push**: if they disagree, the launch post's clone command and the
+application's own Source link are the first things to break.
+
+**One literal `mind-archive` existed in the whole tree**, and it sat inside a
+claim that was false anyway. `DEPLOYMENT.md` said `set_identity.py` *"rewrites
+`mind-archive` to `mindarchive` across the whole repository"*. **It does nothing
+of the kind** — it replaces the `YOUR-USERNAME` placeholder and the copyright
+line in 16 named files, and cannot rename one real name to another at all, which
+is why the narainsagar rename had to be done by hand. Both copies of that claim
+now say what the script does and list the six files a rename must reach.
+
+**An audit written on 2026-09-11 lived outside the repository.** It found that the
+first push would publish twenty dead links and that the frontend CI job fails on
+its first run for want of a `package-lock.json`. It is now `REPORT.md` in this
+session's folder — a finding in a scratch file is a finding the project does not
+have.
+
 ## 2026-09-11 — A link that did nothing
 
 **Session:** [2026-09-11-06-brand-link-and-a-floating-back-to-top](sessions/2026-09-11-06-brand-link-and-a-floating-back-to-top/SESSION.md)
