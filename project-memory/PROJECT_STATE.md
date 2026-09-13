@@ -122,7 +122,7 @@ in the Pages workflow instead, where the failure is a failed deployment (D-043).
 Still not published: `PROJECT_STATE.md`, `SESSION_LOG.md`, `MEMORY_INDEX.md` and
 the session records.
 
-**The contact address is `info@narainsagar.com`**, on a domain that already
+**The contact address is `mindarchive@narainsagar.com`**, on a domain that already
 exists — the earlier plan of an address at `mindarchive.app` would have bounced,
 since that domain has no DNS. It reaches the project for commercial licensing
 and everything else.

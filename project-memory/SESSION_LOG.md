@@ -234,7 +234,7 @@ frontend tests, lint, types, 34 routes.
 
 **Agent:** Claude Opus 5 (Claude Code)
 
-**`info@narainsagar.com` replaces `kishor3947@gmail.com`** on the site and in
+**`mindarchive@narainsagar.com` replaces `kishor3947@gmail.com`** on the site and in
 the application (**D-044**). The earlier plan of an address at `mindarchive.app`
 was dropped: that domain has no DNS, and an address that bounces is worse than a
 personal one — a licensing enquiry is mail nobody sends twice.

@@ -51,7 +51,7 @@ interface SupportConfig {
 
 export const SUPPORT: SupportConfig = {
   /** Reaches you for licensing questions and anything else. */
-  contactEmail: "info@narainsagar.com",
+  contactEmail: "mindarchive@narainsagar.com",
 
   /**
    * One link, and it goes to the website — never to a payment provider.

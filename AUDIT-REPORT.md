@@ -142,7 +142,7 @@ is a claim the repository makes that nobody has tested.
   fixtures only; it may shard the way ChatGPT's does.
 - **`scripts/browser/chatgpt-export.js` output has never been compared** against an
   official export — and is more doubtful now that the official one shards.
-- **`info@narainsagar.com` has never been tested.** Nothing in the repository sends
+- **`mindarchive@narainsagar.com` has never been tested.** Nothing in the repository sends
   mail; the address is published on every page of the site.
 - **Neither workflow has ever run.** CI and Pages are committed and dormant.
 - **`feed.xml` carries relative links locally and absolute ones when published**

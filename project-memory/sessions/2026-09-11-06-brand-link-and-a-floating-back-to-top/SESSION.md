@@ -104,7 +104,7 @@ shared shadow, so it should follow, but that is an argument, not a check.
 **The `RootedGlobal` → `narainsagar` rename is uncommitted and not mine.** It
 reached `project-memory/sessions/`, including three `PROMPTS.md` files, which
 are supposed to be verbatim records of what the maintainer typed. Session 04's
-now reads *"okay lets use info@narainsagar.com..."* — which is not what was
+now reads *"okay lets use mindarchive@narainsagar.com..."* — which is not what was
 typed. `scripts/set_identity.py` did not do this (it only replaces the literal
 `YOUR-USERNAME` placeholder in a fixed list of files); it was an editor-wide
 find and replace. Raised with the maintainer, not acted on.

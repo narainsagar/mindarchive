@@ -20,7 +20,7 @@
   "tagline": "Your Personal AI Mind Archive.",
   "slogan": "Own your AI memory. Simple, private, and yours.",
   "description": "A local-first application for preserving, organising and searching your AI conversations, memories, knowledge and files.",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "license": "LicenseRef-Proprietary-AllRightsReserved",
 
   "github": {
@@ -34,8 +34,8 @@
   },
 
   "author": {
-    "name": "ikishorkumar",
-    "email": "kishor3947@gmail.com"
+    "name": "narainsagar",
+    "email": "mindarchive@narainsagar.com"
   },
 
   "site": {

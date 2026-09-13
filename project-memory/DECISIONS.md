@@ -868,11 +868,11 @@ link's own 120ms fade, which that same block already reduces to nothing.
 
 ---
 
-## D-044 — The published contact address is `info@narainsagar.com`
+## D-044 — The published contact address is `mindarchive@narainsagar.com`
 **Date:** 2026-09-11 · **Status:** Accepted
 
 Commercial licensing enquiries, support and everything else the site and the
-application offer to answer go to **`info@narainsagar.com`**.
+application offer to answer go to **`mindarchive@narainsagar.com`**.
 
 **Why not an address at `mindarchive.app`.** That was the earlier intention, and
 the domain has no DNS. Publishing an address that bounces is worse than
