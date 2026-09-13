@@ -5,6 +5,39 @@ changed and why, not conversation.
 
 ---
 
+## 2026-09-12 — The publisher, and what it proved
+
+**Session:** [2026-09-12-06-build-the-private-to-public-publication-mechanism](sessions/2026-09-12-06-build-the-private-to-public-publication-mechanism/SESSION.md)
+
+**Agent:** Claude Opus 5 (Claude Code)
+
+**`scripts/publish_public.py` exists** — the mechanism D-046 described.
+Standard library, three modes, an explicit allowlist of 134 files, three gates
+every file passes before it is copied. **It never runs `git`**: no init, no
+commit, no push, no GitHub call. It refuses a destination inside this repository,
+refuses an existing one without `--force`, and refuses anything containing `.git`
+even with `--force` (**D-048**).
+
+**Directories are recursive, files are listed.** An allowlist naming every module
+under `apps/api/src` would be stale within a day; the safety is in the gates, not
+the enumeration.
+
+**`AGENTS.md` is withheld** — it is instructions for working inside a private
+repository, not documentation of a product. So are `BACKLOG.md`,
+`docs/DECISIONS.md`, `session.py` and `sync_site_pages.py`.
+
+**Running it found two bugs in my own scanner** — it refused a `/home/someone/`
+placeholder in test fixtures, and the home-path rule had its polarity backwards,
+exempting the real path while flagging invented ones.
+
+**And it proved the thing D-046 could only predict.** Generating the tree and
+running the public tree's own link checker against it gives **38 broken links**:
+five routes break only because the generator is withheld, eight are generated
+from private sources and can never exist publicly. **The publisher is finished;
+the repository is not yet publishable.**
+
+**Nothing committed**, by instruction.
+
 ## 2026-09-12 — The setup guide that was a stub
 
 **Session:** [2026-09-12-05-reconcile-development-git-ssh-documentation](sessions/2026-09-12-05-reconcile-development-git-ssh-documentation/SESSION.md)

@@ -63,10 +63,13 @@ responsively where practical, but small screens are not a current target.
 ## Where the detail lives
 
 - [Roadmap]({{ '/roadmap/' | relative_url }}) — the milestone plan
-- [Backlog]({{ '/backlog/' | relative_url }}) — ideas and known gaps, including
+- [Architecture]({{ '/architecture/' | relative_url }}) — how it is put
+  together, and why
+{% if site.data.private_pages %}- [Backlog]({{ '/backlog/' | relative_url }}) — ideas and known gaps, including
   what was rejected and why
 - [Decisions]({{ '/decisions/' | relative_url }}) — every architectural
   decision, with its reasoning
+{% endif %}
 
 If one of these matters to you, saying so is the clearest signal about what to
 build next.

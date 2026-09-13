@@ -30,7 +30,7 @@ test fails if any provider's name appears in the interface. See decision D-038.
 ## Enquiries
 
 Licensing questions, and anything this page does not cover, go to the project
-contact address in [`docs/_data/support.yml`](docs/_data/support.yml).
+contact address published on the [support page](docs/support.md).
 
 ---
 

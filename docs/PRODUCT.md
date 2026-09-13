@@ -110,5 +110,5 @@ importer — the first point at which Mind Archive becomes useful. Later
 milestones add browsing and search, organisation, more importers, and finally
 optional cloud synchronisation.
 
-The full plan is in [ROADMAP.md]({{ '/roadmap/' | relative_url }}) and
-[MILESTONES.md]({{ '/milestones/' | relative_url }}).
+The full plan is in [ROADMAP.md]({{ '/roadmap/' | relative_url }}){% if site.data.private_pages %}, with the
+authoritative scope in [MILESTONES.md]({{ '/milestones/' | relative_url }}){% endif %}.

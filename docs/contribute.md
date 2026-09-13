@@ -82,10 +82,9 @@ explaining to someone outside the project.
 ## The full guide
 
 Everything above is the summary for a site visitor. The canonical document is
-[CONTRIBUTING.md]({{ '/contributing/' | relative_url }}),
-alongside
+[CONTRIBUTING.md]({{ '/contributing/' | relative_url }}){% if site.data.private_pages %}, alongside
 [AGENTS.md]({{ '/agents/' | relative_url }}) —
-which applies whether you are a human or an AI coding agent.
+which applies whether you are a human or an AI coding agent{% endif %}.
 
 Security issues should not go in a public issue. See
 [the security notes]({{ '/security/' | relative_url }}).

@@ -101,11 +101,11 @@ git status --short
 
 Two things worth knowing before you push:
 
-- **`project-memory/` is never published.** Session records, decisions, research
+{% if site.data.private_pages %}- **`project-memory/` is never published.** Session records, decisions, research
   and the prompts that produced them stay in this private repository (D-046).
   Publishing happens from an explicit allowlist into a separate repository, so
   nothing here reaches the public one by default.
-- **Your email address is public on the site.** `contact_email` in
+{% endif %}- **Your email address is public on the site.** `contact_email` in
   `docs/_data/support.yml` and `contactEmail` in `apps/web/src/support.ts` are
   printed on every page and in the application (D-044).
 - **Commit authorship is permanent.** Every commit in this repository carries the
@@ -193,10 +193,9 @@ deployment once it succeeds.
 ### What to expect on that first push
 
 - **CI** (`ci.yml`) runs backend lint, format, types and tests; frontend lint,
-  types, tests and build; the project-memory check; and a committed-secrets
-  check. It has never run on GitHub before — a first-run failure is more likely
-  to be a runner difference than a real regression, so read the log before
-  assuming the worst.
+  types, tests and build; and a committed-secrets check. It has never run on
+  GitHub before — a first-run failure is more likely to be a runner difference
+  than a real regression, so read the log before assuming the worst.
 - **Documentation site** (`docs-pages.yml`) builds `docs/` with Jekyll and
   deploys it.
 
@@ -209,8 +208,9 @@ deployment once it succeeds.
   `permalink`. A page missing either will 404. See
   [the documentation-site notes]({{ '/github-pages/' | relative_url }}).
 - A documentation page has the same header and footer as the landing page.
-- `project-memory/` is **not** reachable on the site. It lives outside `docs/`,
+{% if site.data.private_pages %}- `project-memory/` is **not** reachable on the site. It lives outside `docs/`,
   so Jekyll never sees it — the site cannot publish what it cannot reach.
+{% endif %}
 
 > **Do not check any of this with `python -m http.server`.** It runs no Jekyll,
 > so no `.md` becomes `.html` and every documentation link 404s whether the site
@@ -276,8 +276,8 @@ is the exact failure it exists to prevent.
 
 ### What would have to exist first
 
-A public demo is real work, not a deployment step. It is in
-[BACKLOG.md]({{ '/backlog/' | relative_url }}):
+A public demo is real work, not a deployment step{% if site.data.private_pages %}, and it is in
+[BACKLOG.md]({{ '/backlog/' | relative_url }}){% endif %}:
 
 1. **A read-only demo mode** — `MIND_ARCHIVE_DEMO=true` seeds a synthetic
    archive and refuses every write. Visitors search and read; nobody uploads.

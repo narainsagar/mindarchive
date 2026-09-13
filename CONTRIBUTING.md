@@ -25,9 +25,10 @@ describes how contribution would work if that ever opens up.
 
 ## Before you start
 
-Read [AGENTS.md](AGENTS.md). It is the canonical working guide for this
-repository and it applies to humans and AI coding agents alike — the read
-order, the working method, and the definition of done.
+Read the documentation before your first change — start with
+[docs/DEVELOPMENT.md](docs/DEVELOPMENT.md) for running it and
+[docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for how it fits together. The
+working method below applies to humans and AI coding agents alike.
 
 Then get it running: [docs/DEVELOPMENT.md](docs/DEVELOPMENT.md).
 
@@ -81,8 +82,9 @@ These are not negotiable, because they are the product:
 
 6. Update the documentation your change affects. Documentation is part of the
    implementation, not a follow-up.
-7. If you changed architecture, add a numbered entry to
-   [project-memory/DECISIONS.md](project-memory/DECISIONS.md).
+7. If you changed architecture, record it as a numbered decision — what was
+   chosen, why, and what it costs. A decision nobody wrote down is
+   indistinguishable from an accident six months later.
 8. **Before you push, run the full gate and fix what it finds:**
 
    ```bash
@@ -159,8 +161,8 @@ is worse than a blog that stays quiet.
 ### On drafting posts with AI
 
 Draft a post however you like, including with an AI assistant, and including
-from the session records in `project-memory/sessions/`, which already
-capture what changed and why.
+from the project's own working notes, which already capture what changed and
+why.
 
 **Nothing is published without a person approving it.** No automation posts to
 this blog. Generated text produces volume rather than value, and a product whose

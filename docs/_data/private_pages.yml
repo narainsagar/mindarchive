@@ -1,0 +1,17 @@
+# Present only in the private repository.
+#
+# The site is built from the same `docs/` in two places: here, where the
+# decision log, milestones, research and both protocols are generated as pages,
+# and in the published tree, where those documents do not exist and their pages
+# are never generated (D-048).
+#
+# Pages and prose that link to them are wrapped in
+#
+#     {% if site.data.private_pages %} ... {% endif %}
+#
+# so the private site keeps every link and the public site reads naturally
+# without them. The publisher does not copy this file, which is the whole
+# mechanism: absent file, absent links.
+#
+# The value is never read. Its presence is the signal.
+enabled: true

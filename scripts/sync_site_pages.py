@@ -54,50 +54,40 @@ DOCS = ROOT / "docs"
 #: with an underscore, and the pages would never be published.
 OUT = DOCS / "reference"
 
-#: Pages generated from a canonical file: source, output name, title, permalink.
+#: Pages generated from a canonical document that is itself published.
 #:
-#: `LICENSE`, `CODE_OF_CONDUCT.md` and `AI_AGENT_PROTOCOL.md` are here because
-#: the documents above them link to those 22 times between them, not because
-#: anybody asked for them directly.
-PAGES = (
+#: source, output name, title, permalink.
+#:
+#: `LICENSE` and `CODE_OF_CONDUCT.md` are here because the documents above them
+#: link to those repeatedly, not because anybody asked for them directly.
+PUBLIC_PAGES = (
     ("LICENSING.md", "licensing.md", "Licensing", "/licensing/"),
     ("LICENSE", "license.md", "Licence", "/license/"),
     ("CONTRIBUTING.md", "contributing.md", "Contributing", "/contributing/"),
     ("CODE_OF_CONDUCT.md", "code-of-conduct.md", "Code of Conduct", "/code-of-conduct/"),
-    ("AGENTS.md", "agents.md", "AGENTS.md", "/agents/"),
     (".env.example", "env-example.md", "Configuration reference", "/env-example/"),
-    (
-        "project-memory/DECISIONS.md",
-        "decision-log.md",
-        "Decision log",
-        "/decisions/log/",
-    ),
-    ("project-memory/MILESTONES.md", "milestones.md", "Milestones", "/milestones/"),
-    ("project-memory/RESEARCH.md", "research.md", "Research", "/research/"),
-    (
-        "project-memory/SESSION_PROTOCOL.md",
-        "session-protocol.md",
-        "Session protocol",
-        "/session-protocol/",
-    ),
-    (
-        "project-memory/AI_AGENT_PROTOCOL.md",
-        "agent-protocol.md",
-        "AI agent protocol",
-        "/agent-protocol/",
-    ),
 )
 
-#: Every document that has a page, by its path from the repository root.
+#: Pages generated from documents that exist only in the private repository —
+#: the decision log, the milestones, the research, both protocols, AGENTS.md.
 #:
-#: Both halves matter: the generated pages above, and the hand-written pages
-#: already in `docs/`. A link from a generated page to `docs/SECURITY.md` has to
-#: become `/security/` just as surely as one to `RESEARCH.md` becomes
-#: `/research/`.
-LINKS = {
+#: **This script runs in two repositories.** The private one has those documents
+#: and publishes pages for them; the public one does not have them and must not
+#: pretend to. So the list lives in a file that is itself private, and this
+#: script generates those pages only when the file is there.
+#:
+#: The alternative — editing the page list on its way out — was rejected: the
+#: published script would then differ from the one anybody could review here,
+#: and a publication step that rewrites code is a publication step nobody can
+#: check (D-048).
+PRIVATE_PAGES_FILE = ROOT / "project-memory" / "site_pages.json"
+
+#: Hand-written pages that already live in `docs/`, by repository path.
+#:
+#: A link from a generated page to `docs/SECURITY.md` has to become `/security/`
+#: just as surely as one to `LICENSING.md` becomes `/licensing/`.
+PUBLIC_LINKS = {
     "docs/ARCHITECTURE.md": "/architecture/",
-    "docs/BACKLOG.md": "/backlog/",
-    "docs/DECISIONS.md": "/decisions/",
     "docs/DEPLOYMENT.md": "/deployment/",
     "docs/DEVELOPMENT.md": "/development/",
     "docs/FASTER_IMPORT.md": "/faster-import/",
@@ -109,7 +99,38 @@ LINKS = {
     "docs/coming-next.md": "/coming-next/",
     "docs/contribute.md": "/contribute/",
     "docs/support.md": "/support/",
+    "docs/development/GIT_SSH_SETUP.md": "/git-ssh/",
 }
+
+
+def load_private_pages():
+    """The private repository's extra pages, or nothing at all.
+
+    Absent is the normal case in a published tree, and it is not an error: the
+    documents those pages are made from were never published either.
+    """
+    if not PRIVATE_PAGES_FILE.exists():
+        return (), {}
+
+    import json
+
+    entries = json.loads(PRIVATE_PAGES_FILE.read_text(encoding="utf-8"))
+    pages = tuple(
+        (entry["source"], entry["output"], entry["title"], entry["permalink"])
+        for entry in entries["pages"]
+    )
+    links = dict(entries.get("links", {}))
+    return pages, links
+
+
+_private_pages, _private_links = load_private_pages()
+
+#: Everything this run will generate.
+PAGES = PUBLIC_PAGES + _private_pages
+
+#: Every document that has a page, from either half.
+LINKS = dict(PUBLIC_LINKS)
+LINKS.update(_private_links)
 for _source, _name, _title, _permalink in PAGES:
     LINKS[_source] = _permalink
 

@@ -411,10 +411,12 @@ python scripts/dev.py up --build</code></pre>
         <a href="{{ '/security/' | relative_url }}">Security</a> —
         <span>the threat model, stated plainly</span>
       </li>
+      {% if site.data.private_pages %}
       <li>
         <a href="{{ '/decisions/' | relative_url }}">Decisions</a> —
         <span>every architectural decision and its reasoning</span>
       </li>
+      {% endif %}
       <li>
         <a href="{{ '/roadmap/' | relative_url }}">Roadmap</a> —
         <span>what is built and what is next</span>

@@ -515,6 +515,122 @@ separation is deliberate and must be preserved.
 
 ---
 
+## D-048 — The publication allowlist, and what it refuses to publish
+**Date:** 2026-09-12 · **Status:** Accepted
+
+**Implements the mechanism D-046 described.** `scripts/publish_public.py` copies
+an explicit allowlist into a clean tree. It is not published itself — a private
+repository's publication tool belongs in the private repository.
+
+```
+python3 scripts/publish_public.py --list              what would be published
+python3 scripts/publish_public.py --check             screen it, say what is wrong
+python3 scripts/publish_public.py --build DIR         write the tree
+```
+
+**It never runs `git`.** No `init`, no `commit`, no `remote`, no `push`, and no
+GitHub call of any kind. It writes files to a named directory and stops.
+Publishing is a deliberate human act; a tool that could do it by accident is the
+wrong tool. It refuses a destination inside this repository, refuses an existing
+destination without `--force`, and **refuses any destination containing `.git`
+even with `--force`** — a repository's history is not this script's to destroy.
+
+### Files are listed; directories are recursive
+
+`PUBLIC_FILES` names individual files. `PUBLIC_TREES` names directories that are
+published whole, so a new file under `apps/api/src` is published automatically.
+
+**That is the deliberate half of the trade-off.** An allowlist naming every
+module would be stale within a day, and a stale allowlist is one people learn to
+bypass. The safety is not in enumerating files; it is in every file — new or old
+— passing three gates before it is copied, and in `--check` printing the whole
+resolved list so additions are visible. Nothing outside the allowlist is read at
+all, so it cannot leak by being forgotten, only by being added on purpose.
+
+**The three gates:** denied path segments and file types (`.env`, keys,
+databases, archives, `project-memory`, `sessions`, `prompts`, `.claude`, `data`,
+`tmp`, symlinks); a content scan for private keys, provider tokens, AWS keys,
+private IP ranges and absolute home paths; and a report of references to
+unpublished material. **The first two stop a build. The third does not** — a
+comment citing `project-memory/DECISIONS.md D-009` leaks nothing, but a public
+reader cannot follow it, so it is reported for a human to judge.
+
+**The scanner is deliberately small.** Placeholder paths (`/home/someone/`) are
+allowed, because a scanner that cries wolf is one people pass with `--force`.
+It will not catch a secret that looks like ordinary prose; `.gitignore` and the
+CI secrets job remain the primary defences.
+
+### Withheld, and why
+
+| Withheld | Reason |
+|---|---|
+| `project-memory/`, `prompts/`, `.claude/` | The internal record and the development process itself |
+| `CLAUDE.md`, `GEMINI.md`, `QWEN.md` | Agent entry points into that record |
+| **`AGENTS.md`** | Read order, session protocol and the public/private boundary — instructions for working inside a private repository, not documentation of a product |
+| `AUDIT-REPORT.md` | An internal punch list of current weaknesses |
+| `docs/DECISIONS.md` | A pointer to the private log; it would dangle |
+| `docs/BACKLOG.md` | Withdrawn pricing, merchant-of-record research, internal reasoning |
+| `scripts/session.py` | The private session-memory tool, useless without `project-memory/` |
+| `scripts/publish_public.py` | This script |
+| `project-memory/site_pages.json` | The private half of the site's page list |
+| `docs/_data/private_pages.yml` | The signal that switches the private links on |
+
+### One `docs/`, two builds — added 2026-09-12
+
+The first generated tree contained a site with **38 broken links**: five routes
+whose sources *were* published but whose generator was not, and eight generated
+from documents that can never be public. Both are now resolved, and the
+mechanism is the same idea twice — **a private file whose absence changes the
+build, rather than a publication step that edits files on their way out.**
+
+Editing files during publication was rejected outright: the published output
+would then differ from anything reviewable here, and a publication step that
+rewrites code is one nobody can check.
+
+**The page list is split.** `sync_site_pages.py` holds the five public entries
+and loads the rest from `project-memory/site_pages.json` **if it is there**. The
+private repository generates 11 pages; the published tree has no such file and
+generates 5. The script itself is now publishable — it names no private
+document — and there is one implementation, not two that drift.
+
+**The links are conditional.** Anything pointing at a private-only route is
+wrapped in `{% raw %}{% if site.data.private_pages %}{% endraw %}`, and
+`docs/_data/private_pages.yml` is not published. The private site keeps every
+link; the public site renders the same documents without them. Several passages
+carry an `{% raw %}{% else %}{% endraw %}` branch so the public wording stands on
+its own rather than reading like something went missing.
+
+**`check_site_links.py` had to learn the same condition**, because it reads
+source rather than built output and would otherwise report links the build it is
+checking would never render — a checker that cries wolf. It strips the private
+blocks when the data file is absent.
+
+**Two tools also stand aside where their inputs are absent:** `dev.py verify`
+skips the project-memory step when `session.py` is not present, and the CI
+`project-memory` job does the same. Conditional rather than removed, so the gate
+keeps checking them in the repository where they mean something.
+
+**Prose was rewritten, not just links.** Four published documents described a
+`project-memory/` directory that will not exist for a public reader — a layout
+diagram, the Pages explanation, two research citations. A public reader should
+not be told about a folder they cannot see.
+
+**Result:** the public tree generates its own 5 pages, resolves **27 routes with
+zero broken links**, and builds. The private tree still generates 11 and resolves
+35. The eight private route families do not exist in the public build, and the
+word `project-memory` appears nowhere in its rendered HTML.
+
+**Consequences:**
+
+- Adding a file to `PUBLIC_FILES` means reading it first. The allowlist is a
+  series of judgements, not an inventory.
+- A new top-level directory is invisible to the publisher until someone adds it,
+  which is the intended default.
+- `--check` should pass before any publication, and its reference report should
+  be read rather than skimmed.
+
+---
+
 ## D-047 — Four names on one apex, and one page for Git and SSH
 **Date:** 2026-09-12 · **Status:** Accepted
 

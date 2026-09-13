@@ -203,39 +203,41 @@ mindarchive/
 │       └── package.json
 ├── docs/              Documentation, and the site built from it
 │   └── development/   Setup guides — Git and SSH
-├── project-memory/    Decisions, state, milestones, sessions (D-039)
-├── scripts/           Development helpers
+{% if site.data.private_pages %}├── project-memory/    Decisions, state, milestones, sessions (D-039)
+{% endif %}├── scripts/           Development helpers
 ├── data/              Your archive. Git-ignored.
 └── docker-compose.yml
 ```
-
+{% if site.data.private_pages %}
 `project-memory/` sits at the repository root, one level above `docs/`, so the
 site cannot reach it — the site publishes what it can read, and it cannot read
 upwards (D-039). `docs/archive/`, which this diagram used to show, was removed;
 its content was merged into project memory and it survives in git history at
 commit `fcf1f5c`.
+{% endif %}
 
 ## Working on the project
 
-Read [AGENTS.md]({{ '/agents/' | relative_url }}) before your first change. It applies to humans
-and AI agents alike, and describes the read order, working method and the
-definition of done.
+{% if site.data.private_pages %}Read [AGENTS.md]({{ '/agents/' | relative_url }}) before your first change. It applies
+to humans and AI agents alike, and describes the read order, working method and
+the definition of done.
 
-The short version:
+The short version:{% else %}The working method, in short:{% endif %}
 
 1. Understand before modifying. Read the relevant docs; find the affected files.
 2. Make the smallest coherent change.
 3. Iterate freely — run whichever checks are useful to you, when they are useful.
 4. Review your diff.
 5. Update the documentation your change affects.
-6. Record any architectural decision in `project-memory/DECISIONS.md`.
+6. Record any architectural decision — what was chosen, why, and what it costs.
 7. Log the session — see [Session memory](#session-memory) below.
 8. At the milestone boundary, run `python scripts/dev.py verify` and fix what
    it finds.
 
-Work on the current milestone only. Found something else worth doing? Put it in
-[BACKLOG.md]({{ '/backlog/' | relative_url }}).
+Work on the current milestone only. Found something else worth doing? Write it
+down somewhere it will be found again{% if site.data.private_pages %} — [BACKLOG.md]({{ '/backlog/' | relative_url }}) is where{% endif %}.
 
+{% if site.data.private_pages %}
 ## Session memory
 
 Every working session is recorded in the repository, so that the project's
@@ -251,6 +253,7 @@ python scripts/session.py check      # validates project memory
 The mechanism is described in
 [SESSION_PROTOCOL.md]({{ '/session-protocol/' | relative_url }}).
 `scripts/session.py check` also runs in CI.
+{% endif %}
 
 ## Tests and when to run them
 

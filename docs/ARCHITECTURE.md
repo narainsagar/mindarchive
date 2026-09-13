@@ -7,8 +7,8 @@ permalink: /architecture/
 
 How Mind Archive is put together, and why.
 
-The decisions behind this document are recorded in the
-[decision log]({{ '/decisions/log/' | relative_url }}).
+Every choice here was recorded as a numbered decision when it was made{% if site.data.private_pages %}; the
+[decision log]({{ '/decisions/log/' | relative_url }}) has them in full{% endif %}.
 
 ## Shape of the system
 
@@ -36,9 +36,9 @@ no shared runtime, no build-time coupling, and no reason for either to know how
 the other is implemented.
 
 Storage adapters are the one piece still to come: local storage is currently
-direct filesystem access, and the interface is introduced in Milestone 5 against
-a real second implementation rather than guessed at now. See
-[MILESTONES.md]({{ '/milestones/' | relative_url }}).
+direct filesystem access, and the interface waits for a real second
+implementation rather than being guessed at now. The
+[roadmap]({{ '/roadmap/' | relative_url }}) says when.
 
 ## Backend — `apps/api`
 

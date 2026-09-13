@@ -70,11 +70,13 @@ docs/
 └── DECISIONS.md
 ```
 
-**The working memory is not in here.** `project-memory/` sits at the repository
+{% if site.data.private_pages %}**The working memory is not in here.** `project-memory/` sits at the repository
 root, one level up and outside this folder entirely, so Jekyll never sees it and
 no exclusion rule is needed — the site cannot publish what it cannot reach
 (D-039). It is useful to anyone reading the repository and noise on a public
-documentation site, which is exactly the split.
+documentation site, which is exactly the split.{% else %}**Everything the site publishes is in here.** Jekyll is rooted at `docs/` and
+cannot read above it, which is the whole of the rule: a document that is not in
+this folder, or generated into it, is not on the site.{% endif %}
 
 ## Enabling it
 
@@ -126,8 +128,9 @@ does the same thing — again, after generating.
 
 Jekyll is rooted at `docs/` and cannot read above it, and the Pages build runs
 in safe mode so it will not follow a symlink out of the source folder either.
-`LICENSING.md`, `AGENTS.md` and everything under `project-memory/` are therefore
-**generated** into `docs/reference/` by `scripts/sync_site_pages.py`.
+`LICENSING.md`, `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md` and
+`.env.example` live at the repository root and are therefore **generated** into
+`docs/reference/` by `scripts/sync_site_pages.py`.
 
 ```bash
 python scripts/sync_site_pages.py --list    # what is published, and where
@@ -170,11 +173,12 @@ python scripts/sync_site_pages.py --list    # what is published, and where
 - `blog/index.html` exists and every post has its own `blog/<slug>/index.html`.
 - `_drafts/TEMPLATE.md` did **not** get published.
 - `feed.xml` is present and parses.
-- No `project-memory/` directory in the output. Four of its documents are
+{% if site.data.private_pages %}- No `project-memory/` directory in the output. Four of its documents are
   published, but as generated pages at `/decisions/log/`, `/milestones/`,
   `/research/` and `/session-protocol/` (D-043) — the directory itself is still
   outside anything Jekyll can reach. `PROJECT_STATE.md`, `SESSION_LOG.md` and
   the session records are not published at all.
+{% endif %}
 - **No band rule uses the `padding` shorthand.** The band gives every page its
   side gutter with `padding-inline: var(--gutter)`. Any rule on the *same
   element* that uses the `padding` shorthand silently resets that to zero and

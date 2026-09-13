@@ -144,7 +144,7 @@
           <a href="{{ '/docs/' | relative_url }}">Docs</a>
           <a href="{{ '/blog/' | relative_url }}">Blog</a>
           <a href="{{ '/architecture/' | relative_url }}">Architecture</a>
-          <a href="{{ '/decisions/' | relative_url }}">Decisions</a>
+          {% if site.data.private_pages %}<a href="{{ '/decisions/' | relative_url }}">Decisions</a>{% endif %}
           <a href="{{ '/contribute/' | relative_url }}">Contribute</a>
           <a href="{{ '/support/' | relative_url }}">Support</a>
           <!-- One address, defined once in _data/support.yml. It was written

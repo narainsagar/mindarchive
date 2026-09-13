@@ -95,10 +95,18 @@ jobs:
           python-version: "3.12"
 
       # The repository is this project's permanent memory. If the memory is
-      # inconsistent, that is a real failure — see
-      # project-memory/SESSION_PROTOCOL.md.
+      # inconsistent, that is a real failure.
+      #
+      # The tool and the memory it validates belong to the private repository,
+      # so this step stands aside where neither exists rather than failing a
+      # public build over a file it was never given (D-048).
       - name: Check project memory
-        run: python scripts/session.py check
+        run: |
+          if [ -f scripts/session.py ]; then
+            python scripts/session.py check
+          else
+            echo "No session tooling in this repository — nothing to check."
+          fi
 
   secrets:
     name: No committed secrets

@@ -67,3 +67,4 @@ Record new architectural and product decisions there, numbered and dated.
 | D-045 | The brand goes back to the top, and so does a floating link |
 | D-046 | Proprietary, all rights reserved; published from an allowlist into a separate clean repository |
 | D-047 | Four names on one apex; Git and SSH setup gets its own page |
+| D-048 | The publication allowlist, and what it refuses to publish |

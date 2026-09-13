@@ -1,0 +1,59 @@
+{
+  "_comment": [
+    "Site pages generated from documents that exist only in this private",
+    "repository. Read by scripts/sync_site_pages.py when it is present.",
+    "",
+    "It lives under project-memory/ because it is private by nature: the page",
+    "list names the private documents. The publisher never copies this file, so",
+    "a generated public tree has no knowledge of these pages and generates none",
+    "of them (D-048).",
+    "",
+    "`pages`: source, output file name, page title, permalink.",
+    "`links`: extra repository paths that resolve to a route, for rewriting",
+    "links inside generated pages."
+  ],
+
+  "pages": [
+    {
+      "source": "AGENTS.md",
+      "output": "agents.md",
+      "title": "AGENTS.md",
+      "permalink": "/agents/"
+    },
+    {
+      "source": "project-memory/DECISIONS.md",
+      "output": "decision-log.md",
+      "title": "Decision log",
+      "permalink": "/decisions/log/"
+    },
+    {
+      "source": "project-memory/MILESTONES.md",
+      "output": "milestones.md",
+      "title": "Milestones",
+      "permalink": "/milestones/"
+    },
+    {
+      "source": "project-memory/RESEARCH.md",
+      "output": "research.md",
+      "title": "Research",
+      "permalink": "/research/"
+    },
+    {
+      "source": "project-memory/SESSION_PROTOCOL.md",
+      "output": "session-protocol.md",
+      "title": "Session protocol",
+      "permalink": "/session-protocol/"
+    },
+    {
+      "source": "project-memory/AI_AGENT_PROTOCOL.md",
+      "output": "agent-protocol.md",
+      "title": "AI agent protocol",
+      "permalink": "/agent-protocol/"
+    }
+  ],
+
+  "links": {
+    "docs/BACKLOG.md": "/backlog/",
+    "docs/DECISIONS.md": "/decisions/"
+  }
+}

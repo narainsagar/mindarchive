@@ -38,8 +38,8 @@ pull with *"docker-credential-desktop.exe: exec format error"*. The setting only
 affects signing in to private registries; Mind Archive pulls public images only.
 
 **A note on speed.** A checkout under `/mnt/c` is on the Windows filesystem, and
-file I/O across that boundary is roughly **27× slower** than native — measured,
-see project-memory RESEARCH R-005. Everything works; imports just take minutes
+file I/O across that boundary is roughly **27× slower** than native — measured
+on this project, not estimated. Everything works; imports just take minutes
 instead of seconds. Cloning into your WSL home (`~/`) instead makes it
 near-instant.
 
@@ -243,8 +243,8 @@ git check-ignore data .env local/*.zip  # all three should be listed
 python scripts/dev.py verify
 ```
 
-Everything: lint, types, both test suites, a production build, and a
-project-memory check. Takes about a minute and tidies up after itself.
+Everything: lint, types, both test suites, a production build, the documentation
+pages and every internal link. Takes about a minute and tidies up after itself.
 
 Nothing runs automatically while you work — you decide when to check.
 
@@ -271,7 +271,7 @@ delete it** — including `clean`.
 | `error getting credentials ... docker-credential-desktop.exe: exec format error` | Also WSL. Your `~/.docker/config.json` points at a Windows credential helper that Linux cannot run. Mind Archive only pulls public images, so the helper is not needed — remove it (see below) |
 | Interface cannot reach the API | Backend still starting. `python scripts/dev.py logs api` |
 | Port already in use | Change `MIND_ARCHIVE_API_PORT` or `WEB_PORT` in `.env` |
-| Import is slow | Expected on Windows, and worst of all from WSL against `/mnt/c`. Docker's bind mount is ~27× slower than a native filesystem — see project-memory RESEARCH R-005. Clone into the WSL home directory (`~/`) rather than `/mnt/c` if you want speed |
+| Import is slow | Expected on Windows, and worst of all from WSL against `/mnt/c`. Docker's bind mount is ~27× slower than a native filesystem, measured. Clone into the WSL home directory (`~/`) rather than `/mnt/c` if you want speed |
 | Nothing in the inbox is picked up | Only `.zip` and `.json` are read. Check the file is directly in the folder, not a subfolder |
 | Changes are not showing | The frontend hot-reloads; the backend restarts on save. `python scripts/dev.py restart` if in doubt |
 

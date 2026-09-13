@@ -85,7 +85,7 @@ Still outstanding:
   access. GitHub password authentication was removed in 2021; a personal access
   token or an SSH key is required.
 - The CI and Pages workflows have still never run against a live repository.
-- `scripts/set_identity.py` **replaces the `YOUR-USERNAME` placeholder and the
+- `scripts/set_identity.py` **replaces the `narainsagar` placeholder and the
   copyright line, in the 16 files in its `TARGETS` list — nothing else.** It
   cannot rename one real name to another, because it matches the placeholder
   rather than the current value. `homepage` in `apps/web/package.json`,
@@ -316,6 +316,18 @@ withdrawn PolyForm licence is recorded in D-016, which is kept for its reasoning
 will be created later, with clean history, populated from an explicit allowlist —
 never by copying this one and deleting things. `project-memory/`, `prompts/`,
 `.claude/`, the session records and this file are never published.
+
+**The publisher exists**: `scripts/publish_public.py --check | --list | --build DIR`
+(D-048). It copies an allowlist of 135 files, screens every one for secrets and
+denied paths, never runs `git`, and refuses to write inside this repository or
+over anything containing `.git`.
+
+**The generated tree is internally coherent.** It generates its own five pages,
+resolves 27 routes with no broken links, and builds. The private tree generates
+eleven and resolves 35. One `docs/` serves both: the page list is split between
+the script and `project-memory/site_pages.json`, and links to private-only
+routes are wrapped in `{% raw %}{% if site.data.private_pages %}{% endraw %}`,
+whose data file is not published. Nothing is edited on its way out.
 
 **AI-assisted development is disclosed at a high level**, in `README.md`, and the
 machinery behind it is not: no prompts, no agent rules, no project memory, no

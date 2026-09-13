@@ -68,9 +68,45 @@ _BLOB = re.compile(r"https://github\.com/[^/]+/[^/\s)]+/blob/[^/]+/([^)\s\"']+)"
 _THIRD_PARTY = re.compile(r'<(?:script|iframe)[^>]+src="https?://([^"/]+)', re.IGNORECASE)
 
 #: Inside a fenced block or a code span, a link is an example being discussed,
-#: not a link. `project-memory/DECISIONS.md` explains the site's own convention
-#: by quoting `[BACKLOG.md](BACKLOG.md)`, which is not a link to anywhere.
+#: not a link. The decision log explains the site's own convention by quoting
+#: `[BACKLOG.md](BACKLOG.md)`, which is not a link to anywhere.
 _FENCE = re.compile(r"```.*?```|`[^`\n]+`", re.DOTALL)
+
+#: Content the site renders only where the private documents exist.
+#:
+#: The same `docs/` builds in two repositories. Pages generated from private
+#: documents exist in one of them, so the links to them are wrapped in
+#: `{% if site.data.private_pages %}`, and the data file is absent from a
+#: published tree (D-048).
+#:
+#: This checker reads source rather than built output, so it has to honour the
+#: same condition — otherwise it reports links that the build it is checking
+#: would never render, which is a checker that cries wolf.
+_PRIVATE_BLOCK = re.compile(
+    r"\{%-?\s*if\s+site\.data\.private_pages\s*-?%\}(.*?)\{%-?\s*endif\s*-?%\}",
+    re.DOTALL,
+)
+_PRIVATE_ELSE = re.compile(r"\{%-?\s*else\s*-?%\}", re.DOTALL)
+
+#: Present only in the private repository. Its absence is the signal.
+PRIVATE_PAGES_DATA = DOCS / "_data" / "private_pages.yml"
+
+
+def strip_private_blocks(text: str) -> str:
+    """Remove what this build will not render.
+
+    In the private repository the blocks stay and their links are checked. In a
+    published tree the data file is gone, so the block's body never renders and
+    its links are not this site's problem — but an `{% else %}` branch is.
+    """
+    if PRIVATE_PAGES_DATA.exists():
+        return text
+
+    def keep_else(match: re.Match) -> str:
+        parts = _PRIVATE_ELSE.split(match.group(1), maxsplit=1)
+        return parts[1] if len(parts) == 2 else ""
+
+    return _PRIVATE_BLOCK.sub(keep_else, text)
 
 
 def site_files():
@@ -128,7 +164,7 @@ def check() -> int:
 
     for path in site_files():
         where = path.relative_to(ROOT).as_posix()
-        text = path.read_text(encoding="utf-8", errors="replace")
+        text = strip_private_blocks(path.read_text(encoding="utf-8", errors="replace"))
         body = _FENCE.sub("", text)
 
         for target in _LIQUID_LINK.findall(body) + _HREF.findall(body):

@@ -48,10 +48,12 @@ description: Everything written down about Mind Archive — what it is, how it i
       <a href="{{ '/security/' | relative_url }}">Security and privacy</a>
       <span>The threat model stated plainly — including what Mind Archive does <em>not</em> protect you from.</span>
     </li>
+    {% if site.data.private_pages %}
     <li>
       <a href="{{ '/decisions/' | relative_url }}">Decisions</a>
       <span>Every architectural decision, dated, with the reasoning that produced it.</span>
     </li>
+    {% endif %}
   </ul>
 
   <h2>Where it is going</h2>
@@ -65,10 +67,12 @@ description: Everything written down about Mind Archive — what it is, how it i
       <a href="{{ '/roadmap/' | relative_url }}">Roadmap</a>
       <span>The milestone plan.</span>
     </li>
+    {% if site.data.private_pages %}
     <li>
       <a href="{{ '/backlog/' | relative_url }}">Backlog</a>
       <span>Ideas and known gaps. Nothing here is a commitment.</span>
     </li>
+    {% endif %}
   </ul>
 
   <h2>Running the project</h2>
@@ -123,13 +127,12 @@ description: Everything written down about Mind Archive — what it is, how it i
     </li>
   </ul>
 
+  {% if site.data.private_pages %}
   <h2>The working record</h2>
 
   <p>
     Notes written for the people and agents building this, not for a reader —
-    plainer and more provisional than the pages above. Published because a
-    project that asks you to trust it with your conversations should be
-    readable all the way down.
+    plainer and more provisional than the pages above.
   </p>
 
   <ul class="doc-index">
@@ -158,6 +161,7 @@ description: Everything written down about Mind Archive — what it is, how it i
       <span>How each working session is recorded, so no decision survives only in a chat log.</span>
     </li>
   </ul>
+  {% endif %}
 
   <p class="doc-index__note">
     Every page here is written as a Markdown file and rendered for the site, so

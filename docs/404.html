@@ -28,7 +28,7 @@ permalink: /404.html
   <li><a href="{{ '/docs/' | relative_url }}">Documentation</a> — everything, indexed</li>
   <li><a href="{{ '/try-it/' | relative_url }}">Try it yourself</a> — running it locally</li>
   <li><a href="{{ '/licensing/' | relative_url }}">Licensing</a> — who pays, and who never does</li>
-  <li><a href="{{ '/decisions/' | relative_url }}">Decisions</a> — why it is built this way</li>
+  {% if site.data.private_pages %}<li><a href="{{ '/decisions/' | relative_url }}">Decisions</a> — why it is built this way</li>{% endif %}
   <li><a href="{{ '/blog/' | relative_url }}">Blog</a></li>
 </ul>
 

@@ -5,9 +5,9 @@ permalink: /roadmap/
 
 # Roadmap
 
-Where Mind Archive is going. The detailed, authoritative version — including
-what is finished — is
-[MILESTONES.md]({{ '/milestones/' | relative_url }}).
+Where Mind Archive is going, and what is already finished.{% if site.data.private_pages %}
+The detailed, authoritative version is
+[MILESTONES.md]({{ '/milestones/' | relative_url }}).{% endif %}
 
 The repository must remain runnable after every milestone.
 
@@ -95,4 +95,5 @@ site.
 A hosted service. An account system. A chat interface. Telemetry. Anything that
 requires a network connection for the core product to work.
 
-Ideas that are not yet milestones live in [BACKLOG.md]({{ '/backlog/' | relative_url }}).
+Ideas that are not yet milestones are tracked separately{% if site.data.private_pages %} in
+[BACKLOG.md]({{ '/backlog/' | relative_url }}){% endif %} — nothing there is a commitment.

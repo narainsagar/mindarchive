@@ -355,7 +355,17 @@ def cmd_verify(args) -> int:
     require_docker()
     failures = []
 
-    steps = [
+    # The project-memory check belongs to the private repository: `session.py`
+    # is not published, and a published tree has no sessions to validate
+    # (D-048). Conditional rather than removed, so the gate keeps checking it
+    # in the repository where it means something.
+    memory_steps = (
+        [("Project memory", [sys.executable, "scripts/session.py", "check"])]
+        if (REPO_ROOT / "scripts" / "session.py").exists()
+        else []
+    )
+
+    steps = memory_steps + [
         ("Backend lint", backend("ruff", "check", ".")),
         ("Backend formatting", backend("ruff", "format", "--check", ".")),
         ("Backend types", backend("mypy", "src")),
@@ -364,10 +374,9 @@ def cmd_verify(args) -> int:
         ("Frontend types", frontend("npm", "run", "typecheck")),
         ("Frontend tests", frontend("npm", "test")),
         ("Frontend build", frontend("npm", "run", "build")),
-        ("Project memory", [sys.executable, "scripts/session.py", "check"]),
-        # Generates the site pages for LICENSING.md, AGENTS.md, project-memory/
-        # and the rest. It fails if one of them links to a document that has no
-        # page, so it is a check as well as a build step (D-043).
+        # Generates the site pages for LICENSING.md and the rest. It fails if
+        # one of them links to a document that has no page, so it is a check as
+        # well as a build step (D-043).
         ("Documentation pages", [sys.executable, "scripts/sync_site_pages.py"]),
         # Walks every internal link on the site. D-036 has required this since
         # a global permalink 404ed the entire navigation, but nothing did it —

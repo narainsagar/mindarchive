@@ -6,9 +6,9 @@ tags: [engineering, process]
 ---
 
 Mind Archive keeps a decision log — every architectural decision, dated, with
-the reasoning that produced it and the consequences that followed. It is
-[published with the code]({{ '/decisions/' | relative_url }}), because a
-decision you cannot inspect is indistinguishable from an accident.
+the reasoning that produced it and the consequences that followed{% if site.data.private_pages %}, and it is
+[published with the code]({{ '/decisions/' | relative_url }}){% endif %}. A decision nobody
+wrote down is indistinguishable from an accident six months later.
 
 Four of them generalise.
 
@@ -97,4 +97,5 @@ the time, in the repository, where the reasoning survives the conversation that
 produced it. Six months later, the value is not the decision — you can see that
 in the code. The value is knowing what you already thought about and rejected.
 
-The whole log is [here]({{ '/decisions/' | relative_url }}).
+{% if site.data.private_pages %}The whole log is [here]({{ '/decisions/' | relative_url }}).{% else %}Four decisions, four arguments you can borrow whether or not you ever run this
+particular application.{% endif %}
